@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O-03 · Email Confirmation — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body>
+<!--
+  O-03 Email Confirmation — "Confirm account via email link" per
+  03_screen-list.md. No pixel spec exists for this phase (05c only
+  covers Phase B), so this is built directly from the screen-list
+  description + 02_user-flows.md's Owner Onboarding flow (Register ->
+  Confirm email -> Set up business profile), reusing the auth-page
+  layout from O-01/O-02 for visual consistency.
+
+  Judgment call: added a "Continue" button standing in for clicking the
+  emailed confirmation link (which can't be simulated in a static
+  reference) — it proceeds to O-05 Business Profile, matching the next
+  step in 02_user-flows.md. Also added "Resend email" since that's a
+  near-universal pattern for this screen type and its absence would be
+  a dead end if the email never arrives.
+-->
+<div class="phone-page">
+  <div class="scroll-area">
+    <div class="auth-page">
+      <div class="auth-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z" opacity="0"/><path d="M3 7l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+      </div>
+      <h1 class="auth-wordmark">Check your email</h1>
+      <div class="auth-subtitle" style="text-align:center; max-width: 30ch;">
+        We sent a confirmation link to <strong style="color:var(--foreground);">owner@themanilatable.ph</strong>. Open it to activate your account.
+      </div>
+
+      <a class="btn btn-primary btn-block" href="o-05-business-profile.html">Continue</a>
+      <button class="btn btn-outline btn-block" style="margin-top: 12px;" type="button">Resend email</button>
+
+      <div class="auth-footer">Wrong email? <a href="o-01-register.html">Start over</a></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

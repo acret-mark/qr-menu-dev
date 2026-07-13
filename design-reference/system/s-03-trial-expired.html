@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>S-03 · Trial Expired / Suspended — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body>
+<!--
+  S-03 Trial Expired / Suspended — "Owner sees upgrade prompt" per
+  03_screen-list.md. Shown when businesses.status is 'trial' (ended) or
+  'suspended' (per 04_data-model.md's business_status enum) — a full
+  blocking gate, not a navigable screen, so it deliberately has no
+  nav-bar or bottom tab bar: the owner shouldn't be able to reach
+  Menu/Categories/QR while blocked.
+
+  Judgment call: framed the copy to cover both trigger cases (trial
+  ended / payment suspended) with one message, since 01_mvp-features.md
+  notes free-trial expiry has no system enforcement (an admin flips the
+  status manually) — so in practice this screen is most likely reached
+  via manual suspension for non-payment, but the copy stays generic
+  enough to also read correctly for an expired trial.
+
+  "Reactivate" links to O-05's Subscription tab; "Contact Support" to
+  its Support tab. "Log out" is the escape hatch out of this gate.
+-->
+<div class="phone-page">
+  <div class="scroll-area" style="justify-content:center;">
+    <div class="empty-state">
+      <div class="icon-wrap" style="width:72px; height:72px;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      </div>
+      <h1>Your account is on hold</h1>
+      <p>Your subscription needs attention — either your trial has ended or your last payment couldn't be verified. Reactivate to keep your menu live and editable.</p>
+
+      <a class="btn btn-primary" href="../owner/o-05-business-profile.html#subscription" style="margin-top: 12px; width: 100%; max-width: 280px;">Reactivate Subscription</a>
+      <a class="btn btn-outline" href="../owner/o-05-business-profile.html#support" style="margin-top: 8px; width: 100%; max-width: 280px;">Contact Support</a>
+
+      <a href="../owner/o-02-login.html" style="margin-top: 20px; font-size: 0.8rem; color: var(--muted-foreground); text-decoration: none;">Log out</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O-06 · Category Manager — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body>
+<!--
+  O-06 Category Manager — create/edit/delete/reorder categories.
+  Source: planning/wireframes/guide/05c_wireframe-owner-core-flow.md
+  Categories match design-reference/customer/c-01-menu-home.html's 8
+  categories, with item counts matching that page's data.
+
+  Spec originally had a nav-bar "Add" text button; swapped for the same
+  floating "+" FAB pattern as O-07's "Add Item" button, for a consistent
+  add-affordance across both management screens. No destination screen
+  exists for it in this phase's spec — left as # for now, same for arrow
+  reorder / edit / delete actions, which are interaction-only in a static
+  reference.
+-->
+<div class="phone-page">
+  <nav class="nav-bar">
+    <a class="back-btn" href="o-04-dashboard-home.html" aria-label="Back to dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    </a>
+    <h1 class="nav-title">Categories</h1>
+    <div class="nav-side"></div>
+  </nav>
+
+  <div class="scroll-area">
+    <ul>
+    <li class="category-row">
+      <div class="reorder-arrows">
+        <button aria-label="Move Starters up" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button aria-label="Move Starters down"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="cat-name">Starters</div>
+      <span class="cat-count">2 items</span>
+      <button class="row-icon-btn" aria-label="Edit Starters"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="row-icon-btn" aria-label="Delete Starters"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </li>
+
+    <li class="category-row">
+      <div class="reorder-arrows">
+        <button aria-label="Move Soups up"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button aria-label="Move Soups down"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="cat-name">Soups</div>
+      <span class="cat-count">2 items</span>
+      <button class="row-icon-btn" aria-label="Edit Soups"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="row-icon-btn" aria-label="Delete Soups"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </li>
+
+    <li class="category-row">
+      <div class="reorder-arrows">
+        <button aria-label="Move Mains up"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button aria-label="Move Mains down"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="cat-name">Mains</div>
+      <span class="cat-count">3 items</span>
+      <button class="row-icon-btn" aria-label="Edit Mains"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="row-icon-btn" aria-label="Delete Mains"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </li>
+
+    <li class="category-row">
+      <div class="reorder-arrows">
+        <button aria-label="Move Noodles up"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button aria-label="Move Noodles down"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="cat-name">Noodles</div>
+      <span class="cat-count">2 items</span>
+      <button class="row-icon-btn" aria-label="Edit Noodles"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="row-icon-btn" aria-label="Delete Noodles"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </li>
+
+    <li class="category-row">
+      <div class="reorder-arrows">
+        <button aria-label="Move Sides up"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button aria-label="Move Sides down"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="cat-name">Sides</div>
+      <span class="cat-count">2 items</span>
+      <button class="row-icon-btn" aria-label="Edit Sides"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="row-icon-btn" aria-label="Delete Sides"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </li>
+
+    <li class="category-row">
+      <div class="reorder-arrows">
+        <button aria-label="Move Drinks up"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button aria-label="Move Drinks down"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="cat-name">Drinks</div>
+      <span class="cat-count">3 items</span>
+      <button class="row-icon-btn" aria-label="Edit Drinks"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="row-icon-btn" aria-label="Delete Drinks"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </li>
+
+    <li class="category-row">
+      <div class="reorder-arrows">
+        <button aria-label="Move Desserts up"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button aria-label="Move Desserts down"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="cat-name">Desserts</div>
+      <span class="cat-count">2 items</span>
+      <button class="row-icon-btn" aria-label="Edit Desserts"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="row-icon-btn" aria-label="Delete Desserts"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </li>
+
+    <li class="category-row">
+      <div class="reorder-arrows">
+        <button aria-label="Move Coffee &amp; Tea up"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+        <button aria-label="Move Coffee &amp; Tea down" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="cat-name">Coffee &amp; Tea</div>
+      <span class="cat-count">2 items</span>
+      <button class="row-icon-btn" aria-label="Edit Coffee &amp; Tea"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="row-icon-btn" aria-label="Delete Coffee &amp; Tea"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </li>
+    </ul>
+  </div>
+
+  <a class="fab" href="#" aria-label="Add category" style="bottom: 84px;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+  </a>
+
+  <nav class="tab-bar">
+    <ul>
+      <li><a class="tab-bar-item" href="o-04-dashboard-home.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg>
+        <span>Dashboard</span>
+      </a></li>
+      <li><a class="tab-bar-item" href="o-07-menu-item-list.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="4" r="1"/><path d="M12 5v3"/><path d="M2 8h20"/><path d="M4 8v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/></svg>
+        <span>Menu</span>
+      </a></li>
+      <li><a class="tab-bar-item active" href="o-06-category-manager.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8Z"/><path d="M7 7h.01"/></svg>
+        <span>Categories</span>
+      </a></li>
+      <li><a class="tab-bar-item" href="o-09-qr-code.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM19 14h2M14 19h2M19 19h2"/></svg>
+        <span>QR Code</span>
+      </a></li>
+    </ul>
+  </nav>
+</div>
+</body>
+</html>

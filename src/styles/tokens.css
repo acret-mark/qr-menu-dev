@@ -1,0 +1,88 @@
+/*
+ * Hapag brand tokens — locked per planning/06_ui-design.md.
+ * Primary: deep green (#1E3D2F). Secondary accent: amber (#A67C3A).
+ * Warm off-white ground, not pure white/black — food-forward, not sterile.
+ *
+ * Single source of truth: consumed by the app (src/app/globals.css, via
+ * @theme inline) and directly by the static reference pages in
+ * qr-menu-dev/design-reference/ — no Tailwind-specific syntax here so both
+ * can link it as plain CSS.
+ */
+:root {
+  --background: #faf7f1;
+  --foreground: #1b1b18;
+  --card: #ffffff;
+  --card-foreground: #1b1b18;
+  --popover: #ffffff;
+  --popover-foreground: #1b1b18;
+  --primary: #1e3d2f;
+  --primary-foreground: #faf7f1;
+  --secondary: #f3e9d8;
+  --secondary-foreground: #1b1b18;
+  --muted: #f1ece1;
+  --muted-foreground: #5b5750;
+  --accent: #a67c3a;
+  --accent-foreground: #1b1b18;
+  --destructive: #b3261e;
+  --destructive-foreground: #faf7f1;
+  --success: #2f855a;
+  --success-foreground: #faf7f1;
+  --warning: #a67c3a;
+  --warning-foreground: #1b1b18;
+  --border: #e3dcce;
+  --input: #e3dcce;
+  --ring: #a67c3a;
+  --chart-1: #1e3d2f;
+  --chart-2: #2f855a;
+  --chart-3: #a67c3a;
+  --chart-4: #c99a52;
+  --chart-5: #5b5750;
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1b1b18;
+  --sidebar-primary: #1e3d2f;
+  --sidebar-primary-foreground: #faf7f1;
+  --sidebar-accent: #f3e9d8;
+  --sidebar-accent-foreground: #1b1b18;
+  --sidebar-border: #e3dcce;
+  --sidebar-ring: #a67c3a;
+}
+
+.dark {
+  --background: #141d18;
+  --foreground: #f1eee6;
+  --card: #1b2620;
+  --card-foreground: #f1eee6;
+  --popover: #1b2620;
+  --popover-foreground: #f1eee6;
+  --primary: #86c3a2;
+  --primary-foreground: #14201a;
+  --secondary: #223229;
+  --secondary-foreground: #f1eee6;
+  --muted: #1f2a24;
+  --muted-foreground: #b7c0b6;
+  --accent: #dcac66;
+  --accent-foreground: #1b1b18;
+  --destructive: #e2534b;
+  --destructive-foreground: #14201a;
+  --success: #6fbf94;
+  --success-foreground: #14201a;
+  --warning: #dcac66;
+  --warning-foreground: #1b1b18;
+  --border: #2b3a32;
+  --input: #2b3a32;
+  --ring: #dcac66;
+  --chart-1: #86c3a2;
+  --chart-2: #6fbf94;
+  --chart-3: #dcac66;
+  --chart-4: #c99a52;
+  --chart-5: #b7c0b6;
+  --sidebar: #1b2620;
+  --sidebar-foreground: #f1eee6;
+  --sidebar-primary: #86c3a2;
+  --sidebar-primary-foreground: #14201a;
+  --sidebar-accent: #223229;
+  --sidebar-accent-foreground: #f1eee6;
+  --sidebar-border: #2b3a32;
+  --sidebar-ring: #dcac66;
+}

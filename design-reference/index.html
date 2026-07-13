@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hapag — Design Reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../src/styles/tokens.css" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Inter", sans-serif;
+    padding: 48px 24px 80px;
+  }
+  h1 {
+    font-family: "Playfair Display", serif;
+    font-size: 1.8rem;
+    margin: 0 0 6px;
+  }
+  p.sub { color: var(--muted-foreground); margin: 0 0 32px; }
+  h2 {
+    font-family: "Playfair Display", serif;
+    font-size: 1.1rem;
+    margin: 32px 0 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a.card {
+    display: block;
+    padding: 14px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--foreground);
+    font-size: 0.92rem;
+  }
+  a.card .id {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    color: var(--muted-foreground);
+    display: block;
+    margin-bottom: 2px;
+  }
+  a.card.pending {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div style="max-width: 900px; margin: 0 auto;">
+  <h1>Hapag — Design Reference</h1>
+  <p class="sub">Static HTML screens, built against the shared token stylesheet. Not final assets/copy — a build reference, per <code>planning/08_development-plan.md</code> Phase 1.</p>
+
+  <h2>Phase A — Customer Menu</h2>
+  <ul class="grid">
+    <li><a class="card" href="customer/c-01-menu-home.html"><span class="id">C-01</span>Menu (Home + Category View)</a></li>
+    <li><a class="card" href="customer/c-03-item-detail.html"><span class="id">C-03</span>Item Detail</a></li>
+    <li><a class="card" href="customer/c-04-search-results.html"><span class="id">C-04</span>Search Results</a></li>
+    <li><a class="card" href="customer/c-05-inactive-menu.html"><span class="id">C-05</span>404 / Inactive Menu</a></li>
+  </ul>
+
+  <h2>Phase B — Owner Core Flow</h2>
+  <ul class="grid">
+    <li><a class="card" href="owner/o-01-register.html"><span class="id">O-01</span>Register</a></li>
+    <li><a class="card" href="owner/o-02-login.html"><span class="id">O-02</span>Login</a></li>
+    <li><a class="card" href="owner/o-04-dashboard-home.html"><span class="id">O-04</span>Dashboard Home</a></li>
+    <li><a class="card" href="owner/o-06-category-manager.html"><span class="id">O-06</span>Category Manager</a></li>
+    <li><a class="card" href="owner/o-07-menu-item-list.html"><span class="id">O-07</span>Menu Item List</a></li>
+    <li><a class="card" href="owner/o-08-add-edit-item.html"><span class="id">O-08</span>Add / Edit Item</a></li>
+    <li><a class="card" href="owner/o-09-qr-code.html"><span class="id">O-09</span>QR Code</a></li>
+  </ul>
+
+  <h2>Phase C — Owner Supporting</h2>
+  <ul class="grid">
+    <li><a class="card" href="owner/o-03-email-confirmation.html"><span class="id">O-03</span>Email Confirmation</a></li>
+    <li><a class="card" href="owner/o-05-business-profile.html#profile"><span class="id">O-05</span>Business Profile</a></li>
+    <li><a class="card" href="owner/o-05-business-profile.html#subscription"><span class="id">O-10</span>Subscription</a></li>
+    <li><a class="card" href="owner/o-05-business-profile.html#support"><span class="id">O-11</span>Support</a></li>
+  </ul>
+
+  <h2>Phase D — Admin Panel</h2>
+  <ul class="grid">
+    <li><a class="card" href="admin/a-01-admin-login.html"><span class="id">A-01</span>Admin Login</a></li>
+    <li><a class="card" href="admin/a-02-business-list.html"><span class="id">A-02</span>Business List</a></li>
+    <li><a class="card" href="admin/a-03-business-detail.html"><span class="id">A-03</span>Business Detail</a></li>
+    <li><a class="card" href="admin/a-04-payment-queue.html"><span class="id">A-04</span>Payment Queue</a></li>
+    <li><a class="card" href="admin/a-05-activate-subscription.html"><span class="id">A-05</span>Activate Subscription</a></li>
+    <li><a class="card" href="admin/a-06-support-tickets.html"><span class="id">A-06</span>Support Tickets</a></li>
+  </ul>
+
+  <h2>Phase E — System / Edge States</h2>
+  <ul class="grid">
+    <li><a class="card" href="system/s-01-forgot-password.html"><span class="id">S-01</span>Forgot Password</a></li>
+    <li><a class="card" href="system/s-02-reset-password.html"><span class="id">S-02</span>Reset Password</a></li>
+    <li><a class="card" href="system/s-03-trial-expired.html"><span class="id">S-03</span>Trial Expired</a></li>
+    <li><a class="card" href="system/s-04-error.html"><span class="id">S-04</span>Error / 500</a></li>
+  </ul>
+</div>
+</body>
+</html>

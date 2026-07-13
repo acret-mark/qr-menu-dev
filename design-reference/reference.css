@@ -1,0 +1,1676 @@
+/*
+ * Shared component styles for Hapag's static HTML reference pages.
+ * Pulls color/radius tokens from ../src/styles/tokens.css (linked separately
+ * in each page's <head>, in that order). This file adds layout + component
+ * patterns on top — the plain-HTML equivalent of the shadcn/ui components
+ * the real app uses, kept visually identical via the same tokens.
+ *
+ * Not shipped to production — reference only, for building the real
+ * Next.js/Tailwind/shadcn screens against.
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 600;
+  margin: 0;
+  text-wrap: balance;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+/*
+ * Mobile phone frame — customer screens are viewed on a phone (390px primary).
+ * App-shell layout: header stays put, footer stays pinned to the bottom of
+ * the viewport, and only the middle (.scroll-area) scrolls.
+ */
+.phone-page {
+  max-width: 430px;
+  margin: 0 auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+  overflow: hidden;
+}
+
+.scroll-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- top bar ---- */
+
+.menu-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+
+.biz-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.biz-name {
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.biz-sub {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+/* ---- search ---- */
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 16px 0;
+  padding: 10px 14px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+
+.search-bar svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ---- category tabs ---- */
+
+.category-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+}
+
+/* .category-tabs' buttons are wrapped in a <ul><li> for semantic list
+   markup; the ul needs to take over the flex-row layout previously
+   carried by .category-tabs' direct children. */
+.category-tabs ul {
+  display: flex;
+  gap: 8px;
+}
+
+.category-tabs li {
+  flex-shrink: 0;
+}
+
+.category-tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.category-tab.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* ---- item thumbnail placeholder ---- */
+/* stand-in for a real Cloudinary photo; gradient + icon signals "food photo here" */
+
+.item-thumb {
+  --thumb-a: var(--primary);
+  --thumb-b: var(--chart-2);
+  position: relative;
+  background: linear-gradient(135deg, var(--thumb-a), var(--thumb-b));
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--primary-foreground) 80%, transparent);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.item-thumb svg {
+  width: 40%;
+  height: 40%;
+  opacity: 0.85;
+}
+
+/* ---- item card (category view / list) ---- */
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px 24px;
+}
+
+.item-list[hidden] {
+  display: none;
+}
+
+.item-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+}
+
+a.item-card,
+a.recent-row {
+  text-decoration: none;
+  color: inherit;
+}
+
+.item-card .item-thumb {
+  width: 76px;
+  height: 76px;
+}
+
+.item-card .item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-card .item-name {
+  font-size: 0.98rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.item-card .item-desc {
+  font-size: 0.83rem;
+  color: var(--muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.item-card .item-price {
+  margin-top: auto;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.item-card.sold-out {
+  opacity: 0.6;
+}
+
+.item-card.sold-out .item-thumb {
+  filter: grayscale(0.7);
+}
+
+/* ---- badges / pills ---- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.6;
+}
+
+.pill.best-seller {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.pill.sold-out {
+  background: var(--muted-foreground);
+  color: var(--card);
+}
+
+.badge-corner {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+}
+
+/* ---- buttons ---- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-size: 0.92rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ---- footer / watermark ---- */
+
+.watermark-footer {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 0.76rem;
+  color: var(--muted-foreground);
+  background: var(--card);
+  border-top: 1px solid var(--border);
+}
+
+.watermark-footer strong {
+  color: var(--primary);
+  font-family: "Playfair Display", serif;
+}
+
+/* ---- empty / error states ---- */
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  padding: 48px 24px;
+}
+
+.empty-state .icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state h1 {
+  font-size: 1.3rem;
+}
+
+.empty-state p {
+  color: var(--muted-foreground);
+  font-size: 0.92rem;
+  max-width: 32ch;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .item-card, .btn, .category-tab {
+    transition: transform 0.12s ease, opacity 0.12s ease;
+  }
+}
+
+/* ============================================================
+ * Owner Core Flow (Phase B) — O-01, O-02, O-04, O-06, O-07, O-08, O-09
+ * Structure/spacing follows planning/wireframes/guide/05c_wireframe-
+ * owner-core-flow.md exactly. That spec's colors are grayscale
+ * (#333333/#F5F5F5/#CCCCCC/#E0E0E0/#111111/#888888) because it was
+ * written for the wireframe stage — here they're mapped onto the real
+ * Hapag tokens instead (--primary, --muted, --border, --foreground,
+ * --muted-foreground) since 06_ui-design.md's palette supersedes it.
+ * ============================================================ */
+
+.nav-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-bar .nav-side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 32px;
+}
+
+.nav-title {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.nav-action {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.back-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+/*
+ * Floating variant — used where the back button sits directly over a
+ * full-width photo (C-03 Item Detail) instead of inside a plain topbar,
+ * so it needs to stay visually legible against any photo underneath.
+ */
+.back-btn.floating {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 36px;
+  height: 36px;
+  background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- form fields (auth + item form) ---- */
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.field-input, .field-select, .field-textarea {
+  width: 100%;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 16px;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  font-family: inherit;
+}
+
+.field-input, .field-select {
+  height: 44px;
+}
+
+.field-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.field-textarea {
+  height: 96px;
+  padding: 12px 16px;
+  resize: none;
+}
+
+.field-price-wrap {
+  position: relative;
+}
+
+.field-price-wrap .prefix {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.field-price-wrap input {
+  padding-left: 32px;
+}
+
+.password-field-wrap {
+  position: relative;
+}
+
+.password-field-wrap .eye-btn {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: none;
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ---- auth screens (O-01 Register, O-02 Login) ---- */
+
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 40px;
+}
+
+.auth-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.auth-wordmark {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.auth-subtitle {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin-top: 8px;
+  margin-bottom: 24px;
+}
+
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.forgot-link {
+  align-self: flex-end;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  margin-top: -4px;
+}
+
+.auth-footer {
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+.auth-footer a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ---- dashboard home (O-04) ---- */
+
+.dash-greeting {
+  font-size: 1rem;
+  padding: 20px 16px 0;
+}
+
+.summary-row {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+}
+
+.summary-card {
+  display: block;
+  flex: 1;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.summary-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 8px;
+}
+
+.sub-card {
+  margin: 0 16px 16px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.sub-card .value {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.sub-card .sep {
+  color: var(--border);
+}
+
+.status-badge {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.section-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  padding: 24px 16px 12px;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.quick-actions .btn {
+  flex: 1;
+}
+
+.recent-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.recent-row .name {
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+
+.recent-row .cat {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
+
+/* ---- category manager (O-06) ---- */
+
+.category-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reorder-arrows {
+  display: flex;
+  flex-direction: column;
+  color: var(--muted-foreground);
+}
+
+/*
+ * 05c_wireframe-owner-core-flow.md specs 44x44px tap targets per arrow,
+ * which doesn't fit two stacked inside the 56px category-row height it
+ * also specs. Maximizing what's actually achievable here: full 44px
+ * width, and as much height as the row allows (28px each, the full
+ * 56px row split evenly) rather than silently understating a gap.
+ */
+.reorder-arrows button {
+  background: none;
+  border: none;
+  width: 44px;
+  height: 28px;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reorder-arrows button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.category-row .cat-name {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+
+.category-row .cat-count {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-right: 4px;
+}
+
+.row-icon-btn {
+  background: none;
+  border: none;
+  padding: 10px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  display: flex;
+  text-decoration: none;
+}
+
+/* ---- menu item list (O-07) ---- */
+/* tab bar reuses .category-tabs/.category-tab (customer menu, above) —
+   same pill-tab component, not sticky here since the page already scrolls
+   under a fixed nav-bar rather than a sticky header. */
+
+.owner-item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  min-height: 72px;
+}
+
+.owner-item-row .thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.owner-item-row .info {
+  flex: 1;
+  min-width: 0;
+}
+
+.owner-item-row .info .name {
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+
+.owner-item-row .info .cat {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+
+.toggle-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.toggle-col .row-icon-btn {
+  height: 24px;
+  width: 24px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-col .toggle-label {
+  font-size: 0.625rem;
+  color: var(--muted-foreground);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--border);
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.toggle-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--card);
+  transition: transform 0.15s ease;
+}
+
+.toggle-switch.on {
+  background: var(--primary);
+}
+
+.toggle-switch.on::after {
+  transform: translateX(20px);
+}
+
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: max(24px, calc((100vw - 430px) / 2 + 24px));
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* ---- account tabs: Profile / Subscription / Support (O-05/O-10/O-11) ---- */
+
+.account-panel[hidden] {
+  display: none;
+}
+
+/*
+ * Ticket cards — same rounded-card, whitespace-forward language as the
+ * Admin Panel's minimal-SaaS shell (admin-stat-card/admin-table-card),
+ * applied here instead of the flat bordered-row style used elsewhere on
+ * the mobile owner screens. Clickable: expands to show the original
+ * message + admin reply (or "Awaiting response"), since a ticket that
+ * can't be opened has nowhere for a reply to actually appear.
+ */
+.ticket-card {
+  margin: 0 16px 10px;
+  background: var(--muted);
+  border-radius: var(--radius);
+}
+
+.ticket-card:last-child {
+  margin-bottom: 24px;
+}
+
+/*
+ * Ticket rows navigate to a detail screen (o-11-ticket-*.html) rather
+ * than expanding in place — grid layout so the status badge spans and
+ * centers against both text rows (subject + date), instead of only
+ * aligning to the first line.
+ */
+.ticket-card-link {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 10px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ticket-card-link .subject {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.ticket-card-link .date {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 3px;
+}
+
+.ticket-card-link .status-badge {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-self: end;
+  align-self: center;
+}
+
+.ticket-card-link .chevron {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}
+
+.ticket-card-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+  margin-top: 2px;
+  padding-top: 14px;
+}
+
+.ticket-card-body[hidden] {
+  display: none;
+}
+
+.ticket-card-body .label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted-foreground);
+  margin-bottom: 4px;
+}
+
+.ticket-card-body .msg {
+  font-size: 0.85rem;
+  background: var(--muted);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.ticket-card-body .reply-block {
+  margin-top: 16px;
+}
+
+.ticket-card-body .reply-block .msg {
+  background: var(--secondary);
+  border-left: 3px solid var(--primary);
+  border-radius: 4px 10px 10px 4px;
+}
+
+.ticket-card-body .awaiting {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+/* ---- add / edit item (O-08) ---- */
+
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 160px;
+  margin: 16px;
+  background: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.toggle-form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+
+.delete-link {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+
+/* ---- QR code (O-09) ---- */
+
+.qr-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 40px;
+  text-align: center;
+}
+
+.qr-placeholder {
+  width: 220px;
+  height: 220px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 4px;
+  padding: 16px;
+  margin: 24px 0 16px;
+}
+
+.qr-placeholder span {
+  background: var(--muted-foreground);
+  border-radius: 2px;
+}
+
+.qr-placeholder span.off {
+  background: transparent;
+}
+
+.qr-biz-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.qr-url {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+  margin-bottom: 24px;
+}
+
+.qr-note {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 24px;
+}
+
+/* ---- bottom tab bar (primary owner navigation) ---- */
+/*
+ * Persistent across the 4 top-level owner destinations (O-04, O-06, O-07,
+ * O-09) — added because tappable summary cards and a "See all" link
+ * weren't reliably discoverable navigation for this audience (per
+ * proposal persona: "basic tech"). Not shown on O-08 (a sub-screen you
+ * arrive at from one of these, not a destination itself) or the auth
+ * screens (O-01/O-02, pre-login).
+ */
+
+.tab-bar {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* .tab-bar's items are wrapped in a <ul><li> for semantic list markup;
+   the ul needs to take over the flex-row layout previously carried by
+   .tab-bar's direct children. */
+.tab-bar ul {
+  display: flex;
+  width: 100%;
+}
+
+.tab-bar li {
+  display: flex;
+  flex: 1;
+}
+
+.tab-bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px 10px;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.tab-bar-item.active {
+  color: var(--primary);
+}
+
+/* ============================================================
+ * Admin Panel (Phase D) — A-01..A-06
+ * Deliberately different shell from the mobile owner/customer screens:
+ * "minimal SaaS dashboard" pattern (collapsible left sidebar + top bar
+ * + rounded cards + data tables), matching Vercel/Stripe/Linear/Clerk/
+ * Supabase per your reference. Desktop-first per 06_ui-design.md
+ * (1440px target, "data table layouts; no card grids" for the tables
+ * themselves — the rounded cards are for stat summaries, not per-row
+ * item display, which is where 06_ui-design.md's "no cards" guidance
+ * was actually aimed).
+ * ============================================================ */
+
+.admin-login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.admin-login-card {
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.admin-login-card .brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.admin-login-card .wordmark {
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.admin-login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-login-card .disclaimer {
+  margin-top: 20px;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.admin-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.15s ease;
+}
+
+.admin-sidebar.collapsed {
+  width: 68px;
+}
+
+.admin-sidebar.collapsed .admin-nav-item span,
+.admin-sidebar.collapsed .admin-sidebar-header .wordmark,
+.admin-sidebar.collapsed .admin-sidebar-footer span {
+  display: none;
+}
+
+.admin-sidebar-header {
+  height: 60px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-sidebar-header .wordmark {
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-nav {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-nav-item svg {
+  flex-shrink: 0;
+}
+
+.admin-nav-item:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.admin-nav-item.active {
+  background: var(--muted);
+  color: var(--primary);
+}
+
+.admin-sidebar-footer {
+  flex-shrink: 0;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.admin-sidebar-footer button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: none;
+  background: none;
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-sidebar-footer button:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.admin-main-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-topbar {
+  height: 60px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+
+.admin-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 320px;
+  max-width: 100%;
+  padding: 7px 12px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+}
+
+.admin-topbar-spacer {
+  flex: 1;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  border: none;
+  background: none;
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.admin-main {
+  flex: 1;
+  padding: 28px 32px 48px;
+  overflow-y: auto;
+  max-width: 1240px;
+}
+
+.admin-page-title {
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.admin-page-sub {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin-bottom: 24px;
+}
+
+/* rounded stat-summary cards — Stripe/Vercel dashboard convention */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.admin-stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+
+.admin-stat-card .label {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+
+.admin-stat-card .value {
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* data tables */
+.admin-table-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.admin-table th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover td {
+  background: var(--muted);
+}
+
+.admin-table .row-link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+/* status badges — color-coded per 06_ui-design.md (active=green,
+   pending=amber, suspended=red); reusing .status-badge as the base */
+.status-badge.success { background: var(--success); color: var(--success-foreground); }
+.status-badge.warning { background: var(--warning); color: var(--warning-foreground); }
+.status-badge.destructive { background: var(--destructive); color: var(--destructive-foreground); }
+.status-badge.neutral { background: var(--border); color: var(--foreground); }
+
+.admin-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.admin-detail-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.admin-detail-tab {
+  padding: 10px 4px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted-foreground);
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.admin-detail-tab.active {
+  color: var(--foreground);
+  border-bottom-color: var(--primary);
+}
+
+.admin-detail-panel[hidden] {
+  display: none;
+}
+
+/* ---- support ticket inbox (A-06) ---- */
+/* Desktop split list + reading pane (Linear/Intercom-style inbox) — a
+   different pattern from the mobile .ticket-card (O-05/O-11), which
+   expands a card in place rather than opening a persistent reading pane. */
+
+.ticket-inbox {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+
+.ticket-inbox-list {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ticket-inbox-row {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid transparent;
+}
+
+.ticket-inbox-row:hover {
+  background: var(--muted);
+}
+
+.ticket-inbox-row.active {
+  background: var(--muted);
+  border-color: var(--border);
+}
+
+.ticket-inbox-row .subject {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.ticket-inbox-row .biz {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+  margin-top: 3px;
+}
+
+.ticket-inbox-row .meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.ticket-inbox-row .date {
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+
+.ticket-thread {
+  flex: 1;
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-thread-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.ticket-thread-header .subject {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.ticket-thread-header .biz {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
+
+.ticket-thread-status-select {
+  position: relative;
+}
+
+.ticket-thread-status-select select {
+  appearance: none;
+  height: 36px;
+  font-size: 0.8rem;
+}
+
+.ticket-thread-status-select svg {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.ticket-thread-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.ticket-msg {
+  background: var(--muted);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 0.875rem;
+  max-width: 75%;
+}
+
+.ticket-thread-reply {
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+  padding-top: 16px;
+}
+
+.ticket-thread-reply textarea {
+  height: 80px;
+}
+
+.ticket-thread-reply button {
+  margin-top: 10px;
+}
+
+/*
+ * Section tabs — mobile counterpart to .admin-detail-tabs, for a small
+ * fixed set of tabs on a settings-style screen (O-05's Profile /
+ * Subscription / Support). .category-tab (pill, left-packed, built for
+ * the customer menu's 8 scrollable food categories) looked odd here
+ * with only 3 items and no scrolling need — full-width underline tabs
+ * fit a mobile settings screen better.
+ */
+.section-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+}
+
+.section-tab {
+  flex: 1;
+  text-align: center;
+  padding: 13px 4px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.section-tab.active {
+  color: var(--foreground);
+  font-weight: 600;
+  border-bottom-color: var(--primary);
+}
+
+@media (max-width: 860px) {
+  .admin-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

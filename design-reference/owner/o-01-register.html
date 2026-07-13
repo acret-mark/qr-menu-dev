@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O-01 · Register — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body>
+<!--
+  O-01 Register — new owner account creation.
+  Source: planning/wireframes/guide/05c_wireframe-owner-core-flow.md
+  (pixel-detailed spec — layout/spacing/sizing followed exactly; colors
+  remapped from that doc's grayscale wireframe palette onto the real
+  Hapag tokens per 06_ui-design.md).
+
+  "Create Account" goes to O-03 Email Confirmation, not straight to the
+  dashboard — matches 02_user-flows.md's Owner Onboarding flow
+  (Register -> Confirm email -> Business profile -> ...).
+-->
+<div class="phone-page">
+  <div class="scroll-area">
+    <div class="auth-page">
+      <div class="auth-logo">H</div>
+      <h1 class="auth-wordmark">Hapag</h1>
+      <div class="auth-subtitle">Create your account</div>
+
+      <form class="auth-form">
+        <div class="field-group">
+          <label class="field-label" for="biz-name">Business name</label>
+          <input class="field-input" id="biz-name" type="text" placeholder="e.g. The Manila Table" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="email">Email</label>
+          <input class="field-input" id="email" type="email" placeholder="you@business.com" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="password">Password</label>
+          <div class="password-field-wrap">
+            <input class="field-input" id="password" type="password" placeholder="At least 8 characters" />
+            <button type="button" class="eye-btn" aria-label="Show password">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="confirm-password">Confirm password</label>
+          <div class="password-field-wrap">
+            <input class="field-input" id="confirm-password" type="password" placeholder="Re-enter your password" />
+            <button type="button" class="eye-btn" aria-label="Show password">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <a class="btn btn-primary btn-block" href="o-03-email-confirmation.html" style="margin-top: 8px;">Create Account</a>
+      </form>
+
+      <div class="auth-footer">Already have an account? <a href="o-02-login.html">Log in</a></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

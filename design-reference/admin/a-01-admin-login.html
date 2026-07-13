@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A-01 · Admin Login — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body class="admin-login-page">
+<!--
+  A-01 Admin Login — "Separate auth from owner login" per
+  03_screen-list.md. Desktop-first per 06_ui-design.md, unlike the
+  owner/customer auth screens — a plain centered card on the page,
+  matching how Vercel/Linear/Stripe's own login screens are laid out
+  (no sidebar shell yet, since there's nothing to navigate until
+  authenticated).
+-->
+<main class="admin-login-card">
+  <div class="brand-row">
+    <div class="auth-logo" style="width:36px; height:36px; font-size:0.95rem;">H</div>
+    <h1 class="wordmark">Hapag Admin</h1>
+  </div>
+
+  <form>
+    <div class="field-group">
+      <label class="field-label" for="email">Email</label>
+      <input class="field-input" id="email" type="email" placeholder="you@acret-ph.com" />
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="password">Password</label>
+      <input class="field-input" id="password" type="password" placeholder="Your password" />
+    </div>
+    <a class="btn btn-primary btn-block" href="a-02-business-list.html" style="margin-top: 4px;">Sign In</a>
+  </form>
+
+  <p class="disclaimer">Internal ACRET staff access only.</p>
+</main>
+</body>
+</html>

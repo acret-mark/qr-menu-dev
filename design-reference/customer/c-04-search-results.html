@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>C-04 · Search Results — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body>
+<!--
+  C-04 Search Results — filtering items by keyword.
+  Source: 03_screen-list.md ("Filter items by keyword").
+
+  Judgment call: this single file shows both the "results found" state
+  (query "adobo") and a "no results" state (query "burger") stacked with a
+  divider, rather than two separate files — same screen, two data states,
+  didn't seem worth a 5th/6th file split. Split it out if you'd rather
+  review them independently.
+-->
+<div class="phone-page">
+
+  <header class="menu-topbar">
+    <a class="back-btn" href="c-01-menu-home.html" aria-label="Back to menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    </a>
+    <div style="flex:1; display:flex; align-items:center; gap:8px; padding: 10px 14px; background: var(--muted); border: 1px solid var(--border); border-radius: 999px; font-size: 0.9rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; opacity:0.7;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span>adobo</span>
+    </div>
+  </header>
+
+  <div class="scroll-area">
+
+  <div style="padding: 16px 16px 4px; font-size: 0.82rem; color: var(--muted-foreground);">1 result for &ldquo;adobo&rdquo;</div>
+
+  <ul class="item-list" style="padding-top: 4px;">
+    <li><a class="item-card" href="c-03-item-detail.html">
+      <div class="item-thumb" style="position: relative;">
+        <span class="pill best-seller badge-corner" style="font-size:0.6rem;">★</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 13a8 8 0 0 0 16 0Z"/><path d="M4 13h16"/><path d="M12 3v4"/></svg>
+      </div>
+      <div class="item-body">
+        <div class="item-name">Chicken Adobo</div>
+        <div class="item-desc">Chicken braised in soy sauce, cane vinegar, garlic, and bay leaf.</div>
+        <div class="item-price">₱320</div>
+      </div>
+    </a></li>
+  </ul>
+
+  <hr style="border:none; border-top:1px dashed var(--border); margin: 8px 16px;" />
+
+  <div style="padding: 12px 16px 4px; font-size: 0.72rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.04em;">Alternate state — no matches</div>
+
+  <div class="empty-state" style="padding: 24px;">
+    <div class="icon-wrap">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 8l6 6M14 8l-6 6"/></svg>
+    </div>
+    <h1>No matches for &ldquo;burger&rdquo;</h1>
+    <p>Try a different search term, or browse by category instead.</p>
+  </div>
+
+  </div>
+
+  <footer class="watermark-footer">Powered by <strong>Hapag</strong></footer>
+</div>
+</body>
+</html>

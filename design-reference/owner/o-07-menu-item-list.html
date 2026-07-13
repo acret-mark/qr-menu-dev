@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O-07 · Menu Item List — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body>
+<!--
+  O-07 Menu Item List — all items with an availability toggle.
+  Source: planning/wireframes/guide/05c_wireframe-owner-core-flow.md, trimmed
+  down per your feedback to reduce row clutter:
+  - Dropped the "Sold" toggle (redundant next to "Avail" in this view;
+    is_sold_out still exists as a field, more likely controlled from O-08).
+  - Dropped the separate Delete icon — Delete already lives on O-08's item
+    form, so it doesn't need a second entry point here.
+  - Edit icon simplified to a plain pencil glyph (dropped the underline
+    stroke from the original pencil-and-line icon), styled as a
+    label-above-icon column matching the Available toggle's format.
+  - Second line under the item name shows price instead of category —
+    category is already implied by the active filter tab, so repeating
+    it per row was redundant; price is the more useful thing to scan.
+
+  Same tab-swap interaction as design-reference/customer/c-01-menu-home.html
+  (no "All" tab, consistent with that decision) — default active: Mains.
+-->
+<div class="phone-page">
+  <nav class="nav-bar">
+    <a class="back-btn" href="o-04-dashboard-home.html" aria-label="Back to dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    </a>
+    <h1 class="nav-title">Menu Items</h1>
+    <div class="nav-side"></div>
+  </nav>
+
+  <div class="scroll-area">
+    <nav class="category-tabs">
+      <ul>
+        <li><button class="category-tab" data-category="starters">Starters</button></li>
+        <li><button class="category-tab" data-category="soups">Soups</button></li>
+        <li><button class="category-tab active" data-category="mains">Mains</button></li>
+        <li><button class="category-tab" data-category="noodles">Noodles</button></li>
+        <li><button class="category-tab" data-category="sides">Sides</button></li>
+        <li><button class="category-tab" data-category="drinks">Drinks</button></li>
+        <li><button class="category-tab" data-category="desserts">Desserts</button></li>
+        <li><button class="category-tab" data-category="coffee-tea">Coffee &amp; Tea</button></li>
+      </ul>
+    </nav>
+
+    <ul data-category-panel="starters" hidden>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="7" width="12" height="10" rx="4"/></svg></div>
+        <div class="info"><div class="name">Lumpiang Shanghai</div><div class="cat">₱220</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="7"/></svg></div>
+        <div class="info"><div class="name">Kilawin</div><div class="cat">₱280</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+    </ul>
+
+    <ul data-category-panel="soups" hidden>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 13a8 8 0 0 0 16 0Z"/><path d="M4 13h16"/></svg></div>
+        <div class="info"><div class="name">Pork Sinigang</div><div class="cat">₱380</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 13a8 8 0 0 0 16 0Z"/><path d="M4 13h16"/><path d="M9 13V9M15 13V9"/></svg></div>
+        <div class="info"><div class="name">Bulalo</div><div class="cat">₱450</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+    </ul>
+
+    <ul data-category-panel="mains">
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 13a8 8 0 0 0 16 0Z"/><path d="M4 13h16"/><path d="M12 3v4"/></svg></div>
+        <div class="info"><div class="name">Chicken Adobo <span class="pill best-seller" style="font-size:0.55rem;">★</span></div><div class="cat">₱320</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/></svg></div>
+        <div class="info"><div class="name">Sisig</div><div class="cat">₱340</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h12l2 7-8 11L4 10Z"/></svg></div>
+        <div class="info"><div class="name">Beef Kaldereta</div><div class="cat">₱420</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+    </ul>
+
+    <ul data-category-panel="noodles" hidden>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 10h14M6 10l1 9h10l1-9"/></svg></div>
+        <div class="info"><div class="name">Pancit Canton</div><div class="cat">₱260</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 13a8 8 0 0 0 16 0Z"/><path d="M4 13h16"/><path d="M8 13c0-2 1-3 1-5M14 13c0-2 1-3 1-5"/></svg></div>
+        <div class="info"><div class="name">Sotanghon</div><div class="cat">₱240</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+    </ul>
+
+    <ul data-category-panel="sides" hidden>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="12" rx="9" ry="6"/></svg></div>
+        <div class="info"><div class="name">Steamed Rice</div><div class="cat">₱75</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="12" rx="9" ry="6"/><path d="M8 12h8"/></svg></div>
+        <div class="info"><div class="name">Garlic Fried Rice</div><div class="cat">₱95</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+    </ul>
+
+    <ul data-category-panel="drinks" hidden>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 10h10M7 14h6M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2Z"/></svg></div>
+        <div class="info"><div class="name">Calamansi Iced Tea <span class="pill best-seller" style="font-size:0.55rem;">★</span></div><div class="cat">₱130</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 21V7l2-4h8l2 4v14Z"/></svg></div>
+        <div class="info"><div class="name">Buko Pandan Cooler</div><div class="cat">₱150</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 21h10l-1-14H8Z"/><path d="M8 7h8"/></svg></div>
+        <div class="info"><div class="name">Sparkling Water</div><div class="cat">₱110</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+    </ul>
+
+    <ul data-category-panel="desserts" hidden>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v4M16 3v4M6 21h12M7 8h10l1 13H6L7 8Z"/></svg></div>
+        <div class="info"><div class="name">Halo-Halo <span class="pill best-seller" style="font-size:0.55rem;">★</span></div><div class="cat">₱260</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="9" width="14" height="6" rx="3"/></svg></div>
+        <div class="info"><div class="name">Turon</div><div class="cat">₱95</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+    </ul>
+
+    <ul data-category-panel="coffee-tea" hidden>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8h10v6a5 5 0 0 1-5 5H9a3 3 0 0 1-3-3V8Z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/></svg></div>
+        <div class="info"><div class="name">Barako Coffee</div><div class="cat">₱120</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+      <li class="owner-item-row">
+        <div class="item-thumb thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 21h10l-1-14H8Z"/><path d="M8 7h8"/></svg></div>
+        <div class="info"><div class="name">Salabat</div><div class="cat">₱90</div></div>
+        <div class="toggle-col"><span class="toggle-label">Available</span><button class="toggle-switch on" aria-label="Toggle available"></button></div>
+        <div class="toggle-col"><span class="toggle-label">Edit</span><a class="row-icon-btn" href="o-08-add-edit-item.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a></div>
+      </li>
+    </ul>
+  </div>
+
+  <a class="fab" href="o-08-add-edit-item.html" aria-label="Add item" style="bottom: 84px;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+  </a>
+
+  <nav class="tab-bar">
+    <ul>
+      <li><a class="tab-bar-item" href="o-04-dashboard-home.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg>
+        <span>Dashboard</span>
+      </a></li>
+      <li><a class="tab-bar-item active" href="o-07-menu-item-list.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="4" r="1"/><path d="M12 5v3"/><path d="M2 8h20"/><path d="M4 8v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/></svg>
+        <span>Menu</span>
+      </a></li>
+      <li><a class="tab-bar-item" href="o-06-category-manager.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8Z"/><path d="M7 7h.01"/></svg>
+        <span>Categories</span>
+      </a></li>
+      <li><a class="tab-bar-item" href="o-09-qr-code.html">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM19 14h2M14 19h2M19 19h2"/></svg>
+        <span>QR Code</span>
+      </a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+  var tabs = document.querySelectorAll(".category-tab");
+  var panels = document.querySelectorAll("[data-category-panel]");
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      var category = tab.getAttribute("data-category");
+      tabs.forEach(function (t) { t.classList.toggle("active", t === tab); });
+      panels.forEach(function (p) {
+        p.hidden = p.getAttribute("data-category-panel") !== category;
+      });
+    });
+  });
+
+  document.querySelectorAll(".toggle-switch").forEach(function (sw) {
+    sw.addEventListener("click", function () {
+      sw.classList.toggle("on");
+    });
+  });
+</script>
+</body>
+</html>

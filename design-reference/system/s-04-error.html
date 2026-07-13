@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>S-04 · Error / 500 — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body>
+<!--
+  S-04 Error / 500 — "Generic error state" per 03_screen-list.md. Not
+  scoped to owner or customer specifically — a fallback that can occur
+  anywhere in the app, so it deliberately carries no branding context
+  (no business name, no nav-bar/tab-bar) beyond the Hapag wordmark.
+
+  Judgment call: "Try Again" reloads the current page (the only action
+  that makes sense generically, without knowing what page the error
+  actually occurred on); "Back to Hapag" is a safe fallback exit,
+  pointed at the owner dashboard here since that's this reference's
+  closest thing to a "home."
+-->
+<div class="phone-page">
+  <div class="scroll-area" style="justify-content:center;">
+    <div class="empty-state">
+      <div class="icon-wrap" style="width:72px; height:72px;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+      </div>
+      <h1>Something went wrong</h1>
+      <p>An unexpected error occurred on our end. Try again, or come back in a few minutes.</p>
+
+      <button class="btn btn-primary" type="button" onclick="location.reload()" style="margin-top: 12px; width: 100%; max-width: 280px;">Try Again</button>
+      <a class="btn btn-outline" href="../owner/o-04-dashboard-home.html" style="margin-top: 8px; width: 100%; max-width: 280px;">Back to Hapag</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

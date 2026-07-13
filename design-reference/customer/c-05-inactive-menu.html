@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>C-05 · 404 / Inactive Menu — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="../../src/styles/tokens.css" />
+<link rel="stylesheet" href="../reference.css" />
+</head>
+<body>
+<!--
+  C-05 404 / Inactive Menu — shown when a business's status isn't 'active'
+  (suspended, pending, or the slug doesn't resolve to a real business).
+  Source: 03_screen-list.md ("This menu is not currently available" state).
+-->
+<div class="phone-page">
+  <div class="scroll-area">
+  <div class="empty-state">
+    <div class="icon-wrap" style="width:72px; height:72px;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="m9 12 6 5M15 12l-6 5"/></svg>
+    </div>
+    <h1>This menu isn&rsquo;t available right now</h1>
+    <p>The business may be updating their menu, or this QR code is no longer active. Please check with staff, or try again later.</p>
+    <div style="margin-top: 8px; font-size: 0.78rem; color: var(--muted-foreground);">hapag.ph/menu/the-manila-table</div>
+  </div>
+  </div>
+  <footer class="watermark-footer">Powered by <strong>Hapag</strong></footer>
+</div>
+</body>
+</html>
