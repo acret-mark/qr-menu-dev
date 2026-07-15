@@ -16,6 +16,14 @@
   per the spec's note). Add mode is the same layout with empty fields and
   no Delete link.
   Source: planning/wireframes/guide/05c_wireframe-owner-core-flow.md
+
+  Three toggles, three different fields — don't conflate them:
+  - Best Seller → is_best_seller.
+  - Available → is_sold_out (inverted: on = available to order, off =
+    sold out / "Ubos Na"). Same toggle as the quick one on O-07.
+  - Show on Menu → is_displayed, whether the item appears on the
+    customer-facing menu at all. Only editable here, not from O-07's list
+    — it's a rarer, more deliberate action than the sold-out toggle.
 -->
 <div class="phone-page">
   <nav class="nav-bar">
@@ -82,6 +90,10 @@
       <div class="toggle-form-row">
         <span>Available</span>
         <button class="toggle-switch on" aria-label="Toggle available"></button>
+      </div>
+      <div class="toggle-form-row">
+        <span>Show on Menu</span>
+        <button class="toggle-switch on" aria-label="Toggle show on menu"></button>
       </div>
     </div>
 

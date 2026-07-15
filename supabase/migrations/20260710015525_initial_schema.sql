@@ -75,7 +75,7 @@ create table items (
   description_lang2 text,
   price numeric(10, 2) not null,
   photo_url text,
-  is_available boolean not null default true,
+  is_displayed boolean not null default true,
   is_sold_out boolean not null default false,
   is_best_seller boolean not null default false,
   sort_order int not null default 0,
@@ -227,10 +227,10 @@ create policy "admins can read all items"
   on items for select
   using (is_admin());
 
-create policy "public can read available items of active businesses"
+create policy "public can read displayed items of active businesses"
   on items for select
   using (
-    is_available
+    is_displayed
     and exists (
       select 1 from businesses
       where businesses.id = items.business_id

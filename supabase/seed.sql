@@ -81,7 +81,7 @@ insert into categories (id, business_id, name_lang1, name_lang2, sort_order) val
 -- items
 -- ============================================================
 
-insert into items (id, category_id, business_id, name_lang1, name_lang2, description_lang1, description_lang2, price, photo_url, is_available, is_sold_out, is_best_seller, sort_order) values
+insert into items (id, category_id, business_id, name_lang1, name_lang2, description_lang1, description_lang2, price, photo_url, is_displayed, is_sold_out, is_best_seller, sort_order) values
   ('d1111111-0000-0000-0000-000000000001', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Lumpiang Shanghai', null, 'Crispy pork spring rolls, 10 pcs', null, 149.00, null, true, false, true, 0),
   ('d1111111-0000-0000-0000-000000000002', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Calamares', null, 'Fried squid rings with garlic mayo', null, 179.00, null, true, false, false, 1),
   ('d1111111-0000-0000-0000-000000000003', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Crispy Pata', null, 'Deep-fried pork leg, good for sharing', null, 450.00, null, true, true, true, 0),

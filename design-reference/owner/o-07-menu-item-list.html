@@ -10,11 +10,15 @@
 </head>
 <body>
 <!--
-  O-07 Menu Item List — all items with an availability toggle.
+  O-07 Menu Item List — all items with a quick sold-out toggle.
   Source: planning/wireframes/guide/05c_wireframe-owner-core-flow.md, trimmed
   down per your feedback to reduce row clutter:
-  - Dropped the "Sold" toggle (redundant next to "Avail" in this view;
-    is_sold_out still exists as a field, more likely controlled from O-08).
+  - The "Available" toggle here controls is_sold_out, not is_displayed —
+    it's the one-tap "Ubos Na" action an owner uses mid-service (toggle on
+    = available to order, off = sold out; item stays visible either way).
+    Whether an item shows on the menu at all (is_displayed) is a separate,
+    less-frequent decision and is only editable from O-08 — there's no
+    "hide from menu" control on this list view by design.
   - Dropped the separate Delete icon — Delete already lives on O-08's item
     form, so it doesn't need a second entry point here.
   - Edit icon simplified to a plain pencil glyph (dropped the underline
