@@ -56,7 +56,6 @@ create table categories (
   name_en text not null,
   name_tl text,
   sort_order int not null default 0,
-  is_visible boolean not null default true,
   created_at timestamptz not null default now()
 );
 
@@ -208,11 +207,10 @@ create policy "admins can read all categories"
   on categories for select
   using (is_admin());
 
-create policy "public can read visible categories of active businesses"
+create policy "public can read categories of active businesses"
   on categories for select
   using (
-    is_visible
-    and exists (
+    exists (
       select 1 from businesses
       where businesses.id = categories.business_id
         and businesses.status = 'active'
