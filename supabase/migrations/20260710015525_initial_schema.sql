@@ -9,7 +9,7 @@ create type plan_type as enum ('standard', 'pro');
 create type business_status as enum ('active', 'suspended', 'trial', 'pending');
 create type subscription_status as enum ('pending', 'active', 'expired', 'cancelled');
 create type ticket_status as enum ('open', 'in_progress', 'resolved');
-create type language_pref as enum ('en', 'tl');
+create type language_pref as enum ('lang1', 'lang2');
 
 -- ============================================================
 -- admin_users
@@ -40,7 +40,7 @@ create table businesses (
   owner_id uuid not null references auth.users (id) on delete cascade,
   plan plan_type not null default 'standard',
   status business_status not null default 'pending',
-  language language_pref not null default 'en',
+  language language_pref not null default 'lang1',
   created_at timestamptz not null default now()
 );
 
@@ -53,8 +53,8 @@ create unique index on businesses (slug);
 create table categories (
   id uuid primary key default gen_random_uuid(),
   business_id uuid not null references businesses (id) on delete cascade,
-  name_en text not null,
-  name_tl text,
+  name_lang1 text not null,
+  name_lang2 text,
   sort_order int not null default 0,
   created_at timestamptz not null default now()
 );
@@ -69,10 +69,10 @@ create table items (
   id uuid primary key default gen_random_uuid(),
   category_id uuid not null references categories (id) on delete cascade,
   business_id uuid not null references businesses (id) on delete cascade,
-  name_en text not null,
-  name_tl text,
-  description_en text,
-  description_tl text,
+  name_lang1 text not null,
+  name_lang2 text,
+  description_lang1 text,
+  description_lang2 text,
   price numeric(10, 2) not null,
   photo_url text,
   is_available boolean not null default true,

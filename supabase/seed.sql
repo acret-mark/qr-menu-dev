@@ -60,16 +60,16 @@ insert into admin_users (id, name, email) values
 -- ============================================================
 
 insert into businesses (id, name, slug, logo_url, contact_phone, contact_email, address, owner_id, plan, status, language) values
-  ('b1111111-0000-0000-0000-000000000001', 'Kubo Kitchen', 'kubo-kitchen', null, '+63 917 111 1111', 'owner-standard@seed.hapag.ph', 'Quezon City, Metro Manila', '11111111-1111-1111-1111-111111111111', 'standard', 'active', 'en'),
-  ('b2222222-0000-0000-0000-000000000002', 'Manila Meze', 'manila-meze', null, '+63 917 222 2222', 'owner-pro@seed.hapag.ph', 'Makati, Metro Manila', '22222222-2222-2222-2222-222222222222', 'pro', 'active', 'en'),
-  ('b3333333-0000-0000-0000-000000000003', 'Isla Grill', 'isla-grill', null, '+63 917 333 3333', 'owner-pending@seed.hapag.ph', 'Cebu City, Cebu', '33333333-3333-3333-3333-333333333333', 'standard', 'pending', 'en'),
-  ('b4444444-0000-0000-0000-000000000004', 'Barrio Bites', 'barrio-bites', null, '+63 917 444 4444', 'owner-suspended@seed.hapag.ph', 'Davao City, Davao', '44444444-4444-4444-4444-444444444444', 'standard', 'suspended', 'en');
+  ('b1111111-0000-0000-0000-000000000001', 'Kubo Kitchen', 'kubo-kitchen', null, '+63 917 111 1111', 'owner-standard@seed.hapag.ph', 'Quezon City, Metro Manila', '11111111-1111-1111-1111-111111111111', 'standard', 'active', 'lang1'),
+  ('b2222222-0000-0000-0000-000000000002', 'Manila Meze', 'manila-meze', null, '+63 917 222 2222', 'owner-pro@seed.hapag.ph', 'Makati, Metro Manila', '22222222-2222-2222-2222-222222222222', 'pro', 'active', 'lang1'),
+  ('b3333333-0000-0000-0000-000000000003', 'Isla Grill', 'isla-grill', null, '+63 917 333 3333', 'owner-pending@seed.hapag.ph', 'Cebu City, Cebu', '33333333-3333-3333-3333-333333333333', 'standard', 'pending', 'lang1'),
+  ('b4444444-0000-0000-0000-000000000004', 'Barrio Bites', 'barrio-bites', null, '+63 917 444 4444', 'owner-suspended@seed.hapag.ph', 'Davao City, Davao', '44444444-4444-4444-4444-444444444444', 'standard', 'suspended', 'lang1');
 
 -- ============================================================
 -- categories
 -- ============================================================
 
-insert into categories (id, business_id, name_en, name_tl, sort_order) values
+insert into categories (id, business_id, name_lang1, name_lang2, sort_order) values
   ('c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Starters', null, 0),
   ('c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Mains', null, 1),
   ('c1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 'Drinks', null, 2),
@@ -81,7 +81,7 @@ insert into categories (id, business_id, name_en, name_tl, sort_order) values
 -- items
 -- ============================================================
 
-insert into items (id, category_id, business_id, name_en, name_tl, description_en, description_tl, price, photo_url, is_available, is_sold_out, is_best_seller, sort_order) values
+insert into items (id, category_id, business_id, name_lang1, name_lang2, description_lang1, description_lang2, price, photo_url, is_available, is_sold_out, is_best_seller, sort_order) values
   ('d1111111-0000-0000-0000-000000000001', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Lumpiang Shanghai', null, 'Crispy pork spring rolls, 10 pcs', null, 149.00, null, true, false, true, 0),
   ('d1111111-0000-0000-0000-000000000002', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Calamares', null, 'Fried squid rings with garlic mayo', null, 179.00, null, true, false, false, 1),
   ('d1111111-0000-0000-0000-000000000003', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Crispy Pata', null, 'Deep-fried pork leg, good for sharing', null, 450.00, null, true, true, true, 0),
@@ -107,5 +107,5 @@ insert into subscriptions (id, business_id, plan, amount, status, payment_method
 
 insert into support_tickets (id, business_id, subject, message, status, admin_reply, replied_at) values
   ('f1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'QR code not scanning', 'Customers say the printed QR code doesn''t open the menu.', 'resolved', 'Reprint at 300dpi minimum — the sample you sent was too low-res. Let us know if it persists.', now() - interval '2 days'),
-  ('f2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'How do I add Tagalog names?', 'I can only see one language field when adding items.', 'open', null, null),
+  ('f2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'How do I add a second language name?', 'I can only see one language field when adding items.', 'open', null, null),
   ('f3333333-0000-0000-0000-000000000003', 'b3333333-0000-0000-0000-000000000003', 'Payment proof upload stuck', 'Uploaded my GCash screenshot but it still shows pending.', 'in_progress', null, null);
