@@ -472,6 +472,82 @@ a.recent-row {
   z-index: 2;
 }
 
+/*
+ * Language selector (Pro only) — auto-detected on load, manual override
+ * persists for the session. Present on every customer screen except C-05
+ * (no chrome at all there). See planning/added-feature/02_instant-translate.md.
+ */
+.lang-selector {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.lang-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+/* Floating variant — sits directly over a full-width photo (C-03), same
+   reasoning as .back-btn.floating above. */
+.lang-selector.floating {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+}
+
+.lang-selector.floating .lang-selector-btn {
+  background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.lang-selector-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 140px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  list-style: none;
+  padding: 4px;
+  z-index: 20;
+}
+
+.lang-selector-menu li + li {
+  margin-top: 2px;
+}
+
+.lang-selector-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-radius: calc(var(--radius) - 4px);
+  font-size: 0.85rem;
+  color: var(--foreground);
+  text-align: left;
+  cursor: pointer;
+}
+
+.lang-selector-menu button.active {
+  background: var(--secondary);
+  font-weight: 600;
+}
+
 .avatar-circle {
   width: 32px;
   height: 32px;
@@ -519,6 +595,66 @@ a.recent-row {
   height: 96px;
   padding: 12px 16px;
   resize: none;
+}
+
+/* ---- AI description (O-08a) ---- */
+
+.ai-keywords-toggle {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.ai-keywords-panel {
+  display: flex;
+  gap: 8px;
+}
+
+.ai-keywords-panel .field-input {
+  flex: 1;
+}
+
+.ai-desc-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  padding: 12px 0;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 999px;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ai-draft-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ai-draft-actions .btn {
+  flex: 1;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+}
+
+.pill.ai {
+  background: var(--secondary);
+  color: var(--accent);
 }
 
 .field-price-wrap {

@@ -30,6 +30,18 @@
       <h1 class="biz-name">The Manila Table</h1>
       <div class="biz-sub">Modern Filipino Restaurant · BGC, Taguig</div>
     </div>
+    <div class="lang-selector" id="lang-selector" style="margin-left:auto;">
+      <button class="lang-selector-btn" id="lang-selector-btn" aria-haspopup="listbox" aria-expanded="false">
+        <span id="lang-selector-current">EN</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <ul class="lang-selector-menu" id="lang-selector-menu" role="listbox" hidden>
+        <li><button type="button" class="active" data-lang="en">English</button></li>
+        <li><button type="button" data-lang="ko">한국어</button></li>
+        <li><button type="button" data-lang="ja">日本語</button></li>
+        <li><button type="button" data-lang="zh">中文</button></li>
+      </ul>
+    </div>
   </header>
 
   <div class="scroll-area">
@@ -278,6 +290,27 @@
       });
     });
   });
+
+  // Demo only — the real component derives the initial selection from
+  // Accept-Language/navigator.language and persists an override for the
+  // session (cookie/localStorage), it doesn't just toggle a menu open/closed.
+  (function () {
+    var btn = document.getElementById("lang-selector-btn");
+    var menu = document.getElementById("lang-selector-menu");
+    var current = document.getElementById("lang-selector-current");
+    btn.addEventListener("click", function () {
+      menu.hidden = !menu.hidden;
+      btn.setAttribute("aria-expanded", String(!menu.hidden));
+    });
+    menu.querySelectorAll("button").forEach(function (opt) {
+      opt.addEventListener("click", function () {
+        menu.querySelectorAll("button").forEach(function (o) { o.classList.toggle("active", o === opt); });
+        current.textContent = opt.getAttribute("data-lang").toUpperCase();
+        menu.hidden = true;
+        btn.setAttribute("aria-expanded", "false");
+      });
+    });
+  })();
 </script>
 </body>
 </html>

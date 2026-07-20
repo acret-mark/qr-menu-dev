@@ -4,6 +4,9 @@
 --
 -- Covers one business per status/plan combo needed across O-04..O-11, C-01..C-05,
 -- A-02..A-06, S-03 — see planning/04_data-model.md and planning/03_screen-list.md.
+-- Manila Meze (pro) also has seeded item_translations/category_translations rows
+-- (ko/ja/zh) so Helper 1 can build the language selector against real cache data
+-- without a live DeepL key locally — see planning/added-feature/02_instant-translate.md.
 --
 -- Login password for every seeded owner/admin below: "password123"
 
@@ -59,37 +62,68 @@ insert into admin_users (id, name, email) values
 -- businesses — one per plan/status combo devs need to hit
 -- ============================================================
 
-insert into businesses (id, name, slug, logo_url, contact_phone, contact_email, address, owner_id, plan, status, language) values
-  ('b1111111-0000-0000-0000-000000000001', 'Kubo Kitchen', 'kubo-kitchen', null, '+63 917 111 1111', 'owner-standard@seed.hapag.ph', 'Quezon City, Metro Manila', '11111111-1111-1111-1111-111111111111', 'standard', 'active', 'lang1'),
-  ('b2222222-0000-0000-0000-000000000002', 'Manila Meze', 'manila-meze', null, '+63 917 222 2222', 'owner-pro@seed.hapag.ph', 'Makati, Metro Manila', '22222222-2222-2222-2222-222222222222', 'pro', 'active', 'lang1'),
-  ('b3333333-0000-0000-0000-000000000003', 'Isla Grill', 'isla-grill', null, '+63 917 333 3333', 'owner-pending@seed.hapag.ph', 'Cebu City, Cebu', '33333333-3333-3333-3333-333333333333', 'standard', 'pending', 'lang1'),
-  ('b4444444-0000-0000-0000-000000000004', 'Barrio Bites', 'barrio-bites', null, '+63 917 444 4444', 'owner-suspended@seed.hapag.ph', 'Davao City, Davao', '44444444-4444-4444-4444-444444444444', 'standard', 'suspended', 'lang1');
+insert into businesses (id, name, slug, logo_url, contact_phone, contact_email, address, owner_id, plan, status, source_language) values
+  ('b1111111-0000-0000-0000-000000000001', 'Kubo Kitchen', 'kubo-kitchen', null, '+63 917 111 1111', 'owner-standard@seed.hapag.ph', 'Quezon City, Metro Manila', '11111111-1111-1111-1111-111111111111', 'standard', 'active', 'en'),
+  ('b2222222-0000-0000-0000-000000000002', 'Manila Meze', 'manila-meze', null, '+63 917 222 2222', 'owner-pro@seed.hapag.ph', 'Makati, Metro Manila', '22222222-2222-2222-2222-222222222222', 'pro', 'active', 'en'),
+  ('b3333333-0000-0000-0000-000000000003', 'Isla Grill', 'isla-grill', null, '+63 917 333 3333', 'owner-pending@seed.hapag.ph', 'Cebu City, Cebu', '33333333-3333-3333-3333-333333333333', 'standard', 'pending', 'en'),
+  ('b4444444-0000-0000-0000-000000000004', 'Barrio Bites', 'barrio-bites', null, '+63 917 444 4444', 'owner-suspended@seed.hapag.ph', 'Davao City, Davao', '44444444-4444-4444-4444-444444444444', 'standard', 'suspended', 'en');
 
 -- ============================================================
 -- categories
 -- ============================================================
 
-insert into categories (id, business_id, name_lang1, name_lang2, sort_order) values
-  ('c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Starters', null, 0),
-  ('c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Mains', null, 1),
-  ('c1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 'Drinks', null, 2),
-  ('c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'Mezze', 'Mezze', 0),
-  ('c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Grills', 'Inihaw', 1),
-  ('c2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'Desserts', 'Panghimagas', 2);
+insert into categories (id, business_id, name, sort_order) values
+  ('c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Starters', 0),
+  ('c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Mains', 1),
+  ('c1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 'Drinks', 2),
+  ('c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'Mezze', 0),
+  ('c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Grills', 1),
+  ('c2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'Desserts', 2);
 
 -- ============================================================
 -- items
 -- ============================================================
 
-insert into items (id, category_id, business_id, name_lang1, name_lang2, description_lang1, description_lang2, price, photo_url, is_displayed, is_sold_out, is_best_seller, sort_order) values
-  ('d1111111-0000-0000-0000-000000000001', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Lumpiang Shanghai', null, 'Crispy pork spring rolls, 10 pcs', null, 149.00, null, true, false, true, 0),
-  ('d1111111-0000-0000-0000-000000000002', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Calamares', null, 'Fried squid rings with garlic mayo', null, 179.00, null, true, false, false, 1),
-  ('d1111111-0000-0000-0000-000000000003', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Crispy Pata', null, 'Deep-fried pork leg, good for sharing', null, 450.00, null, true, true, true, 0),
-  ('d1111111-0000-0000-0000-000000000004', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Sinigang na Baboy', null, 'Pork in tamarind broth', null, 259.00, null, true, false, false, 1),
-  ('d1111111-0000-0000-0000-000000000005', 'c1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 'Buko Shake', null, 'Fresh young coconut shake', null, 99.00, null, false, false, false, 0),
-  ('d2222222-0000-0000-0000-000000000001', 'c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'Hummus Platter', 'Hummus Platter', 'Chickpea dip, olive oil, warm pita', 'Chickpea dip, olive oil, mainit na pita', 220.00, null, true, false, true, 0),
-  ('d2222222-0000-0000-0000-000000000002', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Lamb Kofta', 'Lamb Kofta', 'Grilled spiced lamb skewers', 'Inihaw na tira ng tupa', 380.00, null, true, false, true, 0),
-  ('d2222222-0000-0000-0000-000000000003', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Chicken Shawarma', 'Chicken Shawarma', 'Marinated chicken, garlic sauce', 'Adobong manok, garlic sauce', 260.00, null, true, true, false, 1);
+insert into items (id, category_id, business_id, name, description, description_source, price, photo_url, is_displayed, is_sold_out, is_best_seller, sort_order) values
+  ('d1111111-0000-0000-0000-000000000001', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Lumpiang Shanghai', 'Crispy pork spring rolls, 10 pcs', 'manual', 149.00, null, true, false, true, 0),
+  ('d1111111-0000-0000-0000-000000000002', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Calamares', 'Fried squid rings with garlic mayo', 'manual', 179.00, null, true, false, false, 1),
+  ('d1111111-0000-0000-0000-000000000003', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Crispy Pata', 'Deep-fried pork leg, good for sharing', 'manual', 450.00, null, true, true, true, 0),
+  ('d1111111-0000-0000-0000-000000000004', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Sinigang na Baboy', 'Pork in tamarind broth', 'manual', 259.00, null, true, false, false, 1),
+  ('d1111111-0000-0000-0000-000000000005', 'c1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 'Buko Shake', 'Fresh young coconut shake', 'manual', 99.00, null, false, false, false, 0),
+  ('d2222222-0000-0000-0000-000000000001', 'c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'Hummus Platter', 'Chickpea dip, olive oil, warm pita', 'ai_generated', 220.00, null, true, false, true, 0),
+  ('d2222222-0000-0000-0000-000000000002', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Lamb Kofta', 'Grilled spiced lamb skewers', 'ai_generated', 380.00, null, true, false, true, 0),
+  ('d2222222-0000-0000-0000-000000000003', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Chicken Shawarma', 'Marinated chicken, garlic sauce', 'manual', 260.00, null, true, true, false, 1);
+
+-- ============================================================
+-- item_translations / category_translations — Manila Meze only (pro),
+-- so Helper 1 has non-empty translation data to build C-01/C-03/C-04
+-- against before a live DeepL key is available locally. source_language
+-- for all seeded businesses is 'en', so there's no 'en' row here — the
+-- translate-on-save trigger skips a target language that matches the
+-- source language and renders name/description directly.
+-- ============================================================
+
+insert into category_translations (category_id, business_id, language_code, translated_name, source_hash) values
+  ('c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'ko', '메제', 'seed-hash-cat-c2222222-0000-0000-0000-000000000001'),
+  ('c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'ja', 'メゼ', 'seed-hash-cat-c2222222-0000-0000-0000-000000000001'),
+  ('c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'zh', '梅泽', 'seed-hash-cat-c2222222-0000-0000-0000-000000000001'),
+  ('c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'ko', '그릴', 'seed-hash-cat-c2222222-0000-0000-0000-000000000002'),
+  ('c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'ja', 'グリル', 'seed-hash-cat-c2222222-0000-0000-0000-000000000002'),
+  ('c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'zh', '烧烤', 'seed-hash-cat-c2222222-0000-0000-0000-000000000002'),
+  ('c2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'ko', '디저트', 'seed-hash-cat-c2222222-0000-0000-0000-000000000003'),
+  ('c2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'ja', 'デザート', 'seed-hash-cat-c2222222-0000-0000-0000-000000000003'),
+  ('c2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'zh', '甜点', 'seed-hash-cat-c2222222-0000-0000-0000-000000000003');
+
+insert into item_translations (item_id, business_id, language_code, translated_name, translated_description, source_hash) values
+  ('d2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'ko', '후무스 플래터', '병아리콩 딥, 올리브 오일, 따뜻한 피타', 'seed-hash-item-d2222222-0000-0000-0000-000000000001'),
+  ('d2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'ja', 'フムスプラッター', 'ひよこ豆のディップ、オリーブオイル、温かいピタ', 'seed-hash-item-d2222222-0000-0000-0000-000000000001'),
+  ('d2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'zh', '鹰嘴豆泥拼盘', '鹰嘴豆蘸酱、橄榄油、温热皮塔饼', 'seed-hash-item-d2222222-0000-0000-0000-000000000001'),
+  ('d2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'ko', '램 코프타', '양념한 양고기 꼬치구이', 'seed-hash-item-d2222222-0000-0000-0000-000000000002'),
+  ('d2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'ja', 'ラムコフタ', 'スパイスを効かせた羊肉の串焼き', 'seed-hash-item-d2222222-0000-0000-0000-000000000002'),
+  ('d2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'zh', '羊肉烤肉串', '香料腌制羊肉串烤', 'seed-hash-item-d2222222-0000-0000-0000-000000000002'),
+  ('d2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'ko', '치킨 샤와르마', '양념 치킨, 마늘 소스', 'seed-hash-item-d2222222-0000-0000-0000-000000000003'),
+  ('d2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'ja', 'チキンシャワルマ', 'マリネしたチキン、ガーリックソース', 'seed-hash-item-d2222222-0000-0000-0000-000000000003'),
+  ('d2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'zh', '鸡肉沙威玛', '腌制鸡肉配蒜蓉酱', 'seed-hash-item-d2222222-0000-0000-0000-000000000003');
 
 -- ============================================================
 -- subscriptions — covers active, pending (Payment Queue), expired (S-03)

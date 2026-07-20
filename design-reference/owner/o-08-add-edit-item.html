@@ -24,6 +24,13 @@
   - Show on Menu → is_displayed, whether the item appears on the
     customer-facing menu at all. Only editable here, not from O-07's list
     — it's a rarer, more deliberate action than the sold-out toggle.
+
+  AI Description (O-08a, Pro only, see planning/added-feature/01_ai-description-engine.md):
+  name field alone triggers generation on blur — keywords are optional,
+  collapsed by default. States shown here: draft review (accept/decline,
+  "AI-drafted" tag) is the default demo state; click Regenerate/Decline to
+  see the loading and manual-entry states. description_source is set to
+  ai_generated on accept, manual on decline or any edit after acceptance.
 -->
 <div class="phone-page">
   <nav class="nav-bar">
@@ -76,9 +83,36 @@
         </div>
       </div>
 
-      <div class="field-group">
-        <label class="field-label" for="item-desc">Description</label>
-        <textarea class="field-textarea" id="item-desc">Chicken braised in soy sauce, cane vinegar, garlic, and bay leaf.</textarea>
+      <div class="field-group" id="ai-desc-block">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <label class="field-label" for="item-desc">Description</label>
+          <span class="pill ai" id="ai-desc-tag">AI-drafted</span>
+        </div>
+
+        <!-- Keywords: collapsed by default, optional refinement before/after a draft exists -->
+        <button type="button" class="ai-keywords-toggle" id="keywords-toggle">+ Add keywords for a more specific description</button>
+        <div class="ai-keywords-panel" id="keywords-panel" hidden>
+          <input class="field-input" type="text" id="item-keywords" placeholder="e.g. spicy, family recipe, grilled" />
+          <button type="button" class="btn btn-outline" id="regenerate-btn">Regenerate</button>
+        </div>
+
+        <!-- Pending state: shown briefly on first name-blur and on Regenerate -->
+        <div class="ai-desc-loading" id="ai-loading" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          Generating description…
+        </div>
+
+        <!-- Draft review state: AI candidate, owner accepts or declines -->
+        <div id="ai-draft">
+          <textarea class="field-textarea" id="item-desc" readonly>Chicken braised in soy sauce, cane vinegar, garlic, and bay leaf.</textarea>
+          <div class="ai-draft-actions" style="margin-top:8px;">
+            <button type="button" class="btn btn-outline" id="decline-btn">Decline — write my own</button>
+            <button type="button" class="btn btn-primary" id="accept-btn">Accept</button>
+          </div>
+        </div>
+
+        <!-- Manual entry state: shown on decline, on generation failure, or after accepting (editable, no accept/decline chrome) -->
+        <textarea class="field-textarea" id="item-desc-manual" placeholder="Write a description…" hidden></textarea>
       </div>
     </form>
 
@@ -110,6 +144,58 @@
       sw.classList.toggle("on");
     });
   });
+
+  // Demo only — click-through for the AI description states (loading →
+  // draft review → accept/decline). The real component drives these same
+  // states from the generation API call's lifecycle, not a click handler.
+  (function () {
+    var keywordsToggle = document.getElementById("keywords-toggle");
+    var keywordsPanel = document.getElementById("keywords-panel");
+    var loading = document.getElementById("ai-loading");
+    var draft = document.getElementById("ai-draft");
+    var descTag = document.getElementById("ai-desc-tag");
+    var manual = document.getElementById("item-desc-manual");
+    var acceptBtn = document.getElementById("accept-btn");
+    var declineBtn = document.getElementById("decline-btn");
+    var regenerateBtn = document.getElementById("regenerate-btn");
+
+    keywordsToggle.addEventListener("click", function () {
+      keywordsPanel.hidden = !keywordsPanel.hidden;
+    });
+
+    function showLoading() {
+      draft.hidden = true;
+      descTag.hidden = true;
+      loading.hidden = false;
+    }
+
+    function showDraft() {
+      loading.hidden = true;
+      draft.hidden = false;
+      descTag.hidden = false;
+    }
+
+    regenerateBtn.addEventListener("click", function () {
+      showLoading();
+      setTimeout(showDraft, 900);
+    });
+
+    acceptBtn.addEventListener("click", function () {
+      // Accepted draft becomes directly editable manual text — no re-decline step needed.
+      draft.hidden = true;
+      descTag.hidden = false;
+      manual.hidden = false;
+      manual.value = document.getElementById("item-desc").value;
+    });
+
+    declineBtn.addEventListener("click", function () {
+      draft.hidden = true;
+      descTag.hidden = true;
+      manual.hidden = false;
+      manual.value = "";
+      manual.focus();
+    });
+  })();
 </script>
 </body>
 </html>
