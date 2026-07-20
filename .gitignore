@@ -26,3 +26,5 @@ next-env.d.ts
 .vscode/*
 !.vscode/extensions.json
 .env*
+/.claude
+/CLAUDE.md
