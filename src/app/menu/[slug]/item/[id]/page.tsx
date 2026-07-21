@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
-import { getBusinessBySlug, getItemDetail } from "@/lib/menu/queries";
+import { getBusinessBySlug, getItemDetail, getTranslations } from "@/lib/menu/queries";
+import { getInitialDisplayLanguage } from "@/lib/menu/language";
 import { InactiveMenu } from "@/components/menu/inactive-menu";
 import { ItemDetail } from "@/components/menu/item-detail";
+import type { DisplayLanguage } from "@/lib/menu/types";
 
 export default async function ItemDetailPage({
   params,
@@ -24,9 +26,26 @@ export default async function ItemDetailPage({
   const item = await getItemDetail(business.id, id);
   if (!item) notFound();
 
+  let initialLanguage: DisplayLanguage = "en";
+  let initialDescription = item.description;
+
+  if (business.plan === "pro") {
+    const resolved = await getInitialDisplayLanguage(business.sourceLanguage);
+    initialLanguage = resolved.language;
+    if (!resolved.skipTranslation && initialLanguage !== business.sourceLanguage) {
+      const translations = await getTranslations(business.id, initialLanguage);
+      initialDescription = translations.itemDescriptions[item.id] ?? item.description;
+    }
+  }
+
   return (
     <div className="mx-auto flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
-      <ItemDetail business={business} item={item} />
+      <ItemDetail
+        business={business}
+        item={item}
+        initialLanguage={initialLanguage}
+        initialDescription={initialDescription}
+      />
     </div>
   );
 }

@@ -1,17 +1,52 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ImageOff, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Business, ItemDetail as ItemDetailData } from "@/lib/menu/types";
+import { LanguageSelector } from "./language-selector";
+import { LANG_COOKIE_NAME } from "@/lib/menu/types";
+import type { Business, ItemDetail as ItemDetailData, DisplayLanguage } from "@/lib/menu/types";
 
 export function ItemDetail({
   business,
   item,
+  initialLanguage,
+  initialDescription,
 }: {
   business: Business;
   item: ItemDetailData;
+  initialLanguage: DisplayLanguage;
+  initialDescription: string | null;
 }) {
+  const [currentLanguage, setCurrentLanguage] = useState(initialLanguage);
+  const [descriptionsByLanguage, setDescriptionsByLanguage] = useState<
+    Partial<Record<DisplayLanguage, string | null>>
+  >({ [initialLanguage]: initialDescription });
+
+  const description = descriptionsByLanguage[currentLanguage] ?? initialDescription;
+
+  async function handleLanguageChange(language: DisplayLanguage) {
+    if (language === currentLanguage) return;
+
+    setCurrentLanguage(language);
+    document.cookie = `${LANG_COOKIE_NAME}=${language}; path=/; max-age=31536000; samesite=lax`;
+
+    if (descriptionsByLanguage[language] !== undefined) return;
+
+    try {
+      const response = await fetch(`/menu/${business.slug}/translations?lang=${language}`);
+      if (!response.ok) throw new Error("translation fetch failed");
+      const translations = await response.json();
+      setDescriptionsByLanguage((cache) => ({
+        ...cache,
+        [language]: translations.itemDescriptions[item.id] ?? item.description,
+      }));
+    } catch {
+      setDescriptionsByLanguage((cache) => ({ ...cache, [language]: item.description }));
+    }
+  }
+
   return (
     <>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
@@ -24,10 +59,17 @@ export function ItemDetail({
             <ChevronLeft size={18} />
           </Link>
 
+          {business.plan === "pro" && (
+            <div className="absolute right-3.5 top-3.5 z-10">
+              <LanguageSelector current={currentLanguage} onChange={handleLanguageChange} />
+            </div>
+          )}
+
           {(item.isBestSeller || item.isSoldOut) && (
             <span
               className={cn(
-                "absolute right-3.5 top-3.5 z-10 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.72rem] font-semibold",
+                "absolute right-3.5 z-10 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.72rem] font-semibold",
+                business.plan === "pro" ? "top-14" : "top-3.5",
                 item.isSoldOut
                   ? "bg-muted-foreground text-card"
                   : "bg-accent text-accent-foreground"
@@ -63,8 +105,8 @@ export function ItemDetail({
           <div className="mt-1.5 text-[1.25rem] font-semibold text-primary">
             ₱{item.price.toLocaleString("en-PH", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
           </div>
-          {item.description && (
-            <p className="mt-3.5 text-[0.95rem] text-muted-foreground">{item.description}</p>
+          {description && (
+            <p className="mt-3.5 text-[0.95rem] text-muted-foreground">{description}</p>
           )}
         </div>
 
