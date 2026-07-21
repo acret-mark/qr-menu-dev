@@ -7,10 +7,13 @@ import type { DisplayLanguage } from "@/lib/menu/types";
 
 export default async function ItemDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string; id: string }>;
+  searchParams: Promise<{ q?: string }>;
 }) {
   const { slug, id } = await params;
+  const { q } = await searchParams;
   const business = await getBusinessBySlug(slug);
 
   if (!business) {
@@ -45,6 +48,7 @@ export default async function ItemDetailPage({
         item={item}
         initialLanguage={initialLanguage}
         initialDescription={initialDescription}
+        fromSearchQuery={q}
       />
     </div>
   );
