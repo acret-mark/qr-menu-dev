@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { CategoryTabs } from "./category-tabs";
 import { ItemCard } from "./item-card";
 import { LanguageSelector } from "./language-selector";
 import { applyTranslations } from "@/lib/menu/translations";
-import { LANG_COOKIE_NAME } from "@/lib/menu/types";
+import { LANG_COOKIE_NAME, matchDisplayLanguage } from "@/lib/menu/types";
 import type { Business, MenuCategory, Translations, DisplayLanguage } from "@/lib/menu/types";
 
 export function MenuHome({
@@ -15,11 +15,13 @@ export function MenuHome({
   sourceCategories,
   initialLanguage,
   initialCategories,
+  needsClientProbe,
 }: {
   business: Business;
   sourceCategories: MenuCategory[];
   initialLanguage: DisplayLanguage;
   initialCategories: MenuCategory[];
+  needsClientProbe: boolean;
 }) {
   const [currentLanguage, setCurrentLanguage] = useState(initialLanguage);
   const [categoriesByLanguage, setCategoriesByLanguage] = useState<
@@ -31,11 +33,20 @@ export function MenuHome({
 
   const categories = categoriesByLanguage[currentLanguage] ?? sourceCategories;
 
+  // Accept-Language was completely absent from the request — the only
+  // signal SSR couldn't use. Probe navigator.language once and prime the
+  // cookie for the *next* visit; never touches what's already rendered.
+  useEffect(() => {
+    if (!needsClientProbe) return;
+    const match = matchDisplayLanguage(navigator.language);
+    if (match) setLangCookie(match);
+  }, [needsClientProbe]);
+
   async function handleLanguageChange(language: DisplayLanguage) {
     if (language === currentLanguage) return;
 
     setCurrentLanguage(language);
-    document.cookie = `${LANG_COOKIE_NAME}=${language}; path=/; max-age=31536000; samesite=lax`;
+    setLangCookie(language);
 
     if (categoriesByLanguage[language]) return;
 
@@ -134,4 +145,8 @@ function initials(name: string): string {
     .slice(0, 2)
     .map((word) => word[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+function setLangCookie(language: DisplayLanguage) {
+  document.cookie = `${LANG_COOKIE_NAME}=${language}; path=/; max-age=31536000; samesite=lax`;
 }

@@ -27,10 +27,13 @@ export default async function MenuPage({
 
   let initialLanguage: DisplayLanguage = "en";
   let initialCategories = sourceCategories;
+  let needsClientProbe = false;
 
   if (business.plan === "pro") {
-    initialLanguage = await getInitialDisplayLanguage();
-    if (initialLanguage !== business.sourceLanguage) {
+    const resolved = await getInitialDisplayLanguage(business.sourceLanguage);
+    initialLanguage = resolved.language;
+    needsClientProbe = resolved.needsClientProbe;
+    if (!resolved.skipTranslation && initialLanguage !== business.sourceLanguage) {
       const translations = await getTranslations(business.id, initialLanguage);
       initialCategories = applyTranslations(sourceCategories, translations);
     }
@@ -43,6 +46,7 @@ export default async function MenuPage({
         sourceCategories={sourceCategories}
         initialLanguage={initialLanguage}
         initialCategories={initialCategories}
+        needsClientProbe={needsClientProbe}
       />
     </div>
   );

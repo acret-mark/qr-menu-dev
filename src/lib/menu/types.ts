@@ -10,6 +10,14 @@ export function isDisplayLanguage(value: string | null | undefined): value is Di
   return !!value && (DISPLAY_LANGUAGES as string[]).includes(value);
 }
 
+// Matches a single BCP-47 tag (e.g. "ko-KR", "fr") against the supported
+// set — shared by the server's Accept-Language parser and the client's
+// navigator.language probe so both use identical matching rules.
+export function matchDisplayLanguage(tag: string): DisplayLanguage | null {
+  const primary = tag.split("-")[0]?.toLowerCase();
+  return isDisplayLanguage(primary) ? primary : null;
+}
+
 export interface Business {
   id: string;
   name: string;
