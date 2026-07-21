@@ -1,9 +1,6 @@
-import { getBusinessBySlug, getMenuData, getTranslations } from "@/lib/menu/queries";
-import { applyTranslations } from "@/lib/menu/translations";
-import { getInitialDisplayLanguage } from "@/lib/menu/language";
+import { getBusinessBySlug, loadDisplayCategories } from "@/lib/menu/queries";
 import { InactiveMenu } from "@/components/menu/inactive-menu";
 import { MenuHome } from "@/components/menu/menu-home";
-import type { DisplayLanguage } from "@/lib/menu/types";
 
 export default async function MenuPage({
   params,
@@ -26,21 +23,8 @@ export default async function MenuPage({
     );
   }
 
-  const sourceCategories = await getMenuData(business.id);
-
-  let initialLanguage: DisplayLanguage = "en";
-  let initialCategories = sourceCategories;
-  let needsClientProbe = false;
-
-  if (business.plan === "pro") {
-    const resolved = await getInitialDisplayLanguage(business.sourceLanguage);
-    initialLanguage = resolved.language;
-    needsClientProbe = resolved.needsClientProbe;
-    if (!resolved.skipTranslation && initialLanguage !== business.sourceLanguage) {
-      const translations = await getTranslations(business.id, initialLanguage);
-      initialCategories = applyTranslations(sourceCategories, translations);
-    }
-  }
+  const { sourceCategories, initialLanguage, initialCategories, needsClientProbe } =
+    await loadDisplayCategories(business);
 
   return (
     <div className="mx-auto flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
