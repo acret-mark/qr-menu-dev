@@ -16,19 +16,23 @@ export function MenuHome({
   initialLanguage,
   initialCategories,
   needsClientProbe,
+  initialActiveCategoryId,
 }: {
   business: Business;
   sourceCategories: MenuCategory[];
   initialLanguage: DisplayLanguage;
   initialCategories: MenuCategory[];
   needsClientProbe: boolean;
+  initialActiveCategoryId?: string;
 }) {
   const [currentLanguage, setCurrentLanguage] = useState(initialLanguage);
   const [categoriesByLanguage, setCategoriesByLanguage] = useState<
     Partial<Record<DisplayLanguage, MenuCategory[]>>
   >({ [initialLanguage]: initialCategories });
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(
-    sourceCategories[0]?.id ?? null
+    sourceCategories.some((category) => category.id === initialActiveCategoryId)
+      ? initialActiveCategoryId!
+      : sourceCategories[0]?.id ?? null
   );
 
   const categories = categoriesByLanguage[currentLanguage] ?? sourceCategories;
@@ -63,6 +67,13 @@ export function MenuHome({
       // to source-language content for this session rather than erroring.
       setCategoriesByLanguage((cache) => ({ ...cache, [language]: sourceCategories }));
     }
+  }
+
+  function handleCategorySelect(categoryId: string) {
+    setActiveCategoryId(categoryId);
+    const url = new URL(window.location.href);
+    url.searchParams.set("cat", categoryId);
+    window.history.replaceState(null, "", url);
   }
 
   return (
@@ -104,7 +115,7 @@ export function MenuHome({
             <CategoryTabs
               categories={categories}
               activeCategoryId={activeCategoryId}
-              onSelect={setActiveCategoryId}
+              onSelect={handleCategorySelect}
             />
 
             {categories.map((category) => (
@@ -118,7 +129,7 @@ export function MenuHome({
               >
                 {category.items.map((item) => (
                   <li key={item.id}>
-                    <ItemCard item={item} slug={business.slug} />
+                    <ItemCard item={item} slug={business.slug} categoryId={category.id} />
                   </li>
                 ))}
               </ul>

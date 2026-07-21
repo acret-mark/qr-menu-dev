@@ -3,10 +3,18 @@ import { ImageOff, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MenuItem } from "@/lib/menu/types";
 
-export function ItemCard({ item, slug }: { item: MenuItem; slug: string }) {
+export function ItemCard({
+  item,
+  slug,
+  categoryId,
+}: {
+  item: MenuItem;
+  slug: string;
+  categoryId: string;
+}) {
   return (
     <Link
-      href={`/menu/${slug}/item/${item.id}`}
+      href={`/menu/${slug}/item/${item.id}?cat=${categoryId}`}
       className={cn(
         "flex gap-3 rounded-2xl border border-border bg-card p-3 no-underline",
         item.isSoldOut && "opacity-60"

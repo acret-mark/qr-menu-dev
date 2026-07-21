@@ -7,10 +7,13 @@ import type { DisplayLanguage } from "@/lib/menu/types";
 
 export default async function MenuPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ cat?: string }>;
 }) {
   const { slug } = await params;
+  const { cat } = await searchParams;
   const business = await getBusinessBySlug(slug);
 
   if (!business) {
@@ -47,6 +50,7 @@ export default async function MenuPage({
         initialLanguage={initialLanguage}
         initialCategories={initialCategories}
         needsClientProbe={needsClientProbe}
+        initialActiveCategoryId={cat}
       />
     </div>
   );
