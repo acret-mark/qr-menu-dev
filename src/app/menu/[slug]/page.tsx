@@ -15,7 +15,7 @@ export default async function MenuPage({
 
   if (!business) {
     return (
-      <div className="mx-auto flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
+      <div className="mx-auto w-full flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
           <InactiveMenu slug={slug} />
         </div>
@@ -27,7 +27,7 @@ export default async function MenuPage({
     await loadDisplayCategories(business);
 
   return (
-    <div className="mx-auto flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
+    <div className="mx-auto w-full flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
       <MenuHome
         business={business}
         sourceCategories={sourceCategories}
