@@ -6,9 +6,8 @@ import { Search } from "lucide-react";
 import { CategoryTabs } from "./category-tabs";
 import { ItemCard } from "./item-card";
 import { LanguageSelector } from "./language-selector";
-import { applyTranslations } from "@/lib/menu/translations";
-import { LANG_COOKIE_NAME, matchDisplayLanguage } from "@/lib/menu/types";
-import type { Business, MenuCategory, Translations, DisplayLanguage } from "@/lib/menu/types";
+import { useTranslatedCategories } from "@/lib/menu/use-translated-categories";
+import type { Business, MenuCategory, DisplayLanguage } from "@/lib/menu/types";
 
 export function MenuHome({
   business,
@@ -25,17 +24,19 @@ export function MenuHome({
   needsClientProbe: boolean;
   initialActiveCategoryId?: string;
 }) {
-  const [currentLanguage, setCurrentLanguage] = useState(initialLanguage);
-  const [categoriesByLanguage, setCategoriesByLanguage] = useState<
-    Partial<Record<DisplayLanguage, MenuCategory[]>>
-  >({ [initialLanguage]: initialCategories });
+  const { currentLanguage, categories, handleLanguageChange } = useTranslatedCategories({
+    slug: business.slug,
+    sourceCategories,
+    initialLanguage,
+    initialCategories,
+    needsClientProbe,
+  });
+
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(
     sourceCategories.some((category) => category.id === initialActiveCategoryId)
       ? initialActiveCategoryId!
       : sourceCategories[0]?.id ?? null
   );
-
-  const categories = categoriesByLanguage[currentLanguage] ?? sourceCategories;
 
   // Next's client Router Cache can restore a stale cached render (the
   // original pre-tap props) on a native back/forward gesture, since our
@@ -54,38 +55,6 @@ export function MenuHome({
     window.addEventListener("popstate", syncActiveCategoryFromUrl);
     return () => window.removeEventListener("popstate", syncActiveCategoryFromUrl);
   }, [sourceCategories]);
-
-  // Accept-Language was completely absent from the request — the only
-  // signal SSR couldn't use. Probe navigator.language once and prime the
-  // cookie for the *next* visit; never touches what's already rendered.
-  useEffect(() => {
-    if (!needsClientProbe) return;
-    const match = matchDisplayLanguage(navigator.language);
-    if (match) setLangCookie(match);
-  }, [needsClientProbe]);
-
-  async function handleLanguageChange(language: DisplayLanguage) {
-    if (language === currentLanguage) return;
-
-    setCurrentLanguage(language);
-    setLangCookie(language);
-
-    if (categoriesByLanguage[language]) return;
-
-    try {
-      const response = await fetch(`/menu/${business.slug}/translations?lang=${language}`);
-      if (!response.ok) throw new Error("translation fetch failed");
-      const translations: Translations = await response.json();
-      setCategoriesByLanguage((cache) => ({
-        ...cache,
-        [language]: applyTranslations(sourceCategories, translations),
-      }));
-    } catch {
-      // Language toggle is a convenience layer, not core content — fall back
-      // to source-language content for this session rather than erroring.
-      setCategoriesByLanguage((cache) => ({ ...cache, [language]: sourceCategories }));
-    }
-  }
 
   function handleCategorySelect(categoryId: string) {
     setActiveCategoryId(categoryId);
@@ -174,8 +143,4 @@ function initials(name: string): string {
     .slice(0, 2)
     .map((word) => word[0]?.toUpperCase() ?? "")
     .join("");
-}
-
-function setLangCookie(language: DisplayLanguage) {
-  document.cookie = `${LANG_COOKIE_NAME}=${language}; path=/; max-age=31536000; samesite=lax`;
 }
