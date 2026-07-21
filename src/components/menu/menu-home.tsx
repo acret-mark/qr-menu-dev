@@ -16,22 +16,44 @@ export function MenuHome({
   initialLanguage,
   initialCategories,
   needsClientProbe,
+  initialActiveCategoryId,
 }: {
   business: Business;
   sourceCategories: MenuCategory[];
   initialLanguage: DisplayLanguage;
   initialCategories: MenuCategory[];
   needsClientProbe: boolean;
+  initialActiveCategoryId?: string;
 }) {
   const [currentLanguage, setCurrentLanguage] = useState(initialLanguage);
   const [categoriesByLanguage, setCategoriesByLanguage] = useState<
     Partial<Record<DisplayLanguage, MenuCategory[]>>
   >({ [initialLanguage]: initialCategories });
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(
-    sourceCategories[0]?.id ?? null
+    sourceCategories.some((category) => category.id === initialActiveCategoryId)
+      ? initialActiveCategoryId!
+      : sourceCategories[0]?.id ?? null
   );
 
   const categories = categoriesByLanguage[currentLanguage] ?? sourceCategories;
+
+  // Next's client Router Cache can restore a stale cached render (the
+  // original pre-tap props) on a native back/forward gesture, since our
+  // history.replaceState below updates the address bar without Next's
+  // router ever learning about it. window.location is always accurate
+  // even when the restored props aren't, so re-sync from it on mount and
+  // on every popstate rather than trusting initialActiveCategoryId alone.
+  useEffect(() => {
+    function syncActiveCategoryFromUrl() {
+      const catFromUrl = new URLSearchParams(window.location.search).get("cat");
+      if (catFromUrl && sourceCategories.some((category) => category.id === catFromUrl)) {
+        setActiveCategoryId(catFromUrl);
+      }
+    }
+    syncActiveCategoryFromUrl();
+    window.addEventListener("popstate", syncActiveCategoryFromUrl);
+    return () => window.removeEventListener("popstate", syncActiveCategoryFromUrl);
+  }, [sourceCategories]);
 
   // Accept-Language was completely absent from the request — the only
   // signal SSR couldn't use. Probe navigator.language once and prime the
@@ -63,6 +85,13 @@ export function MenuHome({
       // to source-language content for this session rather than erroring.
       setCategoriesByLanguage((cache) => ({ ...cache, [language]: sourceCategories }));
     }
+  }
+
+  function handleCategorySelect(categoryId: string) {
+    setActiveCategoryId(categoryId);
+    const url = new URL(window.location.href);
+    url.searchParams.set("cat", categoryId);
+    window.history.replaceState(null, "", url);
   }
 
   return (
@@ -104,7 +133,7 @@ export function MenuHome({
             <CategoryTabs
               categories={categories}
               activeCategoryId={activeCategoryId}
-              onSelect={setActiveCategoryId}
+              onSelect={handleCategorySelect}
             />
 
             {categories.map((category) => (
@@ -118,7 +147,7 @@ export function MenuHome({
               >
                 {category.items.map((item) => (
                   <li key={item.id}>
-                    <ItemCard item={item} slug={business.slug} />
+                    <ItemCard item={item} slug={business.slug} categoryId={category.id} />
                   </li>
                 ))}
               </ul>

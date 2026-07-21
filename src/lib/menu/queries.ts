@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Business, MenuCategory, MenuItem, Translations, DisplayLanguage } from "./types";
+import type { Business, ItemDetail, MenuCategory, MenuItem, Translations, DisplayLanguage } from "./types";
 
 export async function getBusinessBySlug(slug: string): Promise<Business | null> {
   const supabase = await createClient();
@@ -104,4 +104,44 @@ export async function getTranslations(
   }
 
   return { categoryNames, itemDescriptions };
+}
+
+export async function getItemDetail(
+  businessId: string,
+  itemId: string
+): Promise<ItemDetail | null> {
+  const supabase = await createClient();
+
+  const { data: item, error: itemError } = await supabase
+    .from("items")
+    .select("id, category_id, name, description, price, photo_url, is_sold_out, is_best_seller")
+    .eq("business_id", businessId)
+    .eq("id", itemId)
+    .eq("is_displayed", true)
+    .maybeSingle();
+
+  if (itemError) throw itemError;
+  if (!item) return null;
+
+  const { data: category, error: categoryError } = await supabase
+    .from("categories")
+    .select("id, name")
+    .eq("business_id", businessId)
+    .eq("id", item.category_id)
+    .maybeSingle();
+
+  if (categoryError) throw categoryError;
+  if (!category) return null;
+
+  return {
+    id: item.id,
+    name: item.name,
+    description: item.description,
+    price: Number(item.price),
+    photoUrl: item.photo_url,
+    isSoldOut: item.is_sold_out,
+    isBestSeller: item.is_best_seller,
+    categoryId: category.id,
+    categoryName: category.name,
+  };
 }

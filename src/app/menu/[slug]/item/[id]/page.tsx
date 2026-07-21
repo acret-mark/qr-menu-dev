@@ -1,19 +1,16 @@
-import { getBusinessBySlug, getMenuData, getTranslations } from "@/lib/menu/queries";
-import { applyTranslations } from "@/lib/menu/translations";
+import { notFound } from "next/navigation";
+import { getBusinessBySlug, getItemDetail, getTranslations } from "@/lib/menu/queries";
 import { getInitialDisplayLanguage } from "@/lib/menu/language";
 import { InactiveMenu } from "@/components/menu/inactive-menu";
-import { MenuHome } from "@/components/menu/menu-home";
+import { ItemDetail } from "@/components/menu/item-detail";
 import type { DisplayLanguage } from "@/lib/menu/types";
 
-export default async function MenuPage({
+export default async function ItemDetailPage({
   params,
-  searchParams,
 }: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ cat?: string }>;
+  params: Promise<{ slug: string; id: string }>;
 }) {
-  const { slug } = await params;
-  const { cat } = await searchParams;
+  const { slug, id } = await params;
   const business = await getBusinessBySlug(slug);
 
   if (!business) {
@@ -26,31 +23,28 @@ export default async function MenuPage({
     );
   }
 
-  const sourceCategories = await getMenuData(business.id);
+  const item = await getItemDetail(business.id, id);
+  if (!item) notFound();
 
   let initialLanguage: DisplayLanguage = "en";
-  let initialCategories = sourceCategories;
-  let needsClientProbe = false;
+  let initialDescription = item.description;
 
   if (business.plan === "pro") {
     const resolved = await getInitialDisplayLanguage(business.sourceLanguage);
     initialLanguage = resolved.language;
-    needsClientProbe = resolved.needsClientProbe;
     if (!resolved.skipTranslation && initialLanguage !== business.sourceLanguage) {
       const translations = await getTranslations(business.id, initialLanguage);
-      initialCategories = applyTranslations(sourceCategories, translations);
+      initialDescription = translations.itemDescriptions[item.id] ?? item.description;
     }
   }
 
   return (
     <div className="mx-auto flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
-      <MenuHome
+      <ItemDetail
         business={business}
-        sourceCategories={sourceCategories}
+        item={item}
         initialLanguage={initialLanguage}
-        initialCategories={initialCategories}
-        needsClientProbe={needsClientProbe}
-        initialActiveCategoryId={cat}
+        initialDescription={initialDescription}
       />
     </div>
   );
