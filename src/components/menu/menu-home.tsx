@@ -37,6 +37,24 @@ export function MenuHome({
 
   const categories = categoriesByLanguage[currentLanguage] ?? sourceCategories;
 
+  // Next's client Router Cache can restore a stale cached render (the
+  // original pre-tap props) on a native back/forward gesture, since our
+  // history.replaceState below updates the address bar without Next's
+  // router ever learning about it. window.location is always accurate
+  // even when the restored props aren't, so re-sync from it on mount and
+  // on every popstate rather than trusting initialActiveCategoryId alone.
+  useEffect(() => {
+    function syncActiveCategoryFromUrl() {
+      const catFromUrl = new URLSearchParams(window.location.search).get("cat");
+      if (catFromUrl && sourceCategories.some((category) => category.id === catFromUrl)) {
+        setActiveCategoryId(catFromUrl);
+      }
+    }
+    syncActiveCategoryFromUrl();
+    window.addEventListener("popstate", syncActiveCategoryFromUrl);
+    return () => window.removeEventListener("popstate", syncActiveCategoryFromUrl);
+  }, [sourceCategories]);
+
   // Accept-Language was completely absent from the request — the only
   // signal SSR couldn't use. Probe navigator.language once and prime the
   // cookie for the *next* visit; never touches what's already rendered.
