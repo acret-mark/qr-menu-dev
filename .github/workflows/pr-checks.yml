@@ -1,0 +1,64 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited]
+
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  # Minimum CI/CD gate: the build must compile, lint clean, and typecheck clean.
+  build:
+    name: Lint, typecheck, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (eslint-config-next)
+        run: npm run lint
+
+      - name: Typecheck (tsc --noEmit, strict mode)
+        run: npm run typecheck
+
+      - name: Build (Next.js production build)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+        run: npm run build
+
+  # Coding conventions for this tech stack + alignment with the project spec (planning/*.md).
+  conventions:
+    name: Coding conventions & spec alignment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check PR title contains the backlog task id
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if ! echo "$PR_TITLE" | grep -qE '^\[[A-Za-z0-9_]+\]\[[A-Za-z0-9_-]+\] .+'; then
+            echo "PR title '$PR_TITLE' must contain the backlog task id, e.g. '[QR_MENU][C-04] Create initial screen'."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Structure & spec-alignment check
+        run: node .github/scripts/check-structure.mjs

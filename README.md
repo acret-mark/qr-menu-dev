@@ -29,6 +29,22 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## CI/CD
+
+Every pull request into `main` runs `.github/workflows/pr-checks.yml`, which checks:
+
+- **Minimum CI gate** — `npm run lint`, `npm run typecheck` (strict TS), `npm run build`.
+- **Coding conventions & spec alignment** — PR title must contain the backlog task id (e.g. `[QR_MENU][C-04] Create initial screen`), plus `.github/scripts/check-structure.mjs`: no stray `console.log`/`FIXME`/`HACK`, no secrets (Supabase service role key, Cloudinary secret) outside `src/lib/supabase/server.ts`, no `"use client"` component importing the server-only Supabase client, App Router segments only contain Next.js special files, oversized-file and naming-convention warnings.
+
+Run the same checks locally before opening a PR:
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+node .github/scripts/check-structure.mjs
+```
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
