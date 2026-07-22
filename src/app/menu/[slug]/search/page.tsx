@@ -1,16 +1,16 @@
 import { getBusinessBySlug, loadDisplayCategories } from "@/lib/menu/queries";
 import { InactiveMenu } from "@/components/menu/inactive-menu";
-import { MenuHome } from "@/components/menu/menu-home";
+import { SearchResults } from "@/components/menu/search-results";
 
-export default async function MenuPage({
+export default async function SearchPage({
   params,
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ cat?: string }>;
+  searchParams: Promise<{ q?: string }>;
 }) {
   const { slug } = await params;
-  const { cat } = await searchParams;
+  const { q } = await searchParams;
   const business = await getBusinessBySlug(slug);
 
   if (!business) {
@@ -28,13 +28,13 @@ export default async function MenuPage({
 
   return (
     <div className="mx-auto w-full flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
-      <MenuHome
+      <SearchResults
         business={business}
         sourceCategories={sourceCategories}
         initialLanguage={initialLanguage}
         initialCategories={initialCategories}
         needsClientProbe={needsClientProbe}
-        initialActiveCategoryId={cat}
+        initialQuery={q ?? ""}
       />
     </div>
   );

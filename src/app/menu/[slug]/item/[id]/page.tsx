@@ -7,15 +7,18 @@ import type { DisplayLanguage } from "@/lib/menu/types";
 
 export default async function ItemDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string; id: string }>;
+  searchParams: Promise<{ q?: string }>;
 }) {
   const { slug, id } = await params;
+  const { q } = await searchParams;
   const business = await getBusinessBySlug(slug);
 
   if (!business) {
     return (
-      <div className="mx-auto flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
+      <div className="mx-auto w-full flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
           <InactiveMenu slug={slug} />
         </div>
@@ -39,12 +42,13 @@ export default async function ItemDetailPage({
   }
 
   return (
-    <div className="mx-auto flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
+    <div className="mx-auto w-full flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
       <ItemDetail
         business={business}
         item={item}
         initialLanguage={initialLanguage}
         initialDescription={initialDescription}
+        fromSearchQuery={q}
       />
     </div>
   );

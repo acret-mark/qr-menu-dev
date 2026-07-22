@@ -7,14 +7,21 @@ export function ItemCard({
   item,
   slug,
   categoryId,
+  searchQuery,
 }: {
   item: MenuItem;
   slug: string;
-  categoryId: string;
+  categoryId?: string;
+  searchQuery?: string;
 }) {
+  const href =
+    searchQuery !== undefined
+      ? `/menu/${slug}/item/${item.id}?q=${encodeURIComponent(searchQuery)}`
+      : `/menu/${slug}/item/${item.id}?cat=${categoryId}`;
+
   return (
     <Link
-      href={`/menu/${slug}/item/${item.id}?cat=${categoryId}`}
+      href={href}
       className={cn(
         "flex gap-3 rounded-2xl border border-border bg-card p-3 no-underline",
         item.isSoldOut && "opacity-60"

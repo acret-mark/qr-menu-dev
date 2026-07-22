@@ -13,11 +13,13 @@ export function ItemDetail({
   item,
   initialLanguage,
   initialDescription,
+  fromSearchQuery,
 }: {
   business: Business;
   item: ItemDetailData;
   initialLanguage: DisplayLanguage;
   initialDescription: string | null;
+  fromSearchQuery?: string;
 }) {
   const [currentLanguage, setCurrentLanguage] = useState(initialLanguage);
   const [descriptionsByLanguage, setDescriptionsByLanguage] = useState<
@@ -25,6 +27,11 @@ export function ItemDetail({
   >({ [initialLanguage]: initialDescription });
 
   const description = descriptionsByLanguage[currentLanguage] ?? initialDescription;
+
+  const backHref =
+    fromSearchQuery !== undefined
+      ? `/menu/${business.slug}/search?q=${encodeURIComponent(fromSearchQuery)}`
+      : `/menu/${business.slug}?cat=${item.categoryId}`;
 
   async function handleLanguageChange(language: DisplayLanguage) {
     if (language === currentLanguage) return;
@@ -52,7 +59,7 @@ export function ItemDetail({
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <div className="relative">
           <Link
-            href={`/menu/${business.slug}?cat=${item.categoryId}`}
+            href={backHref}
             aria-label="Back to menu"
             className="absolute left-3.5 top-3.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-card shadow-md"
           >

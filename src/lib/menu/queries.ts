@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { getInitialDisplayLanguage } from "./language";
+import { applyTranslations } from "./translations";
 import type { Business, ItemDetail, MenuCategory, MenuItem, Translations, DisplayLanguage } from "./types";
 
 export async function getBusinessBySlug(slug: string): Promise<Business | null> {
@@ -144,4 +146,29 @@ export async function getItemDetail(
     categoryId: category.id,
     categoryName: category.name,
   };
+}
+
+export async function loadDisplayCategories(business: Business): Promise<{
+  sourceCategories: MenuCategory[];
+  initialLanguage: DisplayLanguage;
+  initialCategories: MenuCategory[];
+  needsClientProbe: boolean;
+}> {
+  const sourceCategories = await getMenuData(business.id);
+
+  let initialLanguage: DisplayLanguage = "en";
+  let initialCategories = sourceCategories;
+  let needsClientProbe = false;
+
+  if (business.plan === "pro") {
+    const resolved = await getInitialDisplayLanguage(business.sourceLanguage);
+    initialLanguage = resolved.language;
+    needsClientProbe = resolved.needsClientProbe;
+    if (!resolved.skipTranslation && initialLanguage !== business.sourceLanguage) {
+      const translations = await getTranslations(business.id, initialLanguage);
+      initialCategories = applyTranslations(sourceCategories, translations);
+    }
+  }
+
+  return { sourceCategories, initialLanguage, initialCategories, needsClientProbe };
 }
