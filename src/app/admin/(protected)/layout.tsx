@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { AdminShell } from "@/components/admin/admin-shell";
 
 export default async function ProtectedAdminLayout({
   children,
@@ -14,5 +15,5 @@ export default async function ProtectedAdminLayout({
     redirect("/admin/login");
   }
 
-  return <>{children}</>;
+  return <AdminShell>{children}</AdminShell>;
 }
