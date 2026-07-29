@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getBusinessBySlug, getItemDetail, getTranslations } from "@/lib/menu/queries";
 import { getInitialDisplayLanguage } from "@/lib/menu/language";
-import { InactiveMenu } from "@/components/menu/inactive-menu";
+import { InactiveMenuScreen } from "@/components/menu/inactive-menu-screen";
 import { ItemDetail } from "@/components/menu/item-detail";
 import type { DisplayLanguage } from "@/lib/menu/types";
 
@@ -17,13 +17,7 @@ export default async function ItemDetailPage({
   const business = await getBusinessBySlug(slug);
 
   if (!business) {
-    return (
-      <div className="mx-auto w-full flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-          <InactiveMenu slug={slug} />
-        </div>
-      </div>
-    );
+    return <InactiveMenuScreen slug={slug} />;
   }
 
   const item = await getItemDetail(business.id, id);
