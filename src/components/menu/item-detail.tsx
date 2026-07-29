@@ -72,24 +72,24 @@ export function ItemDetail({
             </div>
           )}
 
-          {(item.isBestSeller || item.isSoldOut) && (
-            <span
+          {(item.isSoldOut || item.isBestSeller) && (
+            <div
               className={cn(
-                "absolute right-3.5 z-10 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.72rem] font-semibold",
-                business.plan === "pro" ? "top-14" : "top-3.5",
-                item.isSoldOut
-                  ? "bg-muted-foreground text-card"
-                  : "bg-accent text-accent-foreground"
+                "absolute right-3.5 z-10 flex flex-col items-end gap-1.5",
+                business.plan === "pro" ? "top-14" : "top-3.5"
               )}
             >
-              {item.isSoldOut ? (
-                "Sold Out"
-              ) : (
-                <>
-                  <Star size={11} fill="currentColor" strokeWidth={0} /> Best Seller
-                </>
+              {item.isSoldOut && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-muted-foreground px-2.5 py-1 text-[0.72rem] font-semibold text-card">
+                  Sold Out
+                </span>
               )}
-            </span>
+              {item.isBestSeller && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-[0.72rem] font-semibold text-accent-foreground">
+                  <Star size={11} fill="currentColor" strokeWidth={0} /> Best Seller
+                </span>
+              )}
+            </div>
           )}
 
           <div
