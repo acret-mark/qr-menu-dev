@@ -3,7 +3,9 @@ import type {
   AdminBusinessDetail,
   AdminBusinessSummary,
   AdminMenuCategory,
+  AdminPendingPayment,
   AdminSubscriptionRecord,
+  PlanType,
 } from "./types";
 
 export async function getBusinessList(): Promise<AdminBusinessSummary[]> {
@@ -109,6 +111,64 @@ export async function getBusinessSubscriptions(
     paymentMethod: row.payment_method,
     createdAt: row.created_at,
   }));
+}
+
+/**
+ * Every subscription awaiting payment verification, across all businesses, for
+ * the Payment Queue (A-04).
+ *
+ * Ordered OLDEST-FIRST — this is a work queue, so the owner who has waited
+ * longest sits at the top. That is deliberately the opposite of
+ * getBusinessSubscriptions() above, which is reverse-chronological history for
+ * A-03. Do not "align" the two.
+ *
+ * `businesses!inner` keeps the join RLS-filtered: a row whose business isn't
+ * readable is dropped rather than rendered with a blank name.
+ */
+/**
+ * Shape of one joined row. Declared locally because this project has no
+ * generated Supabase types: without them, supabase-js infers the `businesses`
+ * embed as an array, while PostgREST actually returns a single object for a
+ * to-one relationship (subscriptions.business_id → businesses.id). Both are
+ * modelled here so the normalisation below is honest rather than a blind cast.
+ */
+type PendingPaymentRow = {
+  id: string;
+  business_id: string;
+  plan: PlanType;
+  amount: string | number;
+  payment_method: string | null;
+  payment_proof_url: string | null;
+  created_at: string;
+  businesses: { name: string } | { name: string }[] | null;
+};
+
+export async function getPendingPayments(): Promise<AdminPendingPayment[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .select(
+      "id, business_id, plan, amount, payment_method, payment_proof_url, created_at, businesses!inner(name)"
+    )
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+
+  return ((data ?? []) as unknown as PendingPaymentRow[]).map((row) => {
+    const business = Array.isArray(row.businesses) ? row.businesses[0] : row.businesses;
+
+    return {
+      id: row.id,
+      businessId: row.business_id,
+      businessName: business?.name ?? "(unknown business)",
+      plan: row.plan,
+      amount: Number(row.amount),
+      paymentMethod: row.payment_method,
+      paymentProofUrl: row.payment_proof_url,
+      submittedAt: row.created_at,
+    };
+  });
 }
 
 export async function hasOpenSupportTicket(businessId: string): Promise<boolean> {
