@@ -8,11 +8,29 @@ import { cn } from "@/lib/utils";
 type NavItem = {
   label: string;
   icon: LucideIcon;
-} & ({ enabled: true; href: string } | { enabled: false });
+} & (
+  | {
+      enabled: true;
+      href: string;
+      /**
+       * Path prefix this section owns, used for the active highlight so child
+       * routes (e.g. /admin/payments/[id]) keep their parent item lit. Never the
+       * bare "/admin" — that prefixes every admin route.
+       */
+      section: string;
+    }
+  | { enabled: false }
+);
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Businesses", icon: Store, enabled: true, href: "/admin" },
-  { label: "Payments", icon: CreditCard, enabled: false },
+  { label: "Businesses", icon: Store, enabled: true, href: "/admin", section: "/admin/businesses" },
+  {
+    label: "Payments",
+    icon: CreditCard,
+    enabled: true,
+    href: "/admin/payments",
+    section: "/admin/payments",
+  },
   { label: "Support", icon: LifeBuoy, enabled: false },
 ];
 
@@ -48,7 +66,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 );
               }
 
-              const isActive = pathname === item.href || pathname?.startsWith("/admin/businesses");
+              const isActive =
+                pathname === item.href || pathname?.startsWith(`${item.section}/`) === true;
 
               return (
                 <li key={item.label}>

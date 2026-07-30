@@ -14,6 +14,24 @@
   per 03_screen-list.md. Matches subscriptions.status = 'pending' in
   04_data-model.md. Each row's "Review" action goes to A-05 Activate
   Subscription.
+
+  CORRECTED 2026-07-30 (spec 010-payment-queue, FR-006 / FR-003 / FR-014):
+  - Row order was newest-submission-first; it is now OLDEST-FIRST. This screen
+    is a work queue to be drained, not a feed to be browsed — newest-first
+    structurally buries the owner who has waited longest, and that owner cannot
+    publish their menu until an admin activates them. The original two mock
+    rows were incidental, not a deliberate ordering decision; the A-04 task
+    brief always stated the intent as "owners waiting longest surface first".
+    Note this is deliberately the opposite of A-03's subscription-history
+    table, which stays newest-first because a history log is browsed.
+  - The Submitted column now also shows how long each payment has been
+    waiting, in the warning tone once the wait reaches 3 days, so the FIFO
+    ordering is visible rather than implicit. Presentation only — it triggers
+    no email, escalation, or state change, and commits to no SLA.
+  - Empty state (not mocked below): when nothing is pending, the screen shows
+    "All caught up — no payment proofs waiting for verification." — an
+    affirmative confirmation, since on a screen whose normal state is one or
+    two rows a blank card is indistinguishable from a failed load.
 -->
 <div class="admin-shell">
   <aside class="admin-sidebar" id="sidebar">
@@ -76,19 +94,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Barrio Fiesta Cafe</td>
-              <td>Standard</td>
-              <td>₱299</td>
-              <td>GCash</td>
-              <td>
-                <div class="item-thumb" style="width:32px; height:32px; border-radius:6px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-                </div>
-              </td>
-              <td>Jul 9, 2026</td>
-              <td><a class="btn btn-primary" href="a-05-activate-subscription.html" style="padding:6px 14px; font-size:0.8rem;">Review</a></td>
-            </tr>
+            <!-- Oldest submission first — longest-waiting owner at the top. -->
             <tr>
               <td>Ihawan Grill House</td>
               <td>Standard</td>
@@ -99,7 +105,28 @@
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
                 </div>
               </td>
-              <td>Jul 8, 2026</td>
+              <td>
+                Jul 8, 2026
+                <!-- >= 3 days waiting: warning tone -->
+                <div style="font-size:0.75rem; color:var(--warning); font-weight:500; margin-top:2px;">3 days</div>
+              </td>
+              <td><a class="btn btn-primary" href="a-05-activate-subscription.html" style="padding:6px 14px; font-size:0.8rem;">Review</a></td>
+            </tr>
+            <tr>
+              <td>Barrio Fiesta Cafe</td>
+              <td>Standard</td>
+              <td>₱299</td>
+              <td>GCash</td>
+              <td>
+                <div class="item-thumb" style="width:32px; height:32px; border-radius:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+                </div>
+              </td>
+              <td>
+                Jul 9, 2026
+                <!-- under 3 days: muted, no emphasis -->
+                <div style="font-size:0.75rem; color:var(--muted-foreground); margin-top:2px;">2 days</div>
+              </td>
               <td><a class="btn btn-primary" href="a-05-activate-subscription.html" style="padding:6px 14px; font-size:0.8rem;">Review</a></td>
             </tr>
           </tbody>

@@ -10,6 +10,7 @@ import { StatusBadge } from "@/components/admin/status-badge";
 import { StatCard } from "@/components/admin/stat-card";
 import { Badge } from "@/components/admin/badge";
 import { BusinessDetailTabs } from "@/components/admin/business-detail-tabs";
+import { formatAdminDate, formatPaymentMethod } from "@/lib/admin/format";
 import type { AdminMenuCategory, AdminSubscriptionRecord, SubscriptionStatus } from "@/lib/admin/types";
 
 const SUBSCRIPTION_TONE: Record<SubscriptionStatus, "success" | "warning" | "neutral" | "destructive"> = {
@@ -18,24 +19,6 @@ const SUBSCRIPTION_TONE: Record<SubscriptionStatus, "success" | "warning" | "neu
   expired: "neutral",
   cancelled: "destructive",
 };
-
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  gcash: "GCash",
-  bank_transfer: "Bank Transfer",
-};
-
-function formatPaymentMethod(method: string | null) {
-  if (!method) return "—";
-  return PAYMENT_METHOD_LABELS[method] ?? method;
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 function OverviewPanel({
   business,
@@ -71,7 +54,7 @@ function OverviewPanel({
             </tr>
             <tr>
               <td className="px-5 py-3 text-muted-foreground">Signed up</td>
-              <td className="px-5 py-3">{formatDate(business.createdAt)}</td>
+              <td className="px-5 py-3">{formatAdminDate(business.createdAt)}</td>
             </tr>
           </tbody>
         </table>
@@ -150,7 +133,7 @@ function HistoryPanel({ subscriptions }: { subscriptions: AdminSubscriptionRecor
         <tbody>
           {subscriptions.map((subscription) => (
             <tr key={subscription.id} className="border-b border-border last:border-none">
-              <td className="px-5 py-3">{formatDate(subscription.createdAt)}</td>
+              <td className="px-5 py-3">{formatAdminDate(subscription.createdAt)}</td>
               <td className="px-5 py-3 capitalize">{subscription.plan}</td>
               <td className="px-5 py-3">₱{subscription.amount.toFixed(2)}</td>
               <td className="px-5 py-3">{formatPaymentMethod(subscription.paymentMethod)}</td>
