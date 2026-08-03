@@ -19,6 +19,11 @@
   screen is specifically about reading and replying to a thread, which
   a split view supports directly without a navigation round-trip per
   ticket.
+
+  UPDATED 2026-08-03 (spec 012-support-ticket-management, FR-002/FR-003):
+  added the status-filter and sort controls above the ticket list — the
+  spec requires the inbox to be sortable/filterable by status, but this
+  mock predated that requirement and showed only a flat, unfiltered list.
 -->
 <div class="admin-shell">
   <aside class="admin-sidebar" id="sidebar">
@@ -66,40 +71,54 @@
       <p class="admin-page-sub">4 tickets · 2 open</p>
 
       <div class="ticket-inbox">
-        <ul class="ticket-inbox-list">
-          <li><a class="ticket-inbox-row active" href="#">
-            <div class="subject">QR code won't download</div>
-            <div class="biz">The Manila Table</div>
-            <div class="meta">
-              <span class="date">Jul 8, 2026</span>
-              <span class="status-badge warning">Open</span>
-            </div>
-          </a></li>
-          <li><a class="ticket-inbox-row" href="#">
-            <div class="subject">Payment proof not verified yet</div>
-            <div class="biz">Barrio Fiesta Cafe</div>
-            <div class="meta">
-              <span class="date">Jul 9, 2026</span>
-              <span class="status-badge warning">Open</span>
-            </div>
-          </a></li>
-          <li><a class="ticket-inbox-row" href="#">
-            <div class="subject">How do I add a second language name?</div>
-            <div class="biz">Mesa Filipina</div>
-            <div class="meta">
-              <span class="date">Jul 5, 2026</span>
-              <span class="status-badge neutral">In Progress</span>
-            </div>
-          </a></li>
-          <li><a class="ticket-inbox-row" href="#">
-            <div class="subject">Thanks for the quick help!</div>
-            <div class="biz">Cebu Lechon Express</div>
-            <div class="meta">
-              <span class="date">Jul 3, 2026</span>
-              <span class="status-badge success">Resolved</span>
-            </div>
-          </a></li>
-        </ul>
+        <div class="ticket-inbox-list">
+          <div class="ticket-inbox-toolbar">
+            <select class="field-select" aria-label="Filter by status">
+              <option>All statuses</option>
+              <option>Open</option>
+              <option>In Progress</option>
+              <option>Resolved</option>
+            </select>
+            <select class="field-select" aria-label="Sort order">
+              <option>Newest first</option>
+              <option>Oldest first</option>
+            </select>
+          </div>
+          <ul class="ticket-inbox-rows">
+            <li><a class="ticket-inbox-row active" href="#">
+              <div class="subject">QR code won't download</div>
+              <div class="biz">The Manila Table</div>
+              <div class="meta">
+                <span class="date">Jul 8, 2026</span>
+                <span class="status-badge warning">Open</span>
+              </div>
+            </a></li>
+            <li><a class="ticket-inbox-row" href="#">
+              <div class="subject">Payment proof not verified yet</div>
+              <div class="biz">Barrio Fiesta Cafe</div>
+              <div class="meta">
+                <span class="date">Jul 9, 2026</span>
+                <span class="status-badge warning">Open</span>
+              </div>
+            </a></li>
+            <li><a class="ticket-inbox-row" href="#">
+              <div class="subject">How do I add a second language name?</div>
+              <div class="biz">Mesa Filipina</div>
+              <div class="meta">
+                <span class="date">Jul 5, 2026</span>
+                <span class="status-badge neutral">In Progress</span>
+              </div>
+            </a></li>
+            <li><a class="ticket-inbox-row" href="#">
+              <div class="subject">Thanks for the quick help!</div>
+              <div class="biz">Cebu Lechon Express</div>
+              <div class="meta">
+                <span class="date">Jul 3, 2026</span>
+                <span class="status-badge success">Resolved</span>
+              </div>
+            </a></li>
+          </ul>
+        </div>
 
         <div class="ticket-thread">
           <div class="ticket-thread-header">

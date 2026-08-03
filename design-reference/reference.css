@@ -1656,6 +1656,24 @@ a.recent-row {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+/* Status filter + sort controls (A-06, FR-002/FR-003) — added 2026-08-03,
+   the original mock predated the spec's filter/sort requirement. */
+.ticket-inbox-toolbar {
+  display: flex;
+  gap: 8px;
+}
+
+.ticket-inbox-toolbar .field-select {
+  height: 36px;
+  padding: 0 10px;
+}
+
+.ticket-inbox-rows {
+  display: flex;
+  flex-direction: column;
   gap: 2px;
 }
 
