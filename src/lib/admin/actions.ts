@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { sendActivationConfirmation } from "@/lib/email/send-activation-confirmation";
-import type { PlanType } from "./types";
+import type { PlanType, TicketStatus } from "./types";
 
 export type ActivateSubscriptionInput = {
   subscriptionId: string;
@@ -89,6 +89,69 @@ export async function rejectSubscription(input: {
     .update({ status: "cancelled" })
     .eq("id", input.subscriptionId)
     .eq("status", "pending");
+
+  if (error) {
+    return { ok: false, reason: error.message };
+  }
+
+  return { ok: true };
+}
+
+export type ReplyToSupportTicketResult = { ok: true } | { ok: false; reason: "empty-reply" | string };
+
+/**
+ * Writes the ticket's single admin reply, overwriting any previous one in
+ * place — the schema holds exactly one admin_reply/replied_at pair, never a
+ * thread (spec.md FR-007). Defaults status to "resolved" unless the caller
+ * passes an explicit override (FR-009) — the admin's status control, if set
+ * to something else at send time, wins over this default.
+ */
+export async function replyToSupportTicket(input: {
+  ticketId: string;
+  reply: string;
+  status?: TicketStatus;
+}): Promise<ReplyToSupportTicketResult> {
+  const reply = input.reply.trim();
+  if (!reply) {
+    return { ok: false, reason: "empty-reply" };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("support_tickets")
+    .update({
+      admin_reply: reply,
+      replied_at: new Date().toISOString(),
+      status: input.status ?? "resolved",
+    })
+    .eq("id", input.ticketId);
+
+  if (error) {
+    return { ok: false, reason: error.message };
+  }
+
+  return { ok: true };
+}
+
+export type SetTicketStatusResult = { ok: true } | { ok: false; reason: string };
+
+/**
+ * Status-only update — the payload never includes admin_reply/replied_at, so
+ * this action is structurally incapable of disturbing an existing reply
+ * (FR-011). Independent of replyToSupportTicket: usable at any time, e.g. to
+ * mark in_progress before any reply exists, or to reopen a resolved ticket.
+ */
+export async function setTicketStatus(input: {
+  ticketId: string;
+  status: TicketStatus;
+}): Promise<SetTicketStatusResult> {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("support_tickets")
+    .update({ status: input.status })
+    .eq("id", input.ticketId);
 
   if (error) {
     return { ok: false, reason: error.message };

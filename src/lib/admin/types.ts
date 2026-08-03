@@ -87,3 +87,26 @@ export interface AdminPendingPaymentDetail {
   startsAt: string | null;
   expiresAt: string | null;
 }
+
+export type TicketStatus = "open" | "in_progress" | "resolved";
+
+/**
+ * A support ticket for the Support Tickets inbox (A-06). One shape serves both
+ * the list row and the reading-pane detail — the screen is a single-route
+ * split view (list + reading pane), not a list-route + [id]-route pair, so
+ * there is no separate "detail" type. `adminReply`/`repliedAt` are null until
+ * an admin replies, and are overwritten in place on a second reply — the
+ * schema holds exactly one reply per ticket, never a thread.
+ */
+export interface AdminSupportTicket {
+  id: string;
+  businessId: string;
+  businessName: string;
+  businessEmail: string | null;
+  subject: string;
+  message: string;
+  status: TicketStatus;
+  adminReply: string | null;
+  repliedAt: string | null;
+  createdAt: string;
+}
