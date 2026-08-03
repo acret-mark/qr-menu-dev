@@ -63,3 +63,27 @@ export interface AdminPendingPayment {
   paymentProofUrl: string | null;
   submittedAt: string;
 }
+
+/**
+ * The single-subscription detail view for Activate Subscription (A-05).
+ * Deliberately its own shape rather than an extension of AdminPendingPayment:
+ * this screen must render a subscription that is NOT pending (already
+ * active/expired/cancelled, per FR-008), so `status` and the activation
+ * fields are load-bearing here, not noise.
+ */
+export interface AdminPendingPaymentDetail {
+  id: string;
+  businessId: string;
+  businessName: string;
+  contactEmail: string | null;
+  plan: PlanType;
+  amount: number;
+  status: SubscriptionStatus;
+  paymentMethod: string | null;
+  paymentProofUrl: string | null;
+  submittedAt: string;
+  activatedBy: string | null;
+  activatedAt: string | null;
+  startsAt: string | null;
+  expiresAt: string | null;
+}

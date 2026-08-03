@@ -4,6 +4,7 @@ import type {
   AdminBusinessSummary,
   AdminMenuCategory,
   AdminPendingPayment,
+  AdminPendingPaymentDetail,
   AdminSubscriptionRecord,
   PlanType,
 } from "./types";
@@ -169,6 +170,66 @@ export async function getPendingPayments(): Promise<AdminPendingPayment[]> {
       submittedAt: row.created_at,
     };
   });
+}
+
+/**
+ * Row shape for a single subscription joined to its business, for Activate
+ * Subscription (A-05). Unlike getPendingPayments() this is not filtered to
+ * `status = 'pending'` — the page itself decides how to render an already-
+ * resolved row (FR-008). `businesses!inner` is safe here (not just an
+ * optimisation): `subscriptions.business_id` has `on delete cascade` to
+ * `businesses.id`, so a subscription can never outlive its business.
+ */
+type PendingPaymentDetailRow = {
+  id: string;
+  business_id: string;
+  plan: PlanType;
+  amount: string | number;
+  status: AdminPendingPaymentDetail["status"];
+  payment_method: string | null;
+  payment_proof_url: string | null;
+  created_at: string;
+  activated_by: string | null;
+  activated_at: string | null;
+  starts_at: string | null;
+  expires_at: string | null;
+  businesses:
+    | { name: string; contact_email: string | null }
+    | { name: string; contact_email: string | null }[];
+};
+
+export async function getPendingPaymentById(id: string): Promise<AdminPendingPaymentDetail | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .select(
+      "id, business_id, plan, amount, status, payment_method, payment_proof_url, created_at, activated_by, activated_at, starts_at, expires_at, businesses!inner(name, contact_email)"
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  const row = data as unknown as PendingPaymentDetailRow;
+  const business = Array.isArray(row.businesses) ? row.businesses[0] : row.businesses;
+
+  return {
+    id: row.id,
+    businessId: row.business_id,
+    businessName: business.name,
+    contactEmail: business.contact_email,
+    plan: row.plan,
+    amount: Number(row.amount),
+    status: row.status,
+    paymentMethod: row.payment_method,
+    paymentProofUrl: row.payment_proof_url,
+    submittedAt: row.created_at,
+    activatedBy: row.activated_by,
+    activatedAt: row.activated_at,
+    startsAt: row.starts_at,
+    expiresAt: row.expires_at,
+  };
 }
 
 export async function hasOpenSupportTicket(businessId: string): Promise<boolean> {
