@@ -105,7 +105,7 @@ export function RegisterForm() {
           onChange={(e) => setBusinessName(e.target.value)}
           placeholder="e.g. The Manila Table"
           className={cn(
-            "h-11 rounded-lg border border-border bg-background px-3.5 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+            "h-11 rounded-lg border border-border bg-background px-3.5 text-base outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
             fieldErrors.businessName && "border-destructive"
           )}
           aria-invalid={!!fieldErrors.businessName}
@@ -126,7 +126,7 @@ export function RegisterForm() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@business.com"
           className={cn(
-            "h-11 rounded-lg border border-border bg-background px-3.5 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+            "h-11 rounded-lg border border-border bg-background px-3.5 text-base outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
             fieldErrors.email && "border-destructive"
           )}
           aria-invalid={!!fieldErrors.email}
@@ -146,7 +146,7 @@ export function RegisterForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
             className={cn(
-              "h-11 w-full rounded-lg border border-border bg-background px-3.5 pr-11 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+              "h-11 w-full rounded-lg border border-border bg-background px-3.5 pr-11 text-base outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
               fieldErrors.password && "border-destructive"
             )}
             aria-invalid={!!fieldErrors.password}
@@ -176,7 +176,7 @@ export function RegisterForm() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           placeholder="Re-enter your password"
           className={cn(
-            "h-11 rounded-lg border border-border bg-background px-3.5 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+            "h-11 rounded-lg border border-border bg-background px-3.5 text-base outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
             fieldErrors.confirmPassword && "border-destructive"
           )}
           aria-invalid={!!fieldErrors.confirmPassword}
