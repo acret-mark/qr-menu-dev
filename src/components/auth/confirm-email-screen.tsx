@@ -7,14 +7,22 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 
 export function ConfirmEmailScreen({ email }: { email: string | null }) {
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error" | "rate-limited">(
+    "idle"
+  );
 
   async function handleResend() {
     if (!email) return;
     setStatus("sending");
     const supabase = createClient();
     const { error } = await supabase.auth.resend({ type: "signup", email });
-    setStatus(error ? "error" : "sent");
+    if (!error) {
+      setStatus("sent");
+    } else if (error.code === "over_email_send_rate_limit") {
+      setStatus("rate-limited");
+    } else {
+      setStatus("error");
+    }
   }
 
   return (
@@ -44,6 +52,11 @@ export function ConfirmEmailScreen({ email }: { email: string | null }) {
         )}
         {status === "error" && (
           <p className="mt-2 text-xs text-destructive">Couldn&apos;t resend right now. Try again shortly.</p>
+        )}
+        {status === "rate-limited" && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            You&apos;ve requested this recently — please wait a bit before trying again.
+          </p>
         )}
 
         <div className="mt-6 text-sm text-muted-foreground">
