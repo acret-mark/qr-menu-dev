@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { cloudinaryLoader } from "@/lib/images/cloudinary";
 import { CategoryTabs } from "./category-tabs";
 import { ItemCard } from "./item-card";
 import { LanguageSelector } from "./language-selector";
@@ -24,7 +26,7 @@ export function MenuHome({
   needsClientProbe: boolean;
   initialActiveCategoryId?: string;
 }) {
-  const { currentLanguage, categories, handleLanguageChange } = useTranslatedCategories({
+  const { currentLanguage, categories, handleLanguageChange, isTranslating } = useTranslatedCategories({
     slug: business.slug,
     sourceCategories,
     initialLanguage,
@@ -66,13 +68,16 @@ export function MenuHome({
   return (
     <>
       <header className="flex items-center gap-3 border-b border-border bg-card p-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary font-heading text-[1.1rem] font-bold text-primary-foreground">
+        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary font-heading text-[1.1rem] font-bold text-primary-foreground">
           {business.logoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
+              loader={cloudinaryLoader}
               src={business.logoUrl}
               alt=""
-              className="h-full w-full rounded-lg object-cover"
+              fill
+              sizes="44px"
+              priority
+              className="rounded-lg object-cover"
             />
           ) : (
             initials(business.name)
@@ -80,7 +85,11 @@ export function MenuHome({
         </div>
         <h1 className="min-w-0 flex-1 truncate text-[1.15rem] leading-tight">{business.name}</h1>
         {business.plan === "pro" && (
-          <LanguageSelector current={currentLanguage} onChange={handleLanguageChange} />
+          <LanguageSelector
+            current={currentLanguage}
+            onChange={handleLanguageChange}
+            isTranslating={isTranslating}
+          />
         )}
       </header>
 

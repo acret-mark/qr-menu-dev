@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ImageOff, Star } from "lucide-react";
+import { cloudinaryLoader } from "@/lib/images/cloudinary";
 import { cn } from "@/lib/utils";
 import type { MenuItem } from "@/lib/menu/types";
 
@@ -39,8 +41,14 @@ export function ItemCard({
           </span>
         )}
         {item.photoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.photoUrl} alt="" className="h-full w-full object-cover" />
+          <Image
+            loader={cloudinaryLoader}
+            src={item.photoUrl}
+            alt=""
+            fill
+            sizes="76px"
+            className="object-cover"
+          />
         ) : (
           <ImageOff size={30} strokeWidth={1.5} className="opacity-85" />
         )}

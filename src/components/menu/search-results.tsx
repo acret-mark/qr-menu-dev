@@ -24,7 +24,7 @@ export function SearchResults({
   needsClientProbe: boolean;
   initialQuery: string;
 }) {
-  const { currentLanguage, categories, handleLanguageChange } = useTranslatedCategories({
+  const { currentLanguage, categories, handleLanguageChange, isTranslating } = useTranslatedCategories({
     slug: business.slug,
     sourceCategories,
     initialLanguage,
@@ -88,7 +88,11 @@ export function SearchResults({
           />
         </div>
         {business.plan === "pro" && (
-          <LanguageSelector current={currentLanguage} onChange={handleLanguageChange} />
+          <LanguageSelector
+            current={currentLanguage}
+            onChange={handleLanguageChange}
+            isTranslating={isTranslating}
+          />
         )}
       </header>
 
