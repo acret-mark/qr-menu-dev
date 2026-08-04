@@ -1,4 +1,4 @@
-import sgMail from "@sendgrid/mail";
+import { Resend } from "resend";
 import { formatAdminDate } from "@/lib/admin/format";
 import type { PlanType } from "@/lib/admin/types";
 
@@ -17,12 +17,12 @@ export type SendActivationConfirmationInput = {
 
 export type SendActivationConfirmationResult = { ok: true } | { ok: false; reason: string };
 
-let apiKeyConfigured = false;
+let resendClient: Resend | null = null;
 
 /**
- * First email-sending code in this repo (no prior SendGrid usage to follow).
+ * First email-sending code in this repo (no prior email-provider usage to follow).
  * Server-only by construction — never import this from a "use client" file,
- * since SENDGRID_API_KEY must never reach the browser bundle.
+ * since RESEND_API_KEY must never reach the browser bundle.
  */
 export async function sendActivationConfirmation({
   toEmail,
@@ -38,23 +38,22 @@ export async function sendActivationConfirmation({
     return { ok: false, reason: "no-contact-email" };
   }
 
-  const apiKey = process.env.SENDGRID_API_KEY;
-  const fromEmail = process.env.SENDGRID_FROM_EMAIL;
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
 
   if (!apiKey || !fromEmail) {
     console.error(
-      "Activation-confirmation email not sent: SENDGRID_API_KEY/SENDGRID_FROM_EMAIL is not configured"
+      "Activation-confirmation email not sent: RESEND_API_KEY/RESEND_FROM_EMAIL is not configured"
     );
     return { ok: false, reason: "not-configured" };
   }
 
-  if (!apiKeyConfigured) {
-    sgMail.setApiKey(apiKey);
-    apiKeyConfigured = true;
+  if (!resendClient) {
+    resendClient = new Resend(apiKey);
   }
 
   try {
-    await sgMail.send({
+    const { error } = await resendClient.emails.send({
       to: toEmail,
       from: fromEmail,
       subject: `Your ${businessName} subscription is now active`,
@@ -66,6 +65,10 @@ export async function sendActivationConfirmation({
         "Your menu is now live. Thanks for choosing Hapag.",
       ].join("\n"),
     });
+    if (error) {
+      console.error("Failed to send activation-confirmation email", error);
+      return { ok: false, reason: "send-failed" };
+    }
     return { ok: true };
   } catch (err) {
     console.error("Failed to send activation-confirmation email", err);

@@ -21,13 +21,12 @@ export type ActivateSubscriptionResult =
  * Server Action, not a browser-client call — deliberately deviating from
  * registerOwner()'s client-component + browser-client convention (see
  * research.md §2). That precedent has no server-only secret in its path;
- * this one does (SENDGRID_API_KEY), which must never reach client code, so
+ * this one does (RESEND_API_KEY), which must never reach client code, so
  * the mutation + email send both have to run server-side in one place.
  *
- * Calls the security-definer activate_subscription() RPC proposed in
- * schema-change-request.md, so this function does nothing correct until
- * that migration is merged — see the plan's flagged Constitution Principle
- * III dependency.
+ * Calls the security-definer activate_subscription() RPC added in
+ * schema-change-request.md (merged by Mark, 2026-08-03) — see
+ * supabase/migrations/20260803000000_add_activate_subscription_fn.sql.
  */
 export async function activateSubscription(
   input: ActivateSubscriptionInput
