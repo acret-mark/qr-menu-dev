@@ -20,7 +20,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-2 gap-4">
         <MaybeLink
           href="/categories"
-          enabled={false}
+          enabled={true}
           className="rounded-lg border border-border bg-card p-4 text-center"
         >
           <div className="font-heading text-2xl font-semibold">{categoryCount}</div>
