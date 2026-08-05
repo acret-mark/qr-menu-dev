@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { updateBusinessProfile, type BusinessProfile } from "@/lib/business/profile";
+import { invalidateMenuCacheAction } from "@/lib/menu/cache-actions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +65,9 @@ export function ProfileForm({
       setStatus("idle");
       return;
     }
+
+    // Fire-and-forget: don't block the "Saved." UI state on cache invalidation.
+    void invalidateMenuCacheAction(initialProfile.slug);
 
     setStatus("saved");
   }

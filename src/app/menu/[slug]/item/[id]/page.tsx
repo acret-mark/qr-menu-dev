@@ -20,7 +20,7 @@ export default async function ItemDetailPage({
     return <InactiveMenuScreen slug={slug} />;
   }
 
-  const item = await getItemDetail(business.id, id);
+  const item = await getItemDetail(business.id, id, business.slug);
   if (!item) notFound();
 
   let initialLanguage: DisplayLanguage = "en";
@@ -30,7 +30,7 @@ export default async function ItemDetailPage({
     const resolved = await getInitialDisplayLanguage(business.sourceLanguage);
     initialLanguage = resolved.language;
     if (!resolved.skipTranslation && initialLanguage !== business.sourceLanguage) {
-      const translations = await getTranslations(business.id, initialLanguage);
+      const translations = await getTranslations(business.id, initialLanguage, business.slug);
       initialDescription = translations.itemDescriptions[item.id] ?? item.description;
     }
   }
