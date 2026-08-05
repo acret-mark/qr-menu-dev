@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Camera } from "lucide-react";
-import { uploadBusinessLogo } from "@/app/(owner)/business-profile/actions";
+import { uploadBusinessLogo } from "@/lib/business/upload-logo";
 import { cloudinaryLoader } from "@/lib/images/cloudinary";
 import { validateLogoFile } from "@/lib/business/logo-validation";
 

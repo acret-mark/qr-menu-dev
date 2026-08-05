@@ -1,15 +1,9 @@
 "use server";
 
-import { v2 as cloudinary } from "cloudinary";
 import { createClient } from "@/lib/supabase/server";
 import { getBusinessProfile } from "@/lib/business/profile";
 import { validateLogoFile } from "@/lib/business/logo-validation";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { uploadImage } from "@/lib/cloudinary/client";
 
 export type UploadLogoResult = { ok: true; logoUrl: string } | { ok: false; message: string };
 
@@ -40,17 +34,7 @@ export async function uploadBusinessLogo(formData: FormData): Promise<UploadLogo
 
   let secureUrl: string;
   try {
-    const arrayBuffer = await file.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const dataUri = `data:${file.type};base64,${base64}`;
-
-    const result = await cloudinary.uploader.upload(dataUri, {
-      folder: "business-logos",
-      quality: "auto",
-      fetch_format: "auto",
-    });
-
-    secureUrl = result.secure_url;
+    secureUrl = await uploadImage(file, { folder: "business-logos" });
   } catch {
     return { ok: false, message: "The upload failed. Please try again." };
   }
