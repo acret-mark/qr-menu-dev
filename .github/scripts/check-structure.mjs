@@ -51,10 +51,12 @@ for (const file of codeFiles) {
   });
 }
 
-// 2. Secret keys must never appear outside server-only Supabase wiring.
+// 2. Secret keys must never appear outside server-only wiring, each confined
+//    to one dedicated file per service (mirrors src/lib/supabase/server.ts).
 const SECRET_PATTERNS = [/SUPABASE_SECRET_KEY/, /service_role/i, /CLOUDINARY_API_SECRET/];
 const ALLOWED_SECRET_FILES = new Set([
   join(SRC, "lib", "supabase", "server.ts"),
+  join(SRC, "lib", "cloudinary", "client.ts"),
 ]);
 for (const file of codeFiles) {
   if (ALLOWED_SECRET_FILES.has(file)) continue;
