@@ -31,7 +31,7 @@ const NAV_ITEMS: NavItem[] = [
     href: "/admin/payments",
     section: "/admin/payments",
   },
-  { label: "Support", icon: LifeBuoy, enabled: false },
+  { label: "Support", icon: LifeBuoy, enabled: true, href: "/admin/support", section: "/admin/support" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

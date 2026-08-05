@@ -6,6 +6,7 @@ import type {
   AdminPendingPayment,
   AdminPendingPaymentDetail,
   AdminSubscriptionRecord,
+  AdminSupportTicket,
   PlanType,
 } from "./types";
 
@@ -230,6 +231,63 @@ export async function getPendingPaymentById(id: string): Promise<AdminPendingPay
     startsAt: row.starts_at,
     expiresAt: row.expires_at,
   };
+}
+
+/**
+ * Every support ticket, across all businesses, for the Support Tickets inbox
+ * (A-06) — full subject/message/reply content in one query, since the screen
+ * is a single-route split view (list + reading pane), not a list + [id] pair.
+ *
+ * Ordered NEWEST-FIRST — a triage inbox, not a FIFO work queue like
+ * getPendingPayments() above; see research.md §4. Filtering/sorting in the UI
+ * happens client-side against this full set (pilot-scale ticket volume).
+ *
+ * `businesses!inner` keeps the join RLS-filtered: a ticket whose business
+ * isn't readable is dropped rather than rendered with a blank name, matching
+ * getPendingPayments()'s convention.
+ */
+type SupportTicketRow = {
+  id: string;
+  business_id: string;
+  subject: string;
+  message: string;
+  status: AdminSupportTicket["status"];
+  admin_reply: string | null;
+  replied_at: string | null;
+  created_at: string;
+  businesses:
+    | { name: string; contact_email: string | null }
+    | { name: string; contact_email: string | null }[]
+    | null;
+};
+
+export async function getSupportTickets(): Promise<AdminSupportTicket[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("support_tickets")
+    .select(
+      "id, business_id, subject, message, status, admin_reply, replied_at, created_at, businesses!inner(name, contact_email)"
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return ((data ?? []) as unknown as SupportTicketRow[]).map((row) => {
+    const business = Array.isArray(row.businesses) ? row.businesses[0] : row.businesses;
+
+    return {
+      id: row.id,
+      businessId: row.business_id,
+      businessName: business?.name ?? "(unknown business)",
+      businessEmail: business?.contact_email ?? null,
+      subject: row.subject,
+      message: row.message,
+      status: row.status,
+      adminReply: row.admin_reply,
+      repliedAt: row.replied_at,
+      createdAt: row.created_at,
+    };
+  });
 }
 
 export async function hasOpenSupportTicket(businessId: string): Promise<boolean> {

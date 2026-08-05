@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DisplayLanguage } from "@/lib/menu/types";
 
@@ -15,9 +15,11 @@ const LANGUAGE_LABELS: Record<DisplayLanguage, { short: string; full: string }> 
 export function LanguageSelector({
   current,
   onChange,
+  isTranslating = false,
 }: {
   current: DisplayLanguage;
   onChange: (language: DisplayLanguage) => void;
+  isTranslating?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -27,11 +29,16 @@ export function LanguageSelector({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-busy={isTranslating}
         onClick={() => setOpen((value) => !value)}
         className="flex items-center gap-1 rounded-full border border-border bg-muted px-2.5 py-1.5 text-[0.78rem] font-semibold text-foreground"
       >
         <span>{LANGUAGE_LABELS[current].short}</span>
-        <ChevronDown size={12} />
+        {isTranslating ? (
+          <Loader2 size={12} className="animate-spin" aria-label="Translating…" />
+        ) : (
+          <ChevronDown size={12} />
+        )}
       </button>
 
       {open && (
