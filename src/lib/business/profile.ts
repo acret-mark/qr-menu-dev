@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type BusinessProfile = {
   id: string;
+  slug: string;
   name: string;
   logoUrl: string | null;
   contactPhone: string | null;
@@ -23,7 +24,7 @@ export async function getBusinessProfile(
 ): Promise<BusinessProfile | null> {
   const { data, error } = await supabase
     .from("businesses")
-    .select("id, name, logo_url, contact_phone, contact_email, address")
+    .select("id, slug, name, logo_url, contact_phone, contact_email, address")
     .eq("owner_id", ownerId)
     .maybeSingle();
 
@@ -33,6 +34,7 @@ export async function getBusinessProfile(
 
   return {
     id: data.id,
+    slug: data.slug,
     name: data.name,
     logoUrl: data.logo_url,
     contactPhone: data.contact_phone,

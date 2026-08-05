@@ -17,6 +17,6 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const translations = await getTranslations(business.id, lang);
+  const translations = await getTranslations(business.id, lang, business.slug);
   return NextResponse.json(translations);
 }

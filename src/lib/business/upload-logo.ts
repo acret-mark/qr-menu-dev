@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getBusinessProfile } from "@/lib/business/profile";
 import { validateLogoFile } from "@/lib/business/logo-validation";
 import { uploadImage } from "@/lib/cloudinary/client";
+import { invalidateMenuCache } from "@/lib/menu/cache";
 
 export type UploadLogoResult = { ok: true; logoUrl: string } | { ok: false; message: string };
 
@@ -47,6 +48,8 @@ export async function uploadBusinessLogo(formData: FormData): Promise<UploadLogo
   if (updateError) {
     return { ok: false, message: "The logo uploaded, but we couldn't save it. Please try again." };
   }
+
+  invalidateMenuCache(profile.slug);
 
   return { ok: true, logoUrl: secureUrl };
 }

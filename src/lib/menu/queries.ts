@@ -1,151 +1,189 @@
-import { createClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
+import { createPublicClient } from "@/lib/supabase/public";
+import { menuCacheTag } from "./cache";
 import { getInitialDisplayLanguage } from "./language";
 import { applyTranslations } from "./translations";
 import type { Business, ItemDetail, MenuCategory, MenuItem, Translations, DisplayLanguage } from "./types";
 
+const CACHE_REVALIDATE_SECONDS = 5;
+
 export async function getBusinessBySlug(slug: string): Promise<Business | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("businesses")
-    .select("id, name, slug, logo_url, plan, source_language")
-    .eq("slug", slug)
-    .maybeSingle();
+  return unstable_cache(
+    async () => {
+      const supabase = createPublicClient();
+      const { data, error } = await supabase
+        .from("businesses")
+        .select("id, name, slug, logo_url, plan, source_language")
+        .eq("slug", slug)
+        .maybeSingle();
 
-  if (error) throw error;
-  if (!data) return null;
+      if (error) throw error;
+      if (!data) return null;
 
-  return {
-    id: data.id,
-    name: data.name,
-    slug: data.slug,
-    logoUrl: data.logo_url,
-    plan: data.plan,
-    sourceLanguage: data.source_language,
-  };
+      return {
+        id: data.id,
+        name: data.name,
+        slug: data.slug,
+        logoUrl: data.logo_url,
+        plan: data.plan,
+        sourceLanguage: data.source_language,
+      };
+    },
+    ["business-by-slug", slug],
+    { tags: [menuCacheTag(slug)], revalidate: CACHE_REVALIDATE_SECONDS }
+  )();
 }
 
-export async function getMenuData(businessId: string): Promise<MenuCategory[]> {
-  const supabase = await createClient();
+export async function getMenuData(businessId: string, slug: string): Promise<MenuCategory[]> {
+  return unstable_cache(
+    async () => {
+      const supabase = createPublicClient();
 
-  const [{ data: categories, error: categoriesError }, { data: items, error: itemsError }] =
-    await Promise.all([
-      supabase
-        .from("categories")
-        .select("id, name, sort_order")
-        .eq("business_id", businessId)
-        .order("sort_order", { ascending: true }),
-      supabase
-        .from("items")
-        .select(
-          "id, category_id, name, description, price, photo_url, is_sold_out, is_best_seller, sort_order"
-        )
-        .eq("business_id", businessId)
-        .eq("is_displayed", true)
-        .order("is_best_seller", { ascending: false })
-        .order("sort_order", { ascending: true }),
-    ]);
+      const [{ data: categories, error: categoriesError }, { data: items, error: itemsError }] =
+        await Promise.all([
+          supabase
+            .from("categories")
+            .select("id, name, sort_order")
+            .eq("business_id", businessId)
+            .order("sort_order", { ascending: true }),
+          supabase
+            .from("items")
+            .select(
+              "id, category_id, name, description, price, photo_url, is_sold_out, is_best_seller, sort_order"
+            )
+            .eq("business_id", businessId)
+            .eq("is_displayed", true)
+            .order("is_best_seller", { ascending: false })
+            .order("sort_order", { ascending: true }),
+        ]);
 
-  if (categoriesError) throw categoriesError;
-  if (itemsError) throw itemsError;
+      if (categoriesError) throw categoriesError;
+      if (itemsError) throw itemsError;
 
-  const itemsByCategory = new Map<string, MenuItem[]>();
-  for (const item of items ?? []) {
-    const list = itemsByCategory.get(item.category_id) ?? [];
-    list.push({
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      price: Number(item.price),
-      photoUrl: item.photo_url,
-      isSoldOut: item.is_sold_out,
-      isBestSeller: item.is_best_seller,
-    });
-    itemsByCategory.set(item.category_id, list);
-  }
+      const itemsByCategory = new Map<string, MenuItem[]>();
+      for (const item of items ?? []) {
+        const list = itemsByCategory.get(item.category_id) ?? [];
+        list.push({
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          price: Number(item.price),
+          photoUrl: item.photo_url,
+          isSoldOut: item.is_sold_out,
+          isBestSeller: item.is_best_seller,
+        });
+        itemsByCategory.set(item.category_id, list);
+      }
 
-  return (categories ?? [])
-    .map((category) => ({
-      id: category.id,
-      name: category.name,
-      items: itemsByCategory.get(category.id) ?? [],
-    }))
-    .filter((category) => category.items.length > 0);
+      return (categories ?? [])
+        .map((category) => ({
+          id: category.id,
+          name: category.name,
+          items: itemsByCategory.get(category.id) ?? [],
+        }))
+        .filter((category) => category.items.length > 0);
+    },
+    ["menu-data", businessId],
+    { tags: [menuCacheTag(slug)], revalidate: CACHE_REVALIDATE_SECONDS }
+  )();
 }
 
 export async function getTranslations(
   businessId: string,
-  language: DisplayLanguage
+  language: DisplayLanguage,
+  slug: string
 ): Promise<Translations> {
-  const supabase = await createClient();
+  return unstable_cache(
+    async () => {
+      const supabase = createPublicClient();
 
-  const [{ data: categoryRows, error: categoryError }, { data: itemRows, error: itemError }] =
-    await Promise.all([
-      supabase
-        .from("category_translations")
-        .select("category_id, translated_name")
-        .eq("business_id", businessId)
-        .eq("language_code", language),
-      supabase
-        .from("item_translations")
-        .select("item_id, translated_description")
-        .eq("business_id", businessId)
-        .eq("language_code", language),
-    ]);
+      const [{ data: categoryRows, error: categoryError }, { data: itemRows, error: itemError }] =
+        await Promise.all([
+          supabase
+            .from("category_translations")
+            .select("category_id, translated_name")
+            .eq("business_id", businessId)
+            .eq("language_code", language),
+          supabase
+            .from("item_translations")
+            .select("item_id, translated_description")
+            .eq("business_id", businessId)
+            .eq("language_code", language),
+        ]);
 
-  if (categoryError) throw categoryError;
-  if (itemError) throw itemError;
+      if (categoryError) throw categoryError;
+      if (itemError) throw itemError;
 
-  const categoryNames: Record<string, string> = {};
-  for (const row of categoryRows ?? []) {
-    if (row.translated_name) categoryNames[row.category_id] = row.translated_name;
-  }
+      const categoryNames: Record<string, string> = {};
+      for (const row of categoryRows ?? []) {
+        if (row.translated_name) categoryNames[row.category_id] = row.translated_name;
+      }
 
-  const itemDescriptions: Record<string, string> = {};
-  for (const row of itemRows ?? []) {
-    if (row.translated_description) itemDescriptions[row.item_id] = row.translated_description;
-  }
+      const itemDescriptions: Record<string, string> = {};
+      for (const row of itemRows ?? []) {
+        if (row.translated_description) itemDescriptions[row.item_id] = row.translated_description;
+      }
 
-  return { categoryNames, itemDescriptions };
+      return { categoryNames, itemDescriptions };
+    },
+    ["menu-translations", businessId, language],
+    { tags: [menuCacheTag(slug)], revalidate: CACHE_REVALIDATE_SECONDS }
+  )();
 }
 
 export async function getItemDetail(
   businessId: string,
-  itemId: string
+  itemId: string,
+  slug: string
 ): Promise<ItemDetail | null> {
-  const supabase = await createClient();
+  return unstable_cache(
+    async () => {
+      const supabase = createPublicClient();
 
-  const { data: item, error: itemError } = await supabase
-    .from("items")
-    .select("id, category_id, name, description, price, photo_url, is_sold_out, is_best_seller")
-    .eq("business_id", businessId)
-    .eq("id", itemId)
-    .eq("is_displayed", true)
-    .maybeSingle();
+      // Single round trip via an embedded relation select, instead of a
+      // separate dependent `categories` fetch (see research.md Decision 5).
+      const { data: item, error: itemError } = await supabase
+        .from("items")
+        .select(
+          "id, name, description, price, photo_url, is_sold_out, is_best_seller, categories(id, name)"
+        )
+        .eq("business_id", businessId)
+        .eq("id", itemId)
+        .eq("is_displayed", true)
+        .maybeSingle();
 
-  if (itemError) throw itemError;
-  if (!item) return null;
+      if (itemError) throw itemError;
+      if (!item) return null;
 
-  const { data: category, error: categoryError } = await supabase
-    .from("categories")
-    .select("id, name")
-    .eq("business_id", businessId)
-    .eq("id", item.category_id)
-    .maybeSingle();
+      // Supabase's embedded-relation typing treats `categories` as an array
+      // (it can't prove the items→categories relationship is many-to-one
+      // from the select string alone, absent a generated database.types.ts),
+      // but PostgREST actually returns a single object at runtime here,
+      // since `category_id` is a single foreign key (confirmed directly
+      // against the REST API during implementation). Handle both shapes
+      // defensively rather than trusting either the type or an assumption.
+      const categoryRaw = item.categories as unknown as
+        | { id: string; name: string }
+        | { id: string; name: string }[]
+        | null;
+      const category = Array.isArray(categoryRaw) ? categoryRaw[0] : categoryRaw;
+      if (!category) return null;
 
-  if (categoryError) throw categoryError;
-  if (!category) return null;
-
-  return {
-    id: item.id,
-    name: item.name,
-    description: item.description,
-    price: Number(item.price),
-    photoUrl: item.photo_url,
-    isSoldOut: item.is_sold_out,
-    isBestSeller: item.is_best_seller,
-    categoryId: category.id,
-    categoryName: category.name,
-  };
+      return {
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        price: Number(item.price),
+        photoUrl: item.photo_url,
+        isSoldOut: item.is_sold_out,
+        isBestSeller: item.is_best_seller,
+        categoryId: category.id,
+        categoryName: category.name,
+      };
+    },
+    ["item-detail", businessId, itemId],
+    { tags: [menuCacheTag(slug)], revalidate: CACHE_REVALIDATE_SECONDS }
+  )();
 }
 
 export async function loadDisplayCategories(business: Business): Promise<{
@@ -154,7 +192,7 @@ export async function loadDisplayCategories(business: Business): Promise<{
   initialCategories: MenuCategory[];
   needsClientProbe: boolean;
 }> {
-  const sourceCategories = await getMenuData(business.id);
+  const sourceCategories = await getMenuData(business.id, business.slug);
 
   let initialLanguage: DisplayLanguage = "en";
   let initialCategories = sourceCategories;
@@ -165,7 +203,7 @@ export async function loadDisplayCategories(business: Business): Promise<{
     initialLanguage = resolved.language;
     needsClientProbe = resolved.needsClientProbe;
     if (!resolved.skipTranslation && initialLanguage !== business.sourceLanguage) {
-      const translations = await getTranslations(business.id, initialLanguage);
+      const translations = await getTranslations(business.id, initialLanguage, business.slug);
       initialCategories = applyTranslations(sourceCategories, translations);
     }
   }

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { sendActivationConfirmation } from "@/lib/email/send-activation-confirmation";
+import { invalidateMenuCache } from "@/lib/menu/cache";
 import type { PlanType, TicketStatus } from "./types";
 
 export type ActivateSubscriptionInput = {
@@ -58,6 +59,20 @@ export async function activateSubscription(
   // Safe no-op per FR-007: no email, no error.
   if (!data) {
     return { ok: true, alreadyActive: true, emailSent: false };
+  }
+
+  // Newly-activated business — invalidate its cached public menu (see
+  // specs/016-menu-data-caching FR-009) so the inactive-menu screen doesn't
+  // linger for up to 5s after activation. Cross-boundary note: this touches
+  // the admin actions file (Helper 2's territory per SRS §12.5) from a
+  // Helper-1-owned caching feature — flagged for review awareness.
+  const { data: activatedBusiness } = await supabase
+    .from("businesses")
+    .select("slug")
+    .eq("id", data.business_id)
+    .maybeSingle();
+  if (activatedBusiness) {
+    invalidateMenuCache(activatedBusiness.slug);
   }
 
   const emailResult = await sendActivationConfirmation({
