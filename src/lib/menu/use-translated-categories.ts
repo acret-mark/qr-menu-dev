@@ -22,6 +22,7 @@ export function useTranslatedCategories({
   const [categoriesByLanguage, setCategoriesByLanguage] = useState<
     Partial<Record<DisplayLanguage, MenuCategory[]>>
   >({ [initialLanguage]: initialCategories });
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const categories = categoriesByLanguage[currentLanguage] ?? sourceCategories;
 
@@ -42,6 +43,7 @@ export function useTranslatedCategories({
 
     if (categoriesByLanguage[language]) return;
 
+    setIsTranslating(true);
     try {
       const response = await fetch(`/menu/${slug}/translations?lang=${language}`);
       if (!response.ok) throw new Error("translation fetch failed");
@@ -54,10 +56,12 @@ export function useTranslatedCategories({
       // Language toggle is a convenience layer, not core content — fall back
       // to source-language content for this session rather than erroring.
       setCategoriesByLanguage((cache) => ({ ...cache, [language]: sourceCategories }));
+    } finally {
+      setIsTranslating(false);
     }
   }
 
-  return { currentLanguage, categories, handleLanguageChange };
+  return { currentLanguage, categories, handleLanguageChange, isTranslating };
 }
 
 function setLangCookie(language: DisplayLanguage) {

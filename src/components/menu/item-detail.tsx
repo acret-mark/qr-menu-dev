@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ImageOff, Star } from "lucide-react";
+import { cloudinaryLoader } from "@/lib/images/cloudinary";
 import { cn } from "@/lib/utils";
 import { LanguageSelector } from "./language-selector";
 import { LANG_COOKIE_NAME } from "@/lib/menu/types";
@@ -25,6 +27,7 @@ export function ItemDetail({
   const [descriptionsByLanguage, setDescriptionsByLanguage] = useState<
     Partial<Record<DisplayLanguage, string | null>>
   >({ [initialLanguage]: initialDescription });
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const description = descriptionsByLanguage[currentLanguage] ?? initialDescription;
 
@@ -41,6 +44,7 @@ export function ItemDetail({
 
     if (descriptionsByLanguage[language] !== undefined) return;
 
+    setIsTranslating(true);
     try {
       const response = await fetch(`/menu/${business.slug}/translations?lang=${language}`);
       if (!response.ok) throw new Error("translation fetch failed");
@@ -51,6 +55,8 @@ export function ItemDetail({
       }));
     } catch {
       setDescriptionsByLanguage((cache) => ({ ...cache, [language]: item.description }));
+    } finally {
+      setIsTranslating(false);
     }
   }
 
@@ -68,7 +74,11 @@ export function ItemDetail({
 
           {business.plan === "pro" && (
             <div className="absolute right-3.5 top-3.5 z-10">
-              <LanguageSelector current={currentLanguage} onChange={handleLanguageChange} />
+              <LanguageSelector
+                current={currentLanguage}
+                onChange={handleLanguageChange}
+                isTranslating={isTranslating}
+              />
             </div>
           )}
 
@@ -94,13 +104,20 @@ export function ItemDetail({
 
           <div
             className={cn(
-              "flex h-[280px] w-full items-center justify-center bg-gradient-to-br from-primary to-chart-2 text-primary-foreground/80",
+              "relative flex h-[280px] w-full items-center justify-center bg-gradient-to-br from-primary to-chart-2 text-primary-foreground/80",
               item.isSoldOut && "grayscale-[70%]"
             )}
           >
             {item.photoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={item.photoUrl} alt="" className="h-full w-full object-cover" />
+              <Image
+                loader={cloudinaryLoader}
+                src={item.photoUrl}
+                alt=""
+                fill
+                sizes="(min-width: 430px) 430px, 100vw"
+                priority
+                className="object-cover"
+              />
             ) : (
               <ImageOff size={64} strokeWidth={1.2} className="opacity-85" />
             )}

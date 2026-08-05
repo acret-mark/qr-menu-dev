@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { loginAdmin } from "@/lib/auth/admin";
 import { Button } from "@/components/ui/button";
@@ -119,7 +119,14 @@ export function AdminLoginForm() {
         </div>
       )}
 
-      <Button type="submit" size="lg" disabled={submitting} className="mt-2 h-11 w-full">
+      <Button
+        type="submit"
+        size="lg"
+        disabled={submitting}
+        aria-busy={submitting}
+        className="mt-2 h-11 w-full gap-2"
+      >
+        {submitting && <Loader2 size={16} className="animate-spin" aria-hidden />}
         {submitting ? "Signing in…" : "Sign In"}
       </Button>
 
