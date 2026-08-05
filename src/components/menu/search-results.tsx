@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronLeft, Search, SearchX } from "lucide-react";
 import { ItemCard } from "./item-card";
 import { LanguageSelector } from "./language-selector";
+import { OfflineIndicator } from "./offline-indicator";
 import { useTranslatedCategories } from "@/lib/menu/use-translated-categories";
 import { filterItems } from "@/lib/menu/search";
 import type { Business, MenuCategory, DisplayLanguage } from "@/lib/menu/types";
@@ -68,6 +69,7 @@ export function SearchResults({
 
   return (
     <>
+      <OfflineIndicator />
       <header className="flex items-center gap-3 border-b border-border bg-card p-4">
         <Link
           href={`/menu/${business.slug}`}
