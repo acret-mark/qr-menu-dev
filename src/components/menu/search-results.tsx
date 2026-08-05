@@ -6,6 +6,7 @@ import { ChevronLeft, Search, SearchX } from "lucide-react";
 import { ItemCard } from "./item-card";
 import { LanguageSelector } from "./language-selector";
 import { OfflineIndicator } from "./offline-indicator";
+import { TranslationUnavailableBanner } from "./translation-unavailable-banner";
 import { useTranslatedCategories } from "@/lib/menu/use-translated-categories";
 import { filterItems } from "@/lib/menu/search";
 import type { Business, MenuCategory, DisplayLanguage } from "@/lib/menu/types";
@@ -25,13 +26,14 @@ export function SearchResults({
   needsClientProbe: boolean;
   initialQuery: string;
 }) {
-  const { currentLanguage, categories, handleLanguageChange, isTranslating } = useTranslatedCategories({
-    slug: business.slug,
-    sourceCategories,
-    initialLanguage,
-    initialCategories,
-    needsClientProbe,
-  });
+  const { currentLanguage, categories, handleLanguageChange, isTranslating, translationUnavailable } =
+    useTranslatedCategories({
+      slug: business.slug,
+      sourceCategories,
+      initialLanguage,
+      initialCategories,
+      needsClientProbe,
+    });
 
   const [query, setQuery] = useState(initialQuery);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -70,6 +72,7 @@ export function SearchResults({
   return (
     <>
       <OfflineIndicator />
+      {translationUnavailable && <TranslationUnavailableBanner />}
       <header className="flex items-center gap-3 border-b border-border bg-card p-4">
         <Link
           href={`/menu/${business.slug}`}
