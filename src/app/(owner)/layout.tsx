@@ -7,7 +7,7 @@ import {
   getOwnerBusiness,
   isKnownBusinessStatus,
 } from "@/lib/auth/login";
-import { StatusBanner } from "@/components/dashboard/status-banner";
+import { OwnerShell } from "@/components/dashboard/owner-shell";
 
 export default async function OwnerLayout({
   children,
@@ -32,14 +32,5 @@ export default async function OwnerLayout({
     redirect(SUSPENDED_PATH);
   }
 
-  return (
-    <div className="min-h-dvh bg-background px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-3xl flex-col gap-4">
-        {(business.status === "pending" || business.status === "trial") && (
-          <StatusBanner status={business.status} />
-        )}
-        {children}
-      </div>
-    </div>
-  );
+  return <OwnerShell status={business.status}>{children}</OwnerShell>;
 }
