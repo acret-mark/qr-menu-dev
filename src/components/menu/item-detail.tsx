@@ -7,6 +7,7 @@ import { ChevronLeft, ImageOff, Star } from "lucide-react";
 import { cloudinaryLoader } from "@/lib/images/cloudinary";
 import { cn } from "@/lib/utils";
 import { LanguageSelector } from "./language-selector";
+import { OfflineIndicator } from "./offline-indicator";
 import { LANG_COOKIE_NAME } from "@/lib/menu/types";
 import type { Business, ItemDetail as ItemDetailData, DisplayLanguage } from "@/lib/menu/types";
 
@@ -62,6 +63,7 @@ export function ItemDetail({
 
   return (
     <>
+      <OfflineIndicator />
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <div className="relative">
           <Link

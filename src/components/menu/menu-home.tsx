@@ -8,6 +8,7 @@ import { cloudinaryLoader } from "@/lib/images/cloudinary";
 import { CategoryTabs } from "./category-tabs";
 import { ItemCard } from "./item-card";
 import { LanguageSelector } from "./language-selector";
+import { OfflineIndicator } from "./offline-indicator";
 import { useTranslatedCategories } from "@/lib/menu/use-translated-categories";
 import type { Business, MenuCategory, DisplayLanguage } from "@/lib/menu/types";
 
@@ -67,6 +68,7 @@ export function MenuHome({
 
   return (
     <>
+      <OfflineIndicator />
       <header className="flex items-center gap-3 border-b border-border bg-card p-4">
         <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary font-heading text-[1.1rem] font-bold text-primary-foreground">
           {business.logoUrl ? (
