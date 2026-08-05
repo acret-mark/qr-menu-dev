@@ -67,3 +67,12 @@
     @apply font-heading text-balance;
   }
 }
+
+/* Unlayered on purpose: CSS cascade layers rank Tailwind's utilities above
+ * @layer base regardless of source order, so a rule inside @layer base
+ * would still lose to a future text-sm/text-xs on an input. Keeping this
+ * outside any layer makes it win over utility classes, giving iOS Safari's
+ * 16px auto-zoom threshold a floor that can't be reintroduced per-page. */
+input, select, textarea {
+  font-size: max(16px, 1em);
+}
