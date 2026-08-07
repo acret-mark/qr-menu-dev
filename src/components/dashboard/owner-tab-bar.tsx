@@ -26,7 +26,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", icon: Home, enabled: true, href: "/dashboard", section: "/dashboard" },
   { label: "Menu", icon: UtensilsCrossed, enabled: true, href: "/menu", section: "/menu" },
   { label: "Categories", icon: Tag, enabled: true, href: "/categories", section: "/categories" },
-  { label: "QR", icon: QrCode, enabled: false },
+  { label: "QR", icon: QrCode, enabled: true, href: "/qr", section: "/qr" },
 ];
 
 export function OwnerTabBar() {
