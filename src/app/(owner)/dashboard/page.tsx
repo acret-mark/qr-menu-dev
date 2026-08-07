@@ -48,7 +48,7 @@ export default async function DashboardPage() {
 
       <MaybeLink
         href="/qr"
-        enabled={false}
+        enabled={true}
         className="flex h-11 items-center justify-center rounded-lg border border-border bg-card text-sm font-medium"
       >
         Download QR
