@@ -60,7 +60,7 @@ export function MenuItemRow({
         />
       </div>
       <MaybeLink
-        href={`/menu/${item.id}/edit`}
+        href={`/dashboard/menu/${item.id}/edit`}
         enabled={true}
         className="flex size-9 shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
       >
