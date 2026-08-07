@@ -1,0 +1,113 @@
+// Server-only — the sole file allowed to reference the AI description-generation
+// credentials, mirroring src/lib/deepl/client.ts and src/lib/cloudinary/client.ts's
+// one-file-per-secret discipline (research.md §1).
+
+const GEMINI_MODEL = "gemini-2.0-flash";
+const CLAUDE_MODEL = "claude-3-5-haiku-20241022";
+
+export type GenerateDescriptionResult = { ok: true; text: string } | { ok: false };
+
+function buildPrompt(name: string, keywords?: string): string {
+  const keywordHint = keywords?.trim()
+    ? ` Incorporate these details where relevant: ${keywords.trim()}.`
+    : "";
+  return (
+    `Write a short, appetizing menu description (1-2 sentences, no quotation marks) for a dish or ` +
+    `drink called "${name}".${keywordHint} Keep it concise and suitable for a restaurant menu.`
+  );
+}
+
+async function generateWithGemini(prompt: string): Promise<GenerateDescriptionResult> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return { ok: false };
+  }
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`generateWithGemini: responded ${response.status}`);
+      return { ok: false };
+    }
+
+    const data = (await response.json()) as {
+      candidates?: { content?: { parts?: { text?: string }[] } }[];
+    };
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (!text) {
+      console.error("generateWithGemini: no text in response");
+      return { ok: false };
+    }
+
+    return { ok: true, text };
+  } catch (error) {
+    console.error("generateWithGemini: request failed", error);
+    return { ok: false };
+  }
+}
+
+async function generateWithClaude(prompt: string): Promise<GenerateDescriptionResult> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return { ok: false };
+  }
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 200,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`generateWithClaude: responded ${response.status}`);
+      return { ok: false };
+    }
+
+    const data = (await response.json()) as { content?: { text?: string }[] };
+    const text = data.content?.[0]?.text?.trim();
+    if (!text) {
+      console.error("generateWithClaude: no text in response");
+      return { ok: false };
+    }
+
+    return { ok: true, text };
+  } catch (error) {
+    console.error("generateWithClaude: request failed", error);
+    return { ok: false };
+  }
+}
+
+/**
+ * Tries the primary provider (Gemini Flash) first; on any failure, retries once
+ * against a secondary paid fallback (Claude Haiku). Never throws (research.md §1).
+ */
+export async function generateDescription(
+  name: string,
+  keywords?: string
+): Promise<GenerateDescriptionResult> {
+  const prompt = buildPrompt(name, keywords);
+
+  const primary = await generateWithGemini(prompt);
+  if (primary.ok) {
+    return primary;
+  }
+
+  return generateWithClaude(prompt);
+}

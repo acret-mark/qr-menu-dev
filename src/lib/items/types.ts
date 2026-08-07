@@ -11,4 +11,29 @@ export interface OwnerMenuItem {
   price: number;
   isSoldOut: boolean;
   isBestSeller: boolean;
+  hasStaleTranslation: boolean;
+}
+
+export interface CategoryOption {
+  id: string;
+  name: string;
+}
+
+export interface ItemFormItem {
+  id: string;
+  name: string;
+  categoryId: string;
+  price: number;
+  description: string;
+  photoUrl: string | null;
+  isDisplayed: boolean;
+  isSoldOut: boolean;
+  isBestSeller: boolean;
+  descriptionSource: "ai_generated" | "manual" | null;
+  aiKeywords: string[] | null;
+}
+
+export interface ItemFormData {
+  categories: CategoryOption[];
+  item: ItemFormItem | null;
 }
