@@ -28,7 +28,7 @@ export default async function DashboardPage() {
         </MaybeLink>
         <MaybeLink
           href="/menu"
-          enabled={false}
+          enabled={true}
           className="rounded-lg border border-border bg-card p-4 text-center"
         >
           <div className="font-heading text-2xl font-semibold">{itemCount}</div>
