@@ -55,7 +55,12 @@ export default async function ConfirmPage({
             : null;
 
         const creation = businessName
-          ? await createBusinessForOwner(supabase, verifiedUser.id, businessName)
+          ? await createBusinessForOwner(
+              supabase,
+              verifiedUser.id,
+              businessName,
+              verifiedUser.email ?? ""
+            )
           : { ok: false as const, message: "Missing business name." };
 
         if (!creation.ok) {
