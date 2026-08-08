@@ -1,0 +1,81 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+
+const TABS = [
+  { key: "profile", label: "Profile", title: "Business Profile" },
+  { key: "subscription", label: "Subscription", title: "Subscription" },
+  { key: "support", label: "Support", title: "Support" },
+] as const;
+
+type TabKey = (typeof TABS)[number]["key"];
+
+function isTabKey(value: string): value is TabKey {
+  return TABS.some((tab) => tab.key === value);
+}
+
+export function AccountTabs({
+  profilePanel,
+  subscriptionPanel,
+  supportPanel,
+}: {
+  profilePanel: React.ReactNode;
+  subscriptionPanel: React.ReactNode;
+  supportPanel: React.ReactNode;
+}) {
+  // Deep-linkable via URL hash (#profile / #subscription / #support), same as
+  // the design reference, so other screens can link straight to a tab.
+  const [activeTab, setActiveTab] = useState<TabKey>(() => {
+    if (typeof window === "undefined") return "profile";
+    const hash = window.location.hash.slice(1);
+    return isTabKey(hash) ? hash : "profile";
+  });
+
+  function selectTab(tab: TabKey) {
+    setActiveTab(tab);
+    window.history.replaceState(null, "", `#${tab}`);
+  }
+
+  const activeTitle = TABS.find((tab) => tab.key === activeTab)!.title;
+
+  return (
+    <div className="flex flex-col gap-0 overflow-hidden rounded-lg border border-border bg-card">
+      <div className="flex items-center gap-3 border-b border-border p-6 pb-4">
+        <Link href="/dashboard" aria-label="Back to dashboard" className="text-muted-foreground">
+          ←
+        </Link>
+        <h1 className="font-heading text-xl font-semibold">{activeTitle}</h1>
+      </div>
+
+      <nav className="flex border-b border-border px-4">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => selectTab(tab.key)}
+            className={cn(
+              "flex-1 border-b-2 py-3.5 text-center text-sm font-medium",
+              tab.key === activeTab
+                ? "border-primary font-semibold text-foreground"
+                : "border-transparent text-muted-foreground"
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
+
+      <div className="p-6" hidden={activeTab !== "profile"}>
+        {profilePanel}
+      </div>
+      <div className="py-6" hidden={activeTab !== "subscription"}>
+        {subscriptionPanel}
+      </div>
+      <div className="py-6" hidden={activeTab !== "support"}>
+        {supportPanel}
+      </div>
+    </div>
+  );
+}

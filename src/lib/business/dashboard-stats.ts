@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type DashboardStats = {
+  name: string;
+  logoUrl: string | null;
   plan: "standard" | "pro";
   status: "pending" | "trial" | "active" | "suspended";
   categoryCount: number;
@@ -13,7 +15,7 @@ export async function getDashboardStats(
 ): Promise<DashboardStats | null> {
   const { data: business, error } = await supabase
     .from("businesses")
-    .select("id, plan, status")
+    .select("id, name, logo_url, plan, status")
     .eq("owner_id", ownerId)
     .maybeSingle();
 
@@ -33,6 +35,8 @@ export async function getDashboardStats(
   ]);
 
   return {
+    name: business.name,
+    logoUrl: business.logo_url,
     plan: business.plan,
     status: business.status,
     categoryCount: categoryCount ?? 0,
