@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { randomSlug, slugify } from "./slug";
+import { sendWelcomeEmail } from "@/lib/email/send-welcome-email";
 
 const MAX_SLUG_ATTEMPTS = 25;
 
@@ -24,7 +25,8 @@ export const BUSINESS_SETUP_FAILED_MESSAGE =
 export async function createBusinessForOwner(
   supabase: SupabaseClient,
   ownerId: string,
-  businessName: string
+  businessName: string,
+  ownerEmail: string
 ): Promise<CreateBusinessResult> {
   const baseSlug = slugify(businessName) || randomSlug();
   let candidate = baseSlug;
@@ -39,7 +41,14 @@ export async function createBusinessForOwner(
       plan: "standard",
     });
 
-    if (!insertError) return { ok: true };
+    if (!insertError) {
+      // Fire-and-forget from the caller's perspective: a welcome-email send
+      // failure must never turn a successful business creation into a
+      // failure result (FR-002). Awaited here only so the send is attempted
+      // before this function returns, not so its outcome can block anything.
+      await sendWelcomeEmail({ toEmail: ownerEmail, businessName });
+      return { ok: true };
+    }
 
     if (insertError.code === "23505") {
       suffix += 1;
@@ -101,7 +110,7 @@ export async function registerOwner(
     return { ok: true };
   }
 
-  const result = await createBusinessForOwner(supabase, ownerId, businessName);
+  const result = await createBusinessForOwner(supabase, ownerId, businessName, email);
   if (!result.ok) {
     return { ok: false, stage: "business", message: result.message };
   }

@@ -53,9 +53,15 @@ for (const file of codeFiles) {
 
 // 2. Secret keys must never appear outside server-only wiring, each confined
 //    to one dedicated file per service (mirrors src/lib/supabase/server.ts).
+// service.ts is a second, deliberate Supabase entry: server.ts is the
+// cookie-bound SSR client for authenticated requests, while service.ts is
+// the service-role client for code with no user session at all (currently
+// only the payment-reminder cron route) — distinct enough to warrant its
+// own confined file rather than overloading server.ts's contract.
 const SECRET_PATTERNS = [/SUPABASE_SECRET_KEY/, /service_role/i, /CLOUDINARY_API_SECRET/];
 const ALLOWED_SECRET_FILES = new Set([
   join(SRC, "lib", "supabase", "server.ts"),
+  join(SRC, "lib", "supabase", "service.ts"),
   join(SRC, "lib", "cloudinary", "client.ts"),
 ]);
 for (const file of codeFiles) {
