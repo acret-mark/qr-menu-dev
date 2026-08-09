@@ -19,7 +19,7 @@ export type RegisterOwnerInput = {
 };
 
 export type RegisterOwnerResult =
-  | { ok: true }
+  | { ok: true; sessionCreated: boolean }
   | { ok: false; stage: "duplicate-email" | "auth" | "business"; message: string };
 
 export type CreateBusinessResult = { ok: true } | { ok: false; message: string };
@@ -142,7 +142,7 @@ export async function registerOwner(
   // yet for the "owners can insert own business" RLS policy to match against.
   // /auth/confirm creates the business row once the owner is actually signed in.
   if (!signUpData.session) {
-    return { ok: true };
+    return { ok: true, sessionCreated: false };
   }
 
   const result = await createBusinessForOwner(supabase, ownerId, businessName, email);
@@ -150,5 +150,5 @@ export async function registerOwner(
     return { ok: false, stage: "business", message: result.message };
   }
 
-  return { ok: true };
+  return { ok: true, sessionCreated: true };
 }
