@@ -86,7 +86,12 @@ export function RegisterForm() {
         return;
       }
 
-      router.push(`/confirm-email?email=${encodeURIComponent(email.trim())}`);
+      if (result.sessionCreated) {
+        router.push("/business-profile");
+        router.refresh();
+      } else {
+        router.push(`/confirm-email?email=${encodeURIComponent(email.trim())}`);
+      }
     } finally {
       setSubmitting(false);
     }
