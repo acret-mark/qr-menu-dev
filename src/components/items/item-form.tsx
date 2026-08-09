@@ -81,7 +81,6 @@ export function ItemForm({
     }
 
     router.push("/menu");
-    router.refresh();
   }
 
   return (
