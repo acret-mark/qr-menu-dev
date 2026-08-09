@@ -46,6 +46,8 @@ export function LogoUploader({
         return;
       }
       setLogoUrl(result.logoUrl);
+    } catch {
+      setError("The upload failed. Please try again.");
     } finally {
       setUploading(false);
       onUploadEnd();

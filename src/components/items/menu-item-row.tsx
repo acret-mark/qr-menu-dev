@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { Image as ImageIcon, Pencil, Star, TriangleAlert } from "lucide-react";
 import { MaybeLink } from "@/components/dashboard/maybe-link";
 import { Switch } from "@/components/ui/switch";
+import { cloudinaryLoader } from "@/lib/images/cloudinary";
 import type { OwnerMenuItem } from "@/lib/items/types";
 
 export function MenuItemRow({
@@ -16,8 +18,19 @@ export function MenuItemRow({
 }) {
   return (
     <li className="flex items-center gap-3 px-4 py-3">
-      <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-        <ImageIcon size={20} />
+      <div className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-muted-foreground">
+        {item.photoUrl ? (
+          <Image
+            loader={cloudinaryLoader}
+            src={item.photoUrl}
+            alt=""
+            fill
+            sizes="44px"
+            className="object-cover"
+          />
+        ) : (
+          <ImageIcon size={20} />
+        )}
       </div>
       <div className="min-w-0 flex-1">
         <p className="flex items-center gap-1.5 truncate text-base font-medium">
