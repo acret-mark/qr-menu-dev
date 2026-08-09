@@ -1,6 +1,14 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { randomSlug, slugify } from "./slug";
-import { sendWelcomeEmail } from "@/lib/email/send-welcome-email";
+
+// NOT a static top-level import of "@/lib/email/send-welcome-email" — that
+// file (and the google-smtp-client.ts it calls through) transitively pulls
+// in `nodemailer`, which requires Node built-ins (child_process, net, tls,
+// dns) that don't exist in a browser bundle. This file is reachable from
+// register-form.tsx ("use client"), so a static import here breaks the
+// production build outright (not just a silent runtime no-op, the way the
+// Resend SDK's fetch-based client tolerated being bundled-but-unused).
+// See triggerWelcomeEmail() below.
 
 const MAX_SLUG_ATTEMPTS = 25;
 
@@ -18,6 +26,37 @@ export type CreateBusinessResult = { ok: true } | { ok: false; message: string }
 
 export const BUSINESS_SETUP_FAILED_MESSAGE =
   "Your account was created, but we couldn't finish setting up your business. Please contact support.";
+
+// Fire-and-forget from the caller's perspective: a welcome-email send
+// failure must never turn a successful business creation into a failure
+// result (FR-002). Awaited here only so the send is attempted before
+// createBusinessForOwner() returns, not so its outcome can block anything.
+//
+// Server-side (typeof window === "undefined"): dynamically imports
+// send-welcome-email.ts and calls it directly — safe here, since this
+// branch only ever executes in a Node/server runtime (Server Component,
+// Server Action, Route Handler), never in the browser.
+// Client-side: this function runs inside the browser bundle, so it can
+// never import send-welcome-email.ts (see the note at the top of this
+// file) — it POSTs to the internal route instead, which runs the actual
+// send in a real server context.
+async function triggerWelcomeEmail(toEmail: string, businessName: string): Promise<void> {
+  if (typeof window === "undefined") {
+    const { sendWelcomeEmail } = await import("@/lib/email/send-welcome-email");
+    await sendWelcomeEmail({ toEmail, businessName });
+    return;
+  }
+
+  try {
+    await fetch("/api/internal/welcome-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ toEmail, businessName }),
+    });
+  } catch (err) {
+    console.error("Failed to trigger welcome email via internal route", err);
+  }
+}
 
 // Shared by registerOwner (used when signUp returns a session immediately,
 // i.e. email confirmation is off) and /auth/confirm (used when it doesn't,
@@ -42,11 +81,7 @@ export async function createBusinessForOwner(
     });
 
     if (!insertError) {
-      // Fire-and-forget from the caller's perspective: a welcome-email send
-      // failure must never turn a successful business creation into a
-      // failure result (FR-002). Awaited here only so the send is attempted
-      // before this function returns, not so its outcome can block anything.
-      await sendWelcomeEmail({ toEmail: ownerEmail, businessName });
+      await triggerWelcomeEmail(ownerEmail, businessName);
       return { ok: true };
     }
 
