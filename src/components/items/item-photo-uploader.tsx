@@ -49,6 +49,8 @@ export function ItemPhotoUploader({
       }
       setPhotoUrl(result.photoUrl);
       onPhotoChange(result.photoUrl);
+    } catch {
+      setError("The upload failed. Please try again.");
     } finally {
       setUploading(false);
       onUploadEnd();
