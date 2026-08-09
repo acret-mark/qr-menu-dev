@@ -32,7 +32,7 @@ export async function getMenuForOwner(
       .order("sort_order", { ascending: true }),
     supabase
       .from("items")
-      .select("id, category_id, name, price, description, is_sold_out, is_best_seller")
+      .select("id, category_id, name, price, description, photo_url, is_sold_out, is_best_seller")
       .eq("business_id", business.id)
       .order("sort_order", { ascending: true }),
   ]);
@@ -79,6 +79,7 @@ export async function getMenuForOwner(
       categoryId: row.category_id,
       name: row.name,
       price: Number(row.price),
+      photoUrl: row.photo_url,
       isSoldOut: row.is_sold_out,
       isBestSeller: row.is_best_seller,
       hasStaleTranslation,

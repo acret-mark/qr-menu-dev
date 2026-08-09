@@ -9,6 +9,7 @@ export interface OwnerMenuItem {
   categoryId: string;
   name: string;
   price: number;
+  photoUrl: string | null;
   isSoldOut: boolean;
   isBestSeller: boolean;
   hasStaleTranslation: boolean;
