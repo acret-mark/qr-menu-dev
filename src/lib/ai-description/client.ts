@@ -3,7 +3,7 @@
 // one-file-per-secret discipline (research.md §1).
 
 const GEMINI_MODEL = "gemini-2.0-flash";
-const CLAUDE_MODEL = "claude-3-5-haiku-20241022";
+const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
 
 export type GenerateDescriptionResult = { ok: true; text: string } | { ok: false };
 
@@ -13,7 +13,9 @@ function buildPrompt(name: string, keywords?: string): string {
     : "";
   return (
     `Write a short, appetizing menu description (1-2 sentences, no quotation marks) for a dish or ` +
-    `drink called "${name}".${keywordHint} Keep it concise and suitable for a restaurant menu.`
+    `drink called "${name}".${keywordHint} Keep it concise and suitable for a restaurant menu. ` +
+    `Output only the description sentences as plain text — no title, heading, markdown formatting, ` +
+    `or restating the dish name as a heading.`
   );
 }
 
