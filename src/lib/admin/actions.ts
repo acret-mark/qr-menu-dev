@@ -22,7 +22,9 @@ export type ActivateSubscriptionResult =
  * Server Action, not a browser-client call — deliberately deviating from
  * registerOwner()'s client-component + browser-client convention (see
  * research.md §2). That precedent has no server-only secret in its path;
- * this one does (RESEND_API_KEY), which must never reach client code, so
+ * this one does (GMAIL_SMTP_APP_PASSWORD, since 2026-08-09's Resend → Google
+ * SMTP migration — specs/024-email-notifications FR-012), which must never
+ * reach client code, so
  * the mutation + email send both have to run server-side in one place.
  *
  * Calls the security-definer activate_subscription() RPC added in

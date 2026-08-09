@@ -9,7 +9,7 @@ const DEFAULT_THRESHOLD_DAYS = 3;
 /**
  * First API route in this repo. Invoked on a schedule by Vercel Cron
  * (vercel.json) — never rendered, never reachable as a page. Verifies
- * CRON_SECRET before touching the database or Resend, since an
+ * CRON_SECRET before touching the database or the email provider, since an
  * unauthenticated public GET here would otherwise be a way to trigger
  * arbitrary email sends against every pending subscription.
  */

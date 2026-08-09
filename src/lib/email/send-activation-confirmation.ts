@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+import { sendMail } from "./google-smtp-client";
 import { formatAdminDate } from "@/lib/admin/format";
 import type { PlanType } from "@/lib/admin/types";
 
@@ -17,12 +17,17 @@ export type SendActivationConfirmationInput = {
 
 export type SendActivationConfirmationResult = { ok: true } | { ok: false; reason: string };
 
-let resendClient: Resend | null = null;
-
 /**
  * First email-sending code in this repo (no prior email-provider usage to follow).
  * Server-only by construction — never import this from a "use client" file,
- * since RESEND_API_KEY must never reach the browser bundle.
+ * since GMAIL_SMTP_APP_PASSWORD must never reach the browser bundle.
+ *
+ * Migrated 2026-08-09 (specs/024-email-notifications FR-012) from Resend to
+ * the shared Google SMTP send-helper (google-smtp-client.ts) — signature,
+ * recipient logic (businesses.contact_email, nullable), and the caller
+ * (activateSubscription() in src/lib/admin/actions.ts) are unchanged; only
+ * this file's internals move. See
+ * specs/024-email-notifications/contracts/activation-confirmation-contract.md.
  */
 export async function sendActivationConfirmation({
   toEmail,
@@ -38,40 +43,15 @@ export async function sendActivationConfirmation({
     return { ok: false, reason: "no-contact-email" };
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM_EMAIL;
-
-  if (!apiKey || !fromEmail) {
-    console.error(
-      "Activation-confirmation email not sent: RESEND_API_KEY/RESEND_FROM_EMAIL is not configured"
-    );
-    return { ok: false, reason: "not-configured" };
-  }
-
-  if (!resendClient) {
-    resendClient = new Resend(apiKey);
-  }
-
-  try {
-    const { error } = await resendClient.emails.send({
-      to: toEmail,
-      from: fromEmail,
-      subject: `Your ${businessName} subscription is now active`,
-      text: [
-        `Good news — your ${PLAN_LABELS[plan]} subscription for ${businessName} has been activated.`,
-        "",
-        `Billing period: ${formatAdminDate(startsAt)} to ${formatAdminDate(expiresAt)}`,
-        "",
-        "Your menu is now live. Thanks for choosing Hapag.",
-      ].join("\n"),
-    });
-    if (error) {
-      console.error("Failed to send activation-confirmation email", error);
-      return { ok: false, reason: "send-failed" };
-    }
-    return { ok: true };
-  } catch (err) {
-    console.error("Failed to send activation-confirmation email", err);
-    return { ok: false, reason: "send-failed" };
-  }
+  return sendMail({
+    to: toEmail,
+    subject: `Your ${businessName} subscription is now active`,
+    text: [
+      `Good news — your ${PLAN_LABELS[plan]} subscription for ${businessName} has been activated.`,
+      "",
+      `Billing period: ${formatAdminDate(startsAt)} to ${formatAdminDate(expiresAt)}`,
+      "",
+      "Your menu is now live. Thanks for choosing Hapag.",
+    ].join("\n"),
+  });
 }
