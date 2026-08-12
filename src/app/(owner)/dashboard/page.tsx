@@ -1,7 +1,17 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { getDashboardStats } from "@/lib/business/dashboard-stats";
 import { MaybeLink } from "@/components/dashboard/maybe-link";
+
+function getManilaHour(date: Date): number {
+  return Number(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Manila",
+      hour: "numeric",
+      hourCycle: "h23",
+    }).format(date)
+  );
+}
 
 function getGreeting(hour: number): string {
   if (hour < 12) return "Good morning";
@@ -10,10 +20,7 @@ function getGreeting(hour: number): string {
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.
@@ -45,7 +52,7 @@ export default async function DashboardPage() {
 
       {stats && (
         <p className="text-base">
-          {getGreeting(new Date().getHours())}, {stats.name}
+          {getGreeting(getManilaHour(new Date()))}, {stats.name}
         </p>
       )}
 

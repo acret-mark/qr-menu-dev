@@ -88,7 +88,14 @@ export function MenuHome({
             initials(business.name)
           )}
         </div>
-        <h1 className="min-w-0 flex-1 truncate text-[1.15rem] leading-tight">{business.name}</h1>
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-[1.15rem] leading-tight">{business.name}</h1>
+          {business.address && (
+            <p className="truncate text-[0.78rem] leading-tight text-muted-foreground">
+              {business.address}
+            </p>
+          )}
+        </div>
         {business.plan === "pro" && (
           <LanguageSelector
             current={currentLanguage}

@@ -23,6 +23,7 @@ export interface Business {
   name: string;
   slug: string;
   logoUrl: string | null;
+  address: string | null;
   plan: PlanType;
   sourceLanguage: SourceLanguage;
 }

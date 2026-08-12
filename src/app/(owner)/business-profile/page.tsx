@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { getBusinessProfile } from "@/lib/business/profile";
 import { BusinessProfilePanel } from "@/components/business/business-profile-panel";
 import { AccountTabs } from "@/components/business/account-tabs";
@@ -6,10 +6,7 @@ import { SubscriptionPanel } from "@/components/subscription/subscription-panel"
 import { SupportPanel } from "@/components/support/support-panel";
 
 export default async function BusinessProfilePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.
