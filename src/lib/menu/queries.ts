@@ -13,7 +13,7 @@ export async function getBusinessBySlug(slug: string): Promise<Business | null> 
       const supabase = createPublicClient();
       const { data, error } = await supabase
         .from("businesses")
-        .select("id, name, slug, logo_url, plan, source_language")
+        .select("id, name, slug, logo_url, address, plan, source_language")
         .eq("slug", slug)
         .maybeSingle();
 
@@ -25,6 +25,7 @@ export async function getBusinessBySlug(slug: string): Promise<Business | null> 
         name: data.name,
         slug: data.slug,
         logoUrl: data.logo_url,
+        address: data.address,
         plan: data.plan,
         sourceLanguage: data.source_language,
       };
