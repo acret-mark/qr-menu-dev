@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import {
   ERROR_PATH,
   LOGIN_PATH,
@@ -14,9 +14,7 @@ export default async function OwnerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { supabase, user } = await getCurrentUser();
 
   if (!user) {
     redirect(LOGIN_PATH);

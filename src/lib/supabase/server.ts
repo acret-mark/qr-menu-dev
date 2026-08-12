@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
@@ -26,3 +27,12 @@ export async function createClient() {
     }
   );
 }
+
+// Memoized per-request (React.cache) so the (owner) layout and the page it
+// renders don't each pay for a separate Supabase Auth round trip for the
+// same request.
+export const getCurrentUser = cache(async () => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  return { supabase, user: data.user };
+});

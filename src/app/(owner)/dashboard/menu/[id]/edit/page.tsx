@@ -1,13 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { getItemFormData } from "@/lib/items/queries";
 import { ItemForm } from "@/components/items/item-form";
 
 export default async function EditItemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.

@@ -1,13 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { getMenuForOwner } from "@/lib/items/queries";
 import { MenuItemList } from "@/components/items/menu-item-list";
 import { AddItemFab } from "@/components/items/add-item-fab";
 
 export default async function MenuPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.

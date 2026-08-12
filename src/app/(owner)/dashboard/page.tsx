@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { getDashboardStats } from "@/lib/business/dashboard-stats";
 import { MaybeLink } from "@/components/dashboard/maybe-link";
 
@@ -10,10 +10,7 @@ function getGreeting(hour: number): string {
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.

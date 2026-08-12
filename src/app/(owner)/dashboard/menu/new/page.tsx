@@ -1,13 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { getItemFormData } from "@/lib/items/queries";
 import { ItemForm } from "@/components/items/item-form";
 import { MaybeLink } from "@/components/dashboard/maybe-link";
 
 export default async function NewItemPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.

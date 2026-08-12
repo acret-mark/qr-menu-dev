@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { getSupportTicketForOwner } from "@/lib/support/queries";
 import { TicketOpenView } from "@/components/support/ticket-open-view";
 import { TicketResolvedView } from "@/components/support/ticket-resolved-view";
@@ -9,10 +9,7 @@ export default async function SupportTicketPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getCurrentUser();
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.
