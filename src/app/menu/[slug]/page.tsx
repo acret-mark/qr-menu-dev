@@ -7,10 +7,10 @@ export default async function MenuPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ cat?: string }>;
+  searchParams: Promise<{ cat?: string; q?: string; item?: string }>;
 }) {
   const { slug } = await params;
-  const { cat } = await searchParams;
+  const { cat, q, item } = await searchParams;
   const business = await getBusinessBySlug(slug);
 
   if (!business) {
@@ -29,6 +29,8 @@ export default async function MenuPage({
         initialCategories={initialCategories}
         needsClientProbe={needsClientProbe}
         initialActiveCategoryId={cat}
+        initialQuery={q}
+        initialItemId={item}
       />
     </div>
   );

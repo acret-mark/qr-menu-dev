@@ -3,7 +3,7 @@ import { createPublicClient } from "@/lib/supabase/public";
 import { menuCacheTag } from "./cache";
 import { getInitialDisplayLanguage } from "./language";
 import { applyTranslations } from "./translations";
-import type { Business, ItemDetail, MenuCategory, MenuItem, Translations, DisplayLanguage } from "./types";
+import type { Business, MenuCategory, MenuItem, Translations, DisplayLanguage } from "./types";
 
 const CACHE_REVALIDATE_SECONDS = 5;
 
@@ -128,61 +128,6 @@ export async function getTranslations(
       return { categoryNames, itemDescriptions };
     },
     ["menu-translations", businessId, language],
-    { tags: [menuCacheTag(slug)], revalidate: CACHE_REVALIDATE_SECONDS }
-  )();
-}
-
-export async function getItemDetail(
-  businessId: string,
-  itemId: string,
-  slug: string
-): Promise<ItemDetail | null> {
-  return unstable_cache(
-    async () => {
-      const supabase = createPublicClient();
-
-      // Single round trip via an embedded relation select, instead of a
-      // separate dependent `categories` fetch (see research.md Decision 5).
-      const { data: item, error: itemError } = await supabase
-        .from("items")
-        .select(
-          "id, name, description, price, photo_url, is_sold_out, is_best_seller, categories(id, name)"
-        )
-        .eq("business_id", businessId)
-        .eq("id", itemId)
-        .eq("is_displayed", true)
-        .maybeSingle();
-
-      if (itemError) throw itemError;
-      if (!item) return null;
-
-      // Supabase's embedded-relation typing treats `categories` as an array
-      // (it can't prove the items→categories relationship is many-to-one
-      // from the select string alone, absent a generated database.types.ts),
-      // but PostgREST actually returns a single object at runtime here,
-      // since `category_id` is a single foreign key (confirmed directly
-      // against the REST API during implementation). Handle both shapes
-      // defensively rather than trusting either the type or an assumption.
-      const categoryRaw = item.categories as unknown as
-        | { id: string; name: string }
-        | { id: string; name: string }[]
-        | null;
-      const category = Array.isArray(categoryRaw) ? categoryRaw[0] : categoryRaw;
-      if (!category) return null;
-
-      return {
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        price: Number(item.price),
-        photoUrl: item.photo_url,
-        isSoldOut: item.is_sold_out,
-        isBestSeller: item.is_best_seller,
-        categoryId: category.id,
-        categoryName: category.name,
-      };
-    },
-    ["item-detail", businessId, itemId],
     { tags: [menuCacheTag(slug)], revalidate: CACHE_REVALIDATE_SECONDS }
   )();
 }
