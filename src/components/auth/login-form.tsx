@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
@@ -33,10 +33,11 @@ export function LoginForm() {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isNavigating, startTransition] = useTransition();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (submitting) return;
+    if (submitting || isNavigating) return;
     setFormError(null);
 
     const errors = validate({ email, password });
@@ -44,23 +45,27 @@ export function LoginForm() {
     if (Object.keys(errors).length > 0) return;
 
     setSubmitting(true);
-    try {
-      const supabase = createClient();
-      const result = await loginOwner(supabase, {
-        email: email.trim(),
-        password,
-      });
+    const supabase = createClient();
+    const result = await loginOwner(supabase, {
+      email: email.trim(),
+      password,
+    });
 
-      if (!result.ok) {
-        setFormError(result.message);
-        return;
-      }
+    if (!result.ok) {
+      setSubmitting(false);
+      setFormError(result.message);
+      return;
+    }
 
+    // Wrapped in startTransition (rather than reset in a finally block) so
+    // isNavigating — and the button's disabled/"Signing in…" state — stays
+    // true through the actual route swap into the dashboard, not just the
+    // auth request. Otherwise the button flashes back to idle the instant
+    // loginOwner resolves, while the page underneath is still swapping.
+    startTransition(() => {
       router.push(DASHBOARD_PATH);
       router.refresh();
-    } finally {
-      setSubmitting(false);
-    }
+    });
   }
 
   return (
@@ -125,8 +130,13 @@ export function LoginForm() {
         </div>
       )}
 
-      <Button type="submit" size="lg" disabled={submitting} className="mt-2 h-11 w-full">
-        {submitting ? "Signing in…" : "Log In"}
+      <Button
+        type="submit"
+        size="lg"
+        disabled={submitting || isNavigating}
+        className="mt-2 h-11 w-full"
+      >
+        {submitting || isNavigating ? "Signing in…" : "Log In"}
       </Button>
     </form>
   );
