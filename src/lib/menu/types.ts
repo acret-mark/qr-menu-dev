@@ -44,11 +44,6 @@ export interface MenuCategory {
   items: MenuItem[];
 }
 
-export interface ItemDetail extends MenuItem {
-  categoryId: string;
-  categoryName: string;
-}
-
 export interface Translations {
   categoryNames: Record<string, string>;
   itemDescriptions: Record<string, string>;

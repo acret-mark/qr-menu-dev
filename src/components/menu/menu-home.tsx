@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, SearchX } from "lucide-react";
 import { cloudinaryLoader } from "@/lib/images/cloudinary";
 import { CategoryTabs } from "./category-tabs";
 import { ItemCard } from "./item-card";
@@ -11,6 +10,8 @@ import { LanguageSelector } from "./language-selector";
 import { OfflineIndicator } from "./offline-indicator";
 import { TranslationUnavailableBanner } from "./translation-unavailable-banner";
 import { useTranslatedCategories } from "@/lib/menu/use-translated-categories";
+import { useMenuUrlState } from "@/lib/menu/use-menu-url-state";
+import { filterItems } from "@/lib/menu/search";
 import type { Business, MenuCategory, DisplayLanguage } from "@/lib/menu/types";
 
 export function MenuHome({
@@ -20,6 +21,8 @@ export function MenuHome({
   initialCategories,
   needsClientProbe,
   initialActiveCategoryId,
+  initialQuery,
+  initialItemId,
 }: {
   business: Business;
   sourceCategories: MenuCategory[];
@@ -27,6 +30,8 @@ export function MenuHome({
   initialCategories: MenuCategory[];
   needsClientProbe: boolean;
   initialActiveCategoryId?: string;
+  initialQuery?: string;
+  initialItemId?: string;
 }) {
   const { currentLanguage, categories, handleLanguageChange, isTranslating, translationUnavailable } =
     useTranslatedCategories({
@@ -37,36 +42,16 @@ export function MenuHome({
       needsClientProbe,
     });
 
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(
-    sourceCategories.some((category) => category.id === initialActiveCategoryId)
-      ? initialActiveCategoryId!
-      : sourceCategories[0]?.id ?? null
-  );
+  const { activeCategoryId, query, expandedItemId, selectCategory, setQuery, toggleItem } =
+    useMenuUrlState({
+      sourceCategories,
+      initialCategoryId: initialActiveCategoryId,
+      initialQuery,
+      initialItemId,
+    });
 
-  // Next's client Router Cache can restore a stale cached render (the
-  // original pre-tap props) on a native back/forward gesture, since our
-  // history.replaceState below updates the address bar without Next's
-  // router ever learning about it. window.location is always accurate
-  // even when the restored props aren't, so re-sync from it on mount and
-  // on every popstate rather than trusting initialActiveCategoryId alone.
-  useEffect(() => {
-    function syncActiveCategoryFromUrl() {
-      const catFromUrl = new URLSearchParams(window.location.search).get("cat");
-      if (catFromUrl && sourceCategories.some((category) => category.id === catFromUrl)) {
-        setActiveCategoryId(catFromUrl);
-      }
-    }
-    syncActiveCategoryFromUrl();
-    window.addEventListener("popstate", syncActiveCategoryFromUrl);
-    return () => window.removeEventListener("popstate", syncActiveCategoryFromUrl);
-  }, [sourceCategories]);
-
-  function handleCategorySelect(categoryId: string) {
-    setActiveCategoryId(categoryId);
-    const url = new URL(window.location.href);
-    url.searchParams.set("cat", categoryId);
-    window.history.replaceState(null, "", url);
-  }
+  const trimmedQuery = query.trim();
+  const results = trimmedQuery ? filterItems(categories, query) : [];
 
   return (
     <>
@@ -106,15 +91,48 @@ export function MenuHome({
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        <Link
-          href={`/menu/${business.slug}/search`}
-          className="mx-4 mt-3 flex items-center gap-2 rounded-full border border-border bg-muted px-3.5 py-2.5 text-[0.9rem] text-muted-foreground no-underline"
-        >
+        <div className="mx-4 mt-3 flex items-center gap-2 rounded-full border border-border bg-muted px-3.5 py-2.5 text-[0.9rem]">
           <Search size={16} className="shrink-0 opacity-70" />
-          <span>Search the menu…</span>
-        </Link>
+          <input
+            type="text"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search the menu…"
+            className="w-full bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
+          />
+        </div>
 
-        {categories.length === 0 ? (
+        {trimmedQuery ? (
+          results.length === 0 ? (
+            <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-12 text-center">
+              <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-muted text-muted-foreground">
+                <SearchX size={26} strokeWidth={2} />
+              </div>
+              <h2 className="text-xl">No matches for &ldquo;{trimmedQuery}&rdquo;</h2>
+              <p className="max-w-[32ch] text-sm text-muted-foreground">
+                Try a different search term.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="px-4 pb-1 pt-3 text-[0.82rem] text-muted-foreground">
+                {results.length} result{results.length === 1 ? "" : "s"} for &ldquo;{trimmedQuery}&rdquo;
+              </div>
+              <ul className="flex flex-col gap-3 px-4 pb-6 pt-1">
+                {results.map(({ item, categoryName }) => (
+                  <li key={item.id}>
+                    <ItemCard
+                      item={item}
+                      categoryName={categoryName}
+                      isExpanded={item.id === expandedItemId}
+                      onToggle={() => toggleItem(item.id)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </>
+          )
+        ) : categories.length === 0 ? (
           <p className="flex flex-1 items-center justify-center px-6 text-center text-sm text-muted-foreground">
             No menu items yet.
           </p>
@@ -123,7 +141,7 @@ export function MenuHome({
             <CategoryTabs
               categories={categories}
               activeCategoryId={activeCategoryId}
-              onSelect={handleCategorySelect}
+              onSelect={selectCategory}
             />
 
             {categories.map((category) => (
@@ -137,7 +155,12 @@ export function MenuHome({
               >
                 {category.items.map((item) => (
                   <li key={item.id}>
-                    <ItemCard item={item} slug={business.slug} categoryId={category.id} />
+                    <ItemCard
+                      item={item}
+                      categoryName={category.name}
+                      isExpanded={category.id === activeCategoryId && item.id === expandedItemId}
+                      onToggle={() => toggleItem(item.id)}
+                    />
                   </li>
                 ))}
               </ul>
