@@ -20,18 +20,18 @@ export function MenuHome({
   initialLanguage,
   initialCategories,
   needsClientProbe,
-  initialActiveCategoryId,
+  initialCategoryIndex,
   initialQuery,
-  initialItemId,
+  initialItemIndex,
 }: {
   business: Business;
   sourceCategories: MenuCategory[];
   initialLanguage: DisplayLanguage;
   initialCategories: MenuCategory[];
   needsClientProbe: boolean;
-  initialActiveCategoryId?: string;
+  initialCategoryIndex?: string;
   initialQuery?: string;
-  initialItemId?: string;
+  initialItemIndex?: string;
 }) {
   const { currentLanguage, categories, handleLanguageChange, isTranslating, translationUnavailable } =
     useTranslatedCategories({
@@ -45,9 +45,9 @@ export function MenuHome({
   const { activeCategoryId, query, expandedItemId, selectCategory, setQuery, toggleItem } =
     useMenuUrlState({
       sourceCategories,
-      initialCategoryId: initialActiveCategoryId,
+      initialCategoryIndex,
       initialQuery,
-      initialItemId,
+      initialItemIndex,
     });
 
   const trimmedQuery = query.trim();
