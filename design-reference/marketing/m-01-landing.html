@@ -4,6 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>M-01 · Landing Page — Hapag reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800;9..144,900&family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="marketing.css" />
 </head>
@@ -112,7 +114,20 @@
         </div>
       </div>
       <div class="mkt-hero-visual">
-        <img src="img/hero-phones.webp" alt="Two phone screens: a customer browsing a QR menu, and a three-step onboarding screen." width="1120" height="1482" loading="eager" />
+        <!-- Picture element with a media-gated source, not a plain image
+             tag: below 1024px this container is display:none (the mobile
+             scan icon stands in for it instead), but a plain image tag's
+             own source still downloads regardless of CSS display —
+             verified via /impeccable audit. The source below only
+             matches at 1024px and up, which is the only viewport where
+             this photo is ever shown; below that, the browser falls
+             through to the fallback image's own source, a 1x1
+             transparent GIF (no network request at all) instead of the
+             real ~96KB photo. -->
+        <picture>
+          <source media="(min-width: 1024px)" srcset="img/hero-phones.webp" />
+          <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Two phone screens: a customer browsing a QR menu, and a three-step onboarding screen." width="1120" height="1482" loading="eager" />
+        </picture>
       </div>
     </div>
   </section>
@@ -148,7 +163,7 @@
       <div class="mkt-feature-card mkt-reveal mkt-pop">
         <div class="mkt-feature-body mkt-feature-body--owners">
           <h3>For Owners</h3>
-          <p>Update prices, mark items sold out, and highlight best sellers in real time. No reprinting, ever.</p>
+          <p>Update prices, mark items sold out, and highlight best sellers in real time, straight from your phone — nothing to reprint when something changes.</p>
         </div>
         <div class="mkt-feature-visual mkt-feature-visual--owners">
           <img src="img/feature-customers.webp" alt="Customer-facing QR menu demo listing Kilawin, Chicken Isaw, and Pork Sinigang with prices." width="560" height="1056" loading="lazy" />

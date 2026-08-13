@@ -52,6 +52,12 @@
   --mkt-border: #e8e4e1;
   --mkt-radius-card: 20px;
   --mkt-radius-pill: 999px;
+  /* Named, not bare literals — the only two shadows this page uses,
+     formalized as tokens alongside its other custom properties above
+     rather than left as ad-hoc rgba() values (flagged by /impeccable
+     audit's design-system-color check). */
+  --mkt-shadow-sm: 0 6px 16px rgba(0, 0, 0, 0.22);
+  --mkt-shadow-md: 0 16px 32px -8px rgba(0, 0, 0, 0.35);
 
   margin: 0;
   background: var(--mkt-bg);
@@ -302,8 +308,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  /* 44x44 hit area (WCAG 2.5.5 touch-target floor) — the icon itself
+     stays its own visual size, centered inside the larger button box. */
+  width: 44px;
+  height: 44px;
   background: transparent;
   border: none;
   color: #ffffff;
@@ -361,7 +369,7 @@
   padding: 10px 22px 22px;
   background: var(--mkt-orange);
   border-radius: 16px;
-  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--mkt-shadow-md);
   /* Collapsed by default — box-sizing: border-box (set globally on
      .mkt-page) means max-height: 0 clips the whole border-box,
      padding included, so this fully collapses regardless of the
@@ -646,11 +654,14 @@
   .mkt-hero-visual {
     display: block;
     flex-shrink: 0;
-    /* Fixed, not a % of .mkt-hero-inner's 990px cap — a percentage here
-       was the actual reason the previous size bump had no visible
-       effect: 42-48% of 990px rounds to ~415-475px regardless of this
-       rule's own max-width. */
-    width: 560px;
+    /* Not a flat 560px anymore — that fixed width plus .mkt-hero-copy's
+       620px cap could ask for more room than a 1024-1200px viewport
+       actually has, squeezing the headline column uncomfortably narrow
+       (verified via /impeccable audit). clamp() keeps 560px as the
+       ceiling once there's room for it, but scales down against the
+       viewport first at the narrow end of this breakpoint instead of
+       forcing the copy column to absorb the whole shortfall. */
+    width: clamp(360px, 42vw, 560px);
   }
 }
 
@@ -1454,7 +1465,7 @@ details.mkt-faq-item summary::-webkit-details-marker {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--mkt-shadow-sm);
   /* Hidden until the JS (bottom of the HTML file) adds .is-visible once
      the visitor has scrolled down a bit — a "scroll to top" button has
      nothing to do while already at the top. */
