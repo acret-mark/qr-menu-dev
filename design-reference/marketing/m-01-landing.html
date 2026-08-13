@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>M-01 · Landing Page — Hapag reference</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800;9..144,900&family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="marketing.css" />
+</head>
+<body class="mkt-page">
+<!--
+  M-01 Landing Page — full redesign, revision 2.
+
+  Revision 1 recolored the mockup's orange to Hapag's locked green/amber
+  tokens, reusing reference.css's .btn/.pill primitives. The user then
+  explicitly asked to redesign everything and follow the mockups exactly
+  ("mockup/1-landing_page.jpg" desktop, "mockup/2-landing_page_mobile.jpg"
+  mobile) — this build supersedes that decision. It is a deliberate,
+  explicit deviation from tokens.css, not an oversight: this page does not
+  read --primary/--accent/etc, and does not use reference.css's button/pill
+  classes (wrong shape for this mockup — its buttons are full pills). All
+  colors below were sampled directly from the mockup JPGs pixel-by-pixel
+  (Python/PIL), not eyeballed:
+    --mkt-orange #f37342  — sampled from the nav bar / buttons / CTA panel
+    --mkt-peach  #fff5f3  — sampled from the Pro pricing card / FAQ items /
+                             Steps section background
+    --mkt-card   #f7f7f7  — sampled from the two photo feature cards
+    --mkt-ink    #34312c, --mkt-muted #7a766e — sampled from heading/body text
+
+  One genuine inconsistency between the two supplied mockup files, resolved
+  rather than silently picked: the "For your business" QR-icon feature card
+  renders in the neutral #f7f7f7 (matching its siblings) on the DESKTOP
+  mockup, but in the peach/orange-border treatment (matching the Pro pricing
+  card, FAQ, Steps section) on the MOBILE mockup. Unified on the peach
+  treatment across both breakpoints — see marketing.css's .mkt-feature-card
+  --accent comment.
+
+  Structural nuance the two mockups don't share: the hero's decorative
+  visual is NOT the same asset at two sizes. Desktop shows the twin-phone
+  photo (img/hero-phones.webp) beside the headline; mobile substitutes a
+  simpler standalone QR-scan icon (hand-drawn SVG below, matching the
+  dashed-corner-brackets + scan-line graphic in the mobile mockup) above the
+  headline instead — the twin-phone composite doesn't read at that width.
+
+  Pricing cards are intentionally sparse (tier, price, divider, blank
+  space, button, caption — no feature bullets) because that's what both
+  mockups actually show; the previous revision added feature-bullet lists
+  from PRODUCT.md that aren't in either mockup. Removed to match.
+
+  Flagged, not fabricated: PRODUCT.md records the free trial as an open
+  operational item (no confirmed length/enforcement) — the FAQ answer
+  below stays honest about that rather than inventing a number.
+-->
+
+<header class="mkt-nav" id="top">
+  <div class="mkt-nav-inner">
+    <a class="mkt-logo" href="#top">Hapag.</a>
+    <nav class="mkt-nav-links" aria-label="Primary">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="mkt-nav-actions">
+      <a class="mkt-nav-login" href="../owner/o-02-login.html">Login</a>
+      <a class="mkt-btn mkt-btn--cream mkt-nav-cta" href="../owner/o-01-register.html">Get Started</a>
+      <button type="button" class="mkt-nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <line class="mkt-nav-toggle-bar mkt-nav-toggle-bar--top" x1="2" y1="7" x2="22" y2="7"/>
+          <line class="mkt-nav-toggle-bar mkt-nav-toggle-bar--mid" x1="2" y1="12" x2="22" y2="12"/>
+          <line class="mkt-nav-toggle-bar mkt-nav-toggle-bar--bottom" x1="2" y1="17" x2="22" y2="17"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <nav class="mkt-mobile-menu" id="mobileMenu" hidden aria-label="Mobile">
+    <a href="#about">About</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="../owner/o-02-login.html">Login</a>
+    <a class="mkt-btn mkt-btn--cream mkt-btn--block" href="../owner/o-01-register.html">Get Started</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <section class="mkt-hero">
+    <div class="mkt-hero-inner">
+      <div class="mkt-hero-copy">
+        <svg class="mkt-hero-scan-icon" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+          <path d="M6 30V12a6 6 0 0 1 6-6h18" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/>
+          <path d="M94 30V12a6 6 0 0 0-6-6H70" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/>
+          <path d="M6 70v18a6 6 0 0 0 6 6h18" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/>
+          <path d="M94 70v18a6 6 0 0 1-6 6H70" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/>
+          <g fill="currentColor">
+            <rect x="30" y="30" width="8" height="8" rx="1.5"/>
+            <rect x="42" y="30" width="8" height="8" rx="1.5"/>
+            <rect x="30" y="42" width="8" height="8" rx="1.5"/>
+            <rect x="62" y="30" width="16" height="16" rx="2"/>
+            <rect x="62" y="54" width="16" height="16" rx="2"/>
+            <rect x="30" y="54" width="16" height="16" rx="2"/>
+          </g>
+          <rect class="mkt-scan-line" x="4" y="47" width="92" height="4" rx="2" fill="currentColor" opacity="0.85"/>
+        </svg>
+        <h1>Scan.<br />Browse.<br />Order.</h1>
+        <p class="lede">No app download needed — it opens straight in the browser.</p>
+        <div class="mkt-hero-ctas">
+          <a class="mkt-btn mkt-btn--solid mkt-btn--glow" href="../owner/o-01-register.html">Get Started</a>
+          <a class="mkt-btn mkt-btn--outline" href="../customer/c-01-menu-home.html">See it in action</a>
+        </div>
+      </div>
+      <div class="mkt-hero-visual">
+        <img src="img/hero-phones.webp" alt="Two phone screens: a customer browsing a QR menu, and a three-step onboarding screen." width="1120" height="1482" loading="eager" />
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="mkt-about" id="about">
+    <div class="mkt-about-inner">
+      <div class="mkt-about-visual mkt-phone-frame mkt-reveal mkt-pop">
+        <img src="img/about-phone.webp" alt="Phone screen showing the Hapag QR scan-to-menu flow." width="760" height="1477" loading="lazy" />
+      </div>
+      <div class="mkt-about-copy mkt-reveal">
+        <h2>About Hapag</h2>
+        <p>An instant, app-free QR digital menu for Philippine food businesses. Customers scan, see your full menu on their own phone, and you never reprint for a price change again.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Features -->
+  <section class="mkt-features" id="features">
+    <div class="mkt-section-head mkt-reveal">
+      <h2>Key Features</h2>
+    </div>
+    <div class="mkt-feature-grid">
+      <div class="mkt-feature-card mkt-reveal mkt-pop">
+        <div class="mkt-feature-visual mkt-feature-visual--customers">
+          <img src="img/feature-owners.webp" alt="Owner-side item detail screen for editing a dish, Tortang Talong, with its price and photo." width="560" height="1056" loading="lazy" />
+        </div>
+        <div class="mkt-feature-body">
+          <h3>For Customers</h3>
+          <p>Scan a QR code, browse a real menu on their own phone: no app to download, no waiting for a printed one.</p>
+        </div>
+      </div>
+      <div class="mkt-feature-card mkt-reveal mkt-pop">
+        <div class="mkt-feature-body mkt-feature-body--owners">
+          <h3>For Owners</h3>
+          <p>Update prices, mark items sold out, and highlight best sellers in real time. No reprinting, ever.</p>
+        </div>
+        <div class="mkt-feature-visual mkt-feature-visual--owners">
+          <img src="img/feature-customers.webp" alt="Customer-facing QR menu demo listing Kilawin, Chicken Isaw, and Pork Sinigang with prices." width="560" height="1056" loading="lazy" />
+        </div>
+      </div>
+      <div class="mkt-feature-card mkt-reveal mkt-pop">
+        <div class="mkt-feature-visual icon-only">
+          <img src="img/feature-business.webp" alt="QR code icon" width="157" height="149" loading="lazy" />
+        </div>
+        <div class="mkt-feature-body">
+          <h3>For your business</h3>
+          <p>One QR code, generated instantly, downloadable as PNG or PDF for your tables and counter.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live in three steps -->
+  <section class="mkt-steps">
+    <div class="mkt-section-head mkt-reveal">
+      <h2>Live in three steps</h2>
+      <p>No printing, no waiting on a designer, no developer required.</p>
+    </div>
+    <div class="mkt-steps-grid">
+      <div class="mkt-step mkt-reveal">
+        <div class="mkt-step-num">01</div>
+        <h3>Register &amp; Confirm</h3>
+        <p>Create your business account and confirm your email.</p>
+      </div>
+      <div class="mkt-step mkt-reveal">
+        <div class="mkt-step-num">02</div>
+        <h3>Add your Menu</h3>
+        <p>Categories, items, prices, and a photo for each dish.</p>
+      </div>
+      <div class="mkt-step mkt-reveal">
+        <div class="mkt-step-num">03</div>
+        <h3>Generate your QR</h3>
+        <p>Instantly on your device — download as PNG or PDF for your tables.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="mkt-pricing" id="pricing">
+    <div class="mkt-section-head mkt-reveal">
+      <h2>Simple, transparent pricing</h2>
+      <p>Activated after your payment proof is verified: no automatic checkout or card charges.</p>
+    </div>
+    <div class="mkt-pricing-grid">
+      <div class="mkt-price-card mkt-reveal mkt-pop">
+        <div class="mkt-price-tier">Standard</div>
+        <div class="mkt-price-amount">₱299<span class="per">/mo</span></div>
+        <hr class="mkt-price-divider" />
+        <ul class="mkt-price-features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Menu builder: categories, items, prices, photos</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Sold-out toggle &amp; best-seller badge</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>One QR code, generated instantly</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Menu shown in your source language</li>
+        </ul>
+        <a class="mkt-btn mkt-btn--outline mkt-btn--block" href="../owner/o-01-register.html">Get Started</a>
+        <p class="mkt-price-caption">Activated after bank transfer / GCash proof is verified, not instant checkout.</p>
+      </div>
+      <div class="mkt-price-card is-pro mkt-reveal mkt-pop">
+        <div class="mkt-price-tier">Pro</div>
+        <div class="mkt-price-amount">₱399<span class="per">/mo</span></div>
+        <hr class="mkt-price-divider" />
+        <ul class="mkt-price-features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Everything in Standard</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Pin your best sellers to the top</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>AI-drafted item descriptions</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Auto-translate: English, Korean, Japanese &amp; Mandarin</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>No "Hapag" footer on your menu</li>
+        </ul>
+        <a class="mkt-btn mkt-btn--solid mkt-btn--block" href="../owner/o-01-register.html">Get Started</a>
+        <p class="mkt-price-caption">Activated after bank transfer / GCash proof is verified, not instant checkout.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="mkt-faq" id="faq">
+    <div class="mkt-section-head mkt-reveal">
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div class="mkt-faq-list">
+      <details class="mkt-faq-item mkt-reveal">
+        <summary>What is a QR menu?<span class="mkt-faq-icon" aria-hidden="true"></span></summary>
+        <div class="mkt-faq-answer-wrap"><p class="mkt-faq-answer">A digital menu your customers open by scanning a QR code with their phone's camera. No app to download. Each business gets one QR code, generated on your device, that opens your menu's own link.</p></div>
+      </details>
+      <details class="mkt-faq-item mkt-reveal">
+        <summary>How is it different from a printed or PDF menu?<span class="mkt-faq-icon" aria-hidden="true"></span></summary>
+        <div class="mkt-faq-answer-wrap"><p class="mkt-faq-answer">You update prices, mark items sold out, and highlight best sellers instantly from your phone. Nothing to reprint or re-upload when something changes.</p></div>
+      </details>
+      <details class="mkt-faq-item mkt-reveal">
+        <summary>Is there a free trial?<span class="mkt-faq-icon" aria-hidden="true"></span></summary>
+        <div class="mkt-faq-answer-wrap"><p class="mkt-faq-answer">Ask us when you register: trial availability is confirmed with your account, not a fixed self-serve period yet.</p></div>
+      </details>
+      <details class="mkt-faq-item mkt-reveal">
+        <summary>How long does setup take?<span class="mkt-faq-icon" aria-hidden="true"></span></summary>
+        <div class="mkt-faq-answer-wrap"><p class="mkt-faq-answer">As fast as you can register your account, add your items, categories, and prices, and generate your QR code. The builder itself has no waiting period.</p></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="mkt-cta">
+    <div class="mkt-cta-panel mkt-reveal">
+      <div class="mkt-cta-visual mkt-reveal mkt-pop">
+        <img src="img/cta-phones.webp" alt="Two phone screens: the Hapag scan-browse-order hero screen and a QR menu demo." width="1280" height="1471" loading="lazy" />
+      </div>
+      <div class="mkt-cta-copy">
+        <h2>Your menu, live today.</h2>
+        <p>Register, add your items, and generate your QR code — no printing, no waiting on a designer.</p>
+        <a class="mkt-btn mkt-btn--cream mkt-btn--block" href="../owner/o-01-register.html">Get Started</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="mkt-footer-top">
+    <div class="mkt-footer-logo">Hapag.</div>
+    <nav class="mkt-footer-links" aria-label="Footer">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+  </div>
+  <div class="mkt-footer-bottom">
+    <div class="mkt-footer-bottom-inner">
+      <span>© 2026 All rights reserved</span>
+      <span class="legal-links">
+        <a href="#">Terms &amp; conditions</a>
+        <a href="#">Privacy Policy</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<button type="button" class="mkt-scroll-top" id="scrollTopBtn" aria-label="Scroll to top">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+  // Mobile nav dropdown — smooth open/close, same technique as the FAQ
+  // accordion below and for the same reason: you can't transition
+  // display or the [hidden] attribute directly, so this measures the
+  // real scrollHeight and animates max-height toward it instead, only
+  // syncing [hidden] at the start of an open / end of a close.
+  (function () {
+    var toggle = document.getElementById("navToggle");
+    var menu = document.getElementById("mobileMenu");
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function openMenu() {
+      menu.hidden = false;
+      toggle.setAttribute("aria-expanded", "true");
+      toggle.setAttribute("aria-label", "Close menu");
+      requestAnimationFrame(function () {
+        menu.classList.add("is-open");
+        menu.style.maxHeight = menu.scrollHeight + "px";
+      });
+    }
+
+    function closeMenu() {
+      if (!menu.classList.contains("is-open")) return;
+      menu.style.maxHeight = menu.scrollHeight + "px";
+      menu.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open menu");
+      requestAnimationFrame(function () {
+        menu.style.maxHeight = "0px";
+      });
+      if (reduceMotion) {
+        menu.hidden = true;
+      } else {
+        var onCloseEnd = function (ev) {
+          if (ev.target !== menu || ev.propertyName !== "max-height") return;
+          menu.removeEventListener("transitionend", onCloseEnd);
+          menu.hidden = true;
+        };
+        menu.addEventListener("transitionend", onCloseEnd);
+      }
+    }
+
+    toggle.addEventListener("click", function () {
+      if (menu.classList.contains("is-open")) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    menu.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", closeMenu);
+    });
+
+    window.addEventListener("resize", function () {
+      if (menu.classList.contains("is-open")) {
+        menu.style.maxHeight = menu.scrollHeight + "px";
+      }
+    });
+  })();
+
+  // Nav hide/show by scroll direction — slides up out of view on the
+  // way down, slides back the moment the visitor scrolls up. Skipped
+  // while the mobile dropdown is open (.is-open) so it doesn't hide its
+  // own anchor mid-interaction.
+  (function () {
+    var nav = document.querySelector(".mkt-nav");
+    var mobileMenu = document.getElementById("mobileMenu");
+    var lastY = window.scrollY;
+    window.addEventListener(
+      "scroll",
+      function () {
+        var currentY = window.scrollY;
+        if (mobileMenu.classList.contains("is-open")) {
+          lastY = currentY;
+          return;
+        }
+        if (currentY > lastY && currentY > nav.offsetHeight) {
+          nav.classList.add("is-hidden");
+        } else if (currentY < lastY) {
+          nav.classList.remove("is-hidden");
+        }
+        lastY = currentY;
+      },
+      { passive: true }
+    );
+  })();
+
+  // Scroll to top — sticky bottom-right button, only visible once the
+  // visitor has scrolled down past roughly one viewport height.
+  (function () {
+    var btn = document.getElementById("scrollTopBtn");
+    var threshold = window.innerHeight * 0.8;
+    function updateVisibility() {
+      btn.classList.toggle("is-visible", window.scrollY > threshold);
+    }
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    window.addEventListener("resize", function () {
+      threshold = window.innerHeight * 0.8;
+      updateVisibility();
+    });
+    updateVisibility();
+    btn.addEventListener("click", function () {
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    });
+  })();
+
+  // Scroll reveal (see marketing.css's ".mkt-reveal" block for the actual
+  // fade/rise/stagger). Fully reversible, on purpose: sections re-hide
+  // when they scroll back out of view — scrolling up past a section
+  // resets it, not just a one-time reveal-and-forget. Skips entirely for
+  // prefers-reduced-motion: reduce, since the CSS never puts these
+  // elements in a hidden state to begin with, and there's nothing for
+  // this observer to toggle.
+  (function () {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var targets = document.querySelectorAll(".mkt-reveal");
+    if (!("IntersectionObserver" in window)) {
+      targets.forEach(function (el) { el.classList.add("is-visible"); });
+      return;
+    }
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          entry.target.classList.toggle("is-visible", entry.isIntersecting);
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+    );
+    targets.forEach(function (el) { observer.observe(el); });
+  })();
+
+  // FAQ accordion — smooth open/close. A native <details> can only snap
+  // instantly (display: none the moment [open] is removed), so this
+  // drives the animation itself: measures the answer's real height and
+  // animates .mkt-faq-answer-wrap's max-height between 0 and that
+  // measured px value (see marketing.css) — plain px→px is animated
+  // consistently everywhere, unlike the fr-unit grid trick this replaced.
+  // The real [open] attribute is only synced at the start of an open and
+  // the end of a close, so semantics/no-JS fallback (native instant
+  // toggle) still work if this script fails to load.
+  (function () {
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.querySelectorAll(".mkt-faq-item").forEach(function (item) {
+      var summary = item.querySelector("summary");
+      var wrap = item.querySelector(".mkt-faq-answer-wrap");
+      summary.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (!wrap) {
+          item.open = !item.open;
+          return;
+        }
+        if (item.classList.contains("is-open")) {
+          // closing — from the fully-open measured height back to 0
+          wrap.style.maxHeight = wrap.scrollHeight + "px";
+          item.classList.remove("is-open");
+          requestAnimationFrame(function () {
+            wrap.style.maxHeight = "0px";
+          });
+          if (reduceMotion) {
+            item.open = false;
+          } else {
+            var onCloseEnd = function (ev) {
+              if (ev.target !== wrap || ev.propertyName !== "max-height") return;
+              wrap.removeEventListener("transitionend", onCloseEnd);
+              item.open = false;
+            };
+            wrap.addEventListener("transitionend", onCloseEnd);
+          }
+        } else {
+          // opening — [open] first so scrollHeight measures real content
+          // (not display: none), then measure and animate toward it
+          item.open = true;
+          item.classList.add("is-open");
+          requestAnimationFrame(function () {
+            wrap.style.maxHeight = wrap.scrollHeight + "px";
+          });
+        }
+      });
+    });
+
+    // A currently-open item's measured height can go stale (font
+    // load, orientation change, text reflow at a new width) — resync it.
+    window.addEventListener("resize", function () {
+      document.querySelectorAll(".mkt-faq-item.is-open").forEach(function (item) {
+        var wrap = item.querySelector(".mkt-faq-answer-wrap");
+        if (wrap) wrap.style.maxHeight = wrap.scrollHeight + "px";
+      });
+    });
+  })();
+</script>
+</body>
+</html>
