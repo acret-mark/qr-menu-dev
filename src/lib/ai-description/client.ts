@@ -2,7 +2,17 @@
 // credentials, mirroring src/lib/deepl/client.ts and src/lib/cloudinary/client.ts's
 // one-file-per-secret discipline (research.md §1).
 
-const GEMINI_MODEL = "gemini-2.0-flash";
+// "gemini-2.0-flash" was retired by Google; "gemini-flash-lite-latest" is a
+// rolling alias to the current lite-tier flash model, chosen over
+// "gemini-flash-latest" (which currently resolves to gemini-3.6-flash and
+// enables extended "thinking" by default — 500+ thoughts tokens for a
+// one-line menu description, unnecessary latency/cost for this task) and
+// over pinning a concrete model name like "gemini-2.5-flash" (multiple
+// concrete flash model names tried during this fix were already rejected
+// as "no longer available to new users" on this API key, despite being
+// listed as supported by the /v1beta/models endpoint) — the rolling alias
+// avoids repeating this exact breakage on Google's next model retirement.
+const GEMINI_MODEL = "gemini-flash-lite-latest";
 const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
 
 export type GenerateDescriptionResult = { ok: true; text: string } | { ok: false };
