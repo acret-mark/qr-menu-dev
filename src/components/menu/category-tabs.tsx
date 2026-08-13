@@ -13,7 +13,7 @@ export function CategoryTabs({
   onSelect: (categoryId: string) => void;
 }) {
   return (
-    <nav className="sticky top-0 z-10 mt-2 transform-gpu overflow-x-auto border-b border-border bg-background px-4 py-3.5">
+    <nav className="sticky top-0 z-10 transform-gpu overflow-x-auto border-b border-border bg-background px-4 pb-3.5 pt-[calc(0.5rem+0.875rem)]">
       <ul className="flex gap-2">
         {categories.map((category) => (
           <li key={category.id} className="shrink-0">
