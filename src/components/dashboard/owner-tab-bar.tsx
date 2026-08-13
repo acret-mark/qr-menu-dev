@@ -1,9 +1,19 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useLinkStatus } from "next/link";
 import { Home, UtensilsCrossed, Tag, QrCode, type LucideIcon } from "lucide-react";
 import { MaybeLink } from "@/components/dashboard/maybe-link";
 import { cn } from "@/lib/utils";
+
+// useLinkStatus only works inside a descendant of <Link>, so this is only
+// ever rendered for enabled nav items (MaybeLink renders a plain <span> for
+// disabled ones). It gives instant tap feedback before the destination
+// route's own loading.tsx skeleton has a chance to paint.
+function TabIcon({ icon: Icon }: { icon: LucideIcon }) {
+  const { pending } = useLinkStatus();
+  return <Icon size={20} className={cn(pending && "animate-pulse opacity-50")} />;
+}
 
 type NavItem = {
   label: string;
@@ -52,7 +62,7 @@ export function OwnerTabBar() {
                   isActive && "text-primary"
                 )}
               >
-                <Icon size={20} />
+                {item.enabled ? <TabIcon icon={Icon} /> : <Icon size={20} />}
                 <span>{item.label}</span>
               </MaybeLink>
             </li>
