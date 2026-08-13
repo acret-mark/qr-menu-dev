@@ -90,18 +90,35 @@ export function MenuHome({
         )}
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto [overflow-anchor:none]">
-        <div className="mx-4 mt-3 flex items-center gap-2 rounded-full border border-border bg-muted px-3.5 py-2.5 text-[0.9rem]">
-          <Search size={16} className="shrink-0 opacity-70" />
-          <input
-            type="text"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search the menu…"
-            className="w-full bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
-          />
-        </div>
+      <div className="mx-4 mt-3 flex shrink-0 items-center gap-2 rounded-full border border-border bg-muted px-3.5 py-2.5 text-[0.9rem]">
+        <Search size={16} className="shrink-0 opacity-70" />
+        <input
+          type="text"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search the menu…"
+          className="w-full bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
+        />
+      </div>
 
+      {/* CategoryTabs deliberately lives outside the scrolling region below,
+          not as a `position: sticky` child of it — WebKit (Safari and, since
+          it shares the same engine, Chrome on iOS) has a longstanding bug
+          where a sticky element's stuck position visibly jumps when content
+          below it changes height (e.g. the accordion expanding), inside a
+          flex + overflow-y-auto container. Rendering it here instead, as a
+          normal element above a scroll region that contains only the item
+          list, makes that bug class structurally impossible rather than
+          mitigating it with CSS. */}
+      {!trimmedQuery && categories.length > 0 && (
+        <CategoryTabs
+          categories={categories}
+          activeCategoryId={activeCategoryId}
+          onSelect={selectCategory}
+        />
+      )}
+
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {trimmedQuery ? (
           results.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-12 text-center">
@@ -137,35 +154,27 @@ export function MenuHome({
             No menu items yet.
           </p>
         ) : (
-          <>
-            <CategoryTabs
-              categories={categories}
-              activeCategoryId={activeCategoryId}
-              onSelect={selectCategory}
-            />
-
-            {categories.map((category) => (
-              <ul
-                key={category.id}
-                className={
-                  category.id === activeCategoryId
-                    ? "flex flex-col gap-3 px-4 pb-6 pt-3"
-                    : "hidden"
-                }
-              >
-                {category.items.map((item) => (
-                  <li key={item.id}>
-                    <ItemCard
-                      item={item}
-                      categoryName={category.name}
-                      isExpanded={category.id === activeCategoryId && item.id === expandedItemId}
-                      onToggle={() => toggleItem(item.id)}
-                    />
-                  </li>
-                ))}
-              </ul>
-            ))}
-          </>
+          categories.map((category) => (
+            <ul
+              key={category.id}
+              className={
+                category.id === activeCategoryId
+                  ? "flex flex-col gap-3 px-4 pb-6 pt-3"
+                  : "hidden"
+              }
+            >
+              {category.items.map((item) => (
+                <li key={item.id}>
+                  <ItemCard
+                    item={item}
+                    categoryName={category.name}
+                    isExpanded={category.id === activeCategoryId && item.id === expandedItemId}
+                    onToggle={() => toggleItem(item.id)}
+                  />
+                </li>
+              ))}
+            </ul>
+          ))
         )}
       </div>
 
