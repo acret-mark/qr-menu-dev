@@ -90,7 +90,7 @@ export function MenuHome({
         )}
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto [overflow-anchor:none]">
         <div className="mx-4 mt-3 flex items-center gap-2 rounded-full border border-border bg-muted px-3.5 py-2.5 text-[0.9rem]">
           <Search size={16} className="shrink-0 opacity-70" />
           <input
