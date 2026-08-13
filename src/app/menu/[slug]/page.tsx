@@ -28,9 +28,9 @@ export default async function MenuPage({
         initialLanguage={initialLanguage}
         initialCategories={initialCategories}
         needsClientProbe={needsClientProbe}
-        initialActiveCategoryId={cat}
+        initialCategoryIndex={cat}
         initialQuery={q}
-        initialItemId={item}
+        initialItemIndex={item}
       />
     </div>
   );
