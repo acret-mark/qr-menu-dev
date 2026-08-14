@@ -38,6 +38,7 @@ export function ClosingCtaSection({ registerHref }: { registerHref: string }) {
           </p>
           <Button
             render={<Link href={registerHref} />}
+            nativeButton={false}
             size="lg"
             className="h-auto w-full rounded-[var(--mkt-radius-pill)] bg-[#fff9f7] px-7 py-3.5 text-[0.95rem] font-bold text-[var(--mkt-orange)] hover:bg-white"
           >
