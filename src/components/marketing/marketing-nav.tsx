@@ -107,6 +107,7 @@ export function MarketingNav({ registerHref }: { registerHref: string }) {
           </Link>
           <Button
             render={<Link href={registerHref} />}
+            nativeButton={false}
             className="hidden h-auto rounded-[var(--mkt-radius-pill)] bg-[#fff9f7] px-7 py-3.5 text-[0.95rem] font-bold text-[var(--mkt-orange)] hover:bg-white min-[900px]:inline-flex"
           >
             Get Started
@@ -192,6 +193,7 @@ export function MarketingNav({ registerHref }: { registerHref: string }) {
                 onClick={() => setMenuOpen(false)}
               />
             }
+            nativeButton={false}
             className="mt-3 h-auto w-full rounded-[var(--mkt-radius-pill)] bg-[#fff9f7] px-7 py-3.5 text-[0.95rem] font-bold text-[var(--mkt-orange)] hover:bg-white"
           >
             Get Started

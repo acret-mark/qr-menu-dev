@@ -51,6 +51,7 @@ function PricingCard({ tier }: { tier: PricingTier }) {
       </ul>
       <Button
         render={<Link href={tier.ctaHref} />}
+        nativeButton={false}
         size="lg"
         className={cn(
           "mt-auto h-auto w-full rounded-[var(--mkt-radius-pill)] px-7 py-3.5 text-[0.95rem] font-bold",

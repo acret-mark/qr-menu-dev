@@ -92,6 +92,7 @@ export function HeroSection({ registerHref }: { registerHref: string }) {
             {/* mkt-btn--solid mkt-btn--glow: orange fill, white text, glow on hover */}
             <Button
               render={<Link href={registerHref} />}
+              nativeButton={false}
               size="lg"
               className="h-auto rounded-[var(--mkt-radius-pill)] bg-[var(--mkt-orange)] px-7 py-3.5 text-[0.95rem] font-bold text-white shadow-none hover:bg-[var(--mkt-orange-deep)] hover:shadow-[0_10px_28px_-6px_rgba(243,115,66,0.55)]"
             >
@@ -100,6 +101,7 @@ export function HeroSection({ registerHref }: { registerHref: string }) {
             {/* mkt-btn--outline: white fill, ink text, border; hover flips to orange */}
             <Button
               render={<Link href="/demo" />}
+              nativeButton={false}
               size="lg"
               variant="outline"
               className="h-auto rounded-[var(--mkt-radius-pill)] border-[var(--mkt-border)] bg-white px-7 py-3.5 text-[0.95rem] font-bold text-[var(--mkt-ink)] hover:border-[var(--mkt-orange)] hover:bg-white hover:text-[var(--mkt-orange)] dark:bg-white dark:hover:bg-white"
