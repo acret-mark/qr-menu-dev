@@ -30,5 +30,9 @@ export default async function OwnerLayout({
     redirect(SUSPENDED_PATH);
   }
 
-  return <OwnerShell status={business.status}>{children}</OwnerShell>;
+  return (
+    <OwnerShell status={business.status} businessName={business.name}>
+      {children}
+    </OwnerShell>
+  );
 }
