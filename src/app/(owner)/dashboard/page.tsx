@@ -31,24 +31,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="font-heading text-xl font-semibold">Dashboard</h1>
-        <Link
-          href="/business-profile"
-          aria-label="Business profile"
-          className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-muted text-muted-foreground"
-        >
-          {stats?.logoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- external Cloudinary URL, avatar-sized
-            <img src={stats.logoUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-            </svg>
-          )}
-        </Link>
-      </div>
+      <h1 className="font-heading text-xl font-semibold">Dashboard</h1>
 
       {stats && (
         <p className="text-base">

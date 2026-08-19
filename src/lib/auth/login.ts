@@ -15,6 +15,7 @@ export type BusinessStatus = "pending" | "trial" | "active" | "suspended";
 export type OwnerBusiness = {
   id: string;
   status: BusinessStatus;
+  name: string;
 };
 
 const INVALID_CREDENTIALS_MESSAGE = "Invalid email or password.";
@@ -63,7 +64,7 @@ export async function getOwnerBusiness(
 ): Promise<OwnerBusiness | null> {
   const { data, error } = await supabase
     .from("businesses")
-    .select("id, status")
+    .select("id, status, name")
     .eq("owner_id", ownerId)
     .maybeSingle();
 
