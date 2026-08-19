@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { signOutOwner } from "@/lib/auth/logout";
@@ -39,26 +40,29 @@ export function OwnerShell({
             the one link into /business-profile from here — the dashboard
             page's own logo-button that used to go there was removed so
             there's a single, consistent entry point instead of two. */}
-        <div className="flex items-center justify-end gap-2">
-          <form action={signOutOwner}>
-            <button
-              type="submit"
-              aria-label="Log out"
-              title="Log out"
-              className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        <div className="flex items-center justify-between gap-2">
+          <Image src="/brand.png" alt="Hapag" width={530} height={154} className="h-6 w-auto shrink-0" />
+          <div className="flex items-center gap-2">
+            <form action={signOutOwner}>
+              <button
+                type="submit"
+                aria-label="Log out"
+                title="Log out"
+                className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <LogOut size={14} />
+                Log out
+              </button>
+            </form>
+            <Link
+              href="/business-profile"
+              aria-label="Business profile"
+              title={businessName}
+              className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
-              <LogOut size={14} />
-              Log out
-            </button>
-          </form>
-          <Link
-            href="/business-profile"
-            aria-label="Business profile"
-            title={businessName}
-            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            {getInitials(businessName)}
-          </Link>
+              {getInitials(businessName)}
+            </Link>
+          </div>
         </div>
         {(status === "pending" || status === "trial") && <StatusBanner status={status} />}
         {children}
