@@ -11,15 +11,30 @@ function formatCreatedDate(iso: string) {
   });
 }
 
-export default async function BusinessListPage() {
+export default async function BusinessListPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
   const businesses = await getBusinessList();
 
+  // Stats always reflect every business, regardless of the search box above
+  // (AdminShell) — only the table rows below are filtered, same convention
+  // as the customer menu's own search (results narrow, nothing else does).
   const total = businesses.length;
   const active = businesses.filter((b) => b.status === "active").length;
   const trial = businesses.filter((b) => b.status === "trial").length;
   const needsAttention = businesses.filter(
     (b) => b.status === "trial" || b.status === "pending"
   ).length;
+
+  const trimmedQuery = q?.trim() ?? "";
+  const filteredBusinesses = trimmedQuery
+    ? businesses.filter((business) =>
+        business.name.toLowerCase().includes(trimmedQuery.toLowerCase())
+      )
+    : businesses;
 
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6">
@@ -40,6 +55,10 @@ export default async function BusinessListPage() {
           <p className="px-6 py-10 text-center text-sm text-muted-foreground">
             No businesses registered yet.
           </p>
+        ) : filteredBusinesses.length === 0 ? (
+          <p className="px-6 py-10 text-center text-sm text-muted-foreground">
+            No businesses match &ldquo;{trimmedQuery}&rdquo;.
+          </p>
         ) : (
           <table className="w-full text-sm">
             <thead>
@@ -51,7 +70,7 @@ export default async function BusinessListPage() {
               </tr>
             </thead>
             <tbody>
-              {businesses.map((business) => {
+              {filteredBusinesses.map((business) => {
                 const href = `/admin/businesses/${business.id}`;
                 return (
                   <tr

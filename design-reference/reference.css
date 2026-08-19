@@ -54,6 +54,14 @@ button {
  * the viewport, and only the middle (.scroll-area) scrolls.
  */
 .phone-page {
+  /* `relative` establishes this as the containing block for any `position:
+     absolute` overlay a page renders (e.g. .item-sheet-overlay) — mobile-
+     first even on desktop: the whole app is this centered max-w-430px
+     column, so a full-screen overlay should be scoped to it, not escape to
+     span the entire browser viewport the way `position: fixed` would.
+     Safe for every other page sharing this rule: it was implicitly
+     `position: static` before, and no page relies on that. */
+  position: relative;
   max-width: 430px;
   margin: 0 auto;
   height: 100vh;
@@ -113,10 +121,10 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 12px 16px 0;
-  padding: 10px 14px;
+  margin: 24px 16px 0;
+  padding: 14px 14px;
   background: var(--muted);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 999px;
   color: var(--muted-foreground);
   font-size: 0.9rem;
@@ -353,6 +361,382 @@ a.recent-row {
 
 .watermark-footer a:hover {
   text-decoration: underline;
+}
+
+/* ============================================================
+ * C-01 Menu Home — 2026-08-14 visual redesign (rebrand)
+ * specs/026-menu-home-rebrand (ai_workspace). Every class below is new and
+ * scoped to c-01-menu-home.html's own markup — none of the shared
+ * primitives above (.menu-topbar, .biz-logo, .biz-name, .biz-sub, the base
+ * .category-tab rule, .item-card, .pill.best-seller/.pill.sold-out,
+ * .badge-corner, .watermark-footer, .lang-selector-btn) are modified,
+ * since c-03-item-detail.html, c-04-search-results.html, and several
+ * owner/admin screens still consume those unchanged (see spec.md's Scope
+ * Correction and this file's own header comment for why touching the
+ * shared rules directly was rejected).
+ * ============================================================ */
+
+/* Scattered-block texture echoing a QR code's own pixel mosaic, matching
+   mockup/3-menu.jpg exactly rather than a generic diagonal stripe — the same
+   inline SVG data URI used in src/components/menu/menu-home.tsx's inline
+   style (kept in sync by hand across the two surfaces, same as every other
+   rule in this section). Only white/transparent shapes are baked into the
+   SVG — the orange still comes from var(--primary), so no brand hex is
+   duplicated outside tokens.css. This is the *default* hero background —
+   a business with a logo uploaded shows that logo instead (`.menu-hero.has-
+   logo`, below); this pattern is the no-logo fallback only. This reference
+   page demonstrates the no-logo state, since that's what "The Manila Table"
+   (this page's demo business) has; the real component
+   (src/components/menu/menu-home.tsx) switches on `business.logoUrl`. */
+.menu-hero {
+  /* No overflow: hidden — the #lang-selector-menu dropdown is a descendant
+     of this element, and an ancestor's overflow:hidden clips it wherever
+     the dropdown (4 languages) extends past the hero's own bounds. The
+     background-image already tiles exactly within this box on its own, so
+     clipping was never actually needed here. */
+  position: relative;
+  padding: 24px 16px 56px;
+  background-color: var(--primary);
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2780%27%20height%3D%2780%27%3E%3Crect%20x%3D%274%27%20y%3D%274%27%20width%3D%2710%27%20height%3D%2710%27%20fill%3D%27white%27%20opacity%3D%270.1%27/%3E%3Crect%20x%3D%2720%27%20y%3D%272%27%20width%3D%2714%27%20height%3D%2714%27%20fill%3D%27white%27%20opacity%3D%270.08%27/%3E%3Crect%20x%3D%2740%27%20y%3D%2710%27%20width%3D%278%27%20height%3D%278%27%20fill%3D%27white%27%20opacity%3D%270.12%27/%3E%3Crect%20x%3D%2758%27%20y%3D%274%27%20width%3D%2712%27%20height%3D%2712%27%20fill%3D%27white%27%20opacity%3D%270.07%27/%3E%3Crect%20x%3D%2710%27%20y%3D%2724%27%20width%3D%2716%27%20height%3D%2716%27%20fill%3D%27white%27%20opacity%3D%270.09%27/%3E%3Crect%20x%3D%2734%27%20y%3D%2728%27%20width%3D%2710%27%20height%3D%2710%27%20fill%3D%27white%27%20opacity%3D%270.11%27/%3E%3Crect%20x%3D%2754%27%20y%3D%2726%27%20width%3D%2714%27%20height%3D%2714%27%20fill%3D%27white%27%20opacity%3D%270.08%27/%3E%3Crect%20x%3D%272%27%20y%3D%2744%27%20width%3D%2712%27%20height%3D%2712%27%20fill%3D%27white%27%20opacity%3D%270.1%27/%3E%3Crect%20x%3D%2724%27%20y%3D%2746%27%20width%3D%278%27%20height%3D%278%27%20fill%3D%27white%27%20opacity%3D%270.09%27/%3E%3Crect%20x%3D%2744%27%20y%3D%2742%27%20width%3D%2716%27%20height%3D%2716%27%20fill%3D%27white%27%20opacity%3D%270.07%27/%3E%3Crect%20x%3D%2764%27%20y%3D%2748%27%20width%3D%2710%27%20height%3D%2710%27%20fill%3D%27white%27%20opacity%3D%270.11%27/%3E%3Crect%20x%3D%2714%27%20y%3D%2762%27%20width%3D%2714%27%20height%3D%2714%27%20fill%3D%27white%27%20opacity%3D%270.08%27/%3E%3Crect%20x%3D%2736%27%20y%3D%2764%27%20width%3D%2710%27%20height%3D%2710%27%20fill%3D%27white%27%20opacity%3D%270.1%27/%3E%3Crect%20x%3D%2756%27%20y%3D%2766%27%20width%3D%2712%27%20height%3D%2712%27%20fill%3D%27white%27%20opacity%3D%270.09%27/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* Has-logo variant (not demonstrated on this page — see comment above):
+   an <img class="menu-hero-logo"> filling the hero, plus a scrim so the
+   white on-hero language pill stays legible over any logo's own colors. */
+.menu-hero.has-logo {
+  background-image: none;
+}
+
+.menu-hero-logo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-hero.has-logo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.menu-hero .lang-selector {
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.lang-selector.on-hero .lang-selector-btn {
+  background: var(--card);
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.menu-identity-panel {
+  /* Load-bearing, not decorative — see the equivalent comment in
+     src/components/menu/menu-home.tsx. .menu-hero above is `position:
+     relative`, making it a positioned element; without this panel also
+     being positioned, CSS's painting-order rules let the hero's sharp-
+     cornered background paint over this panel's rounded top corners in
+     their overlap zone instead of the other way around. */
+  position: relative;
+  margin-top: -24px;
+  border-radius: 28px 28px 0 0;
+  background: var(--card);
+  padding: 32px 16px 0;
+}
+
+.menu-identity-name {
+  margin: 0;
+  text-align: center;
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.menu-identity-sub {
+  margin: 4px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+}
+
+.menu-identity-sub svg {
+  flex-shrink: 0;
+}
+
+/* Category tabs, outlined-when-inactive (spec FR-007) — applied via this
+   modifier class on c-01's own <nav>, not the shared .category-tab rule. */
+.category-tabs.brand .category-tab {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.category-tabs.brand .category-tab.active {
+  color: var(--primary-foreground);
+}
+
+/* Item rows, C-01's own visual language (spec FR-009/FR-012): no card
+   border/background/padding — rows sit directly on the page, separated by
+   .item-list.brand's larger gap below, matching the mockup exactly (it has
+   no bordered box per row at all). Thumbnail enlarged from the shared
+   76×76 to 128×128 (mockup samples ~33% of viewport width, roughly square).
+   Best-seller inline after the name instead of a thumbnail corner badge;
+   sold-out as a banner overlaid on the thumbnail instead of a name-adjacent
+   pill, and no longer dims the row's text/price (mockup keeps those at full
+   opacity; only the thumbnail gets the sold-out treatment). */
+.item-list.brand {
+  gap: 24px;
+}
+
+/* Rows are now <button> elements (they open the item-detail sheet below,
+   specs/026-menu-home-rebrand follow-up), so this also resets native button
+   chrome — the shared .item-card rule's display:flex/gap/etc. still apply. */
+.item-card.brand {
+  border: none;
+  background: none;
+  padding: 0;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.item-card.brand .item-thumb {
+  width: 128px;
+  height: 128px;
+  border-radius: 16px;
+}
+
+.item-card.brand.sold-out {
+  opacity: 1;
+}
+
+.item-card.brand .item-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.item-card.brand .item-price {
+  margin-top: 8px;
+  font-size: 1.05rem;
+  color: var(--accent);
+}
+
+.item-card.brand .item-name .best-seller-star {
+  flex-shrink: 0;
+  color: var(--warning);
+  font-size: 0.85em;
+}
+
+.sold-out-banner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: inherit;
+}
+
+/* Every item row's own banner is only ever in the DOM when that item is
+   actually sold out (spec.md), so this never mattered there. The shared
+   item-sheet template (below) is different: it's one persistent element
+   toggled via the `hidden` attribute per clicked item — and this class's
+   own `display: flex` above is an author-stylesheet rule, which beats the
+   browser's default `[hidden] { display: none }` UA rule at equal
+   specificity regardless of the attribute being present. Without this,
+   the banner would show for every item, sold out or not. */
+.sold-out-banner[hidden] {
+  display: none;
+}
+
+.sold-out-banner span {
+  font-family: "Playfair Display", serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Footer CTA, solid brand bar (spec FR-013). */
+.watermark-footer.brand {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-top: none;
+}
+
+.watermark-footer.brand strong {
+  color: inherit;
+}
+
+/* Item-detail sheet — replaces the old inline accordion this page never
+   actually wired up (specs/026-menu-home-rebrand follow-up: "clicking a
+   menu item slides up the details" over a dimmed backdrop). Mirrors
+   src/components/menu/item-detail-sheet.tsx exactly; see that file's own
+   comments for the full rationale (why it repeats name/price/best-seller/
+   sold-out, why only the open transition animates). One shared template,
+   populated by the script below from whichever .item-card was clicked. */
+.item-sheet-overlay {
+  /* absolute, not fixed — scoped to .phone-page's own relative positioning
+     (mobile-first even on desktop; see that rule's comment). */
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+}
+
+.item-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  /* Pixel-sampled from mockup/4-menu_item.jpg (dimmed hero/panel pixels vs.
+     their known undimmed color solve to ~76-79% black, not the ~60% first
+     guessed). */
+  background: rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+}
+
+.item-sheet {
+  /* No `overflow: hidden` here — #item-sheet-close is deliberately
+     positioned half above this box's own top edge (floating over the
+     backdrop/sheet boundary, per the mockup); clipping this box would cut
+     that overhanging half clean off, leaving only its bottom half visible
+     (which reads as a chevron, not an X — exactly what this fix corrects).
+     Clipping to the rounded top corners moved to .item-sheet-scroll below,
+     which wraps only the photo/text content, not the close button. */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 85vh;
+  /* Keeps the sheet substantial even for a short description — pixel-
+     measured from mockup/4-menu_item.jpg (sheet occupies the bottom ~68vh
+     there); a bit under that since the photo + padding/text already
+     account for a good chunk on their own. Real content can still grow
+     the sheet past this floor, up to max-height above. */
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 28px 28px 0 0;
+  background: var(--card);
+  transform: translateY(100%);
+  /* 0.3s must match closeSheet()'s own 300ms setTimeout in
+     c-01-menu-home.html — it waits this long before hiding, so the
+     slide-down actually plays instead of being cut off mid-transition. */
+  transition: transform 0.3s ease-out;
+}
+
+.item-sheet-overlay.open .item-sheet {
+  transform: translateY(0);
+}
+
+.item-sheet-close {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  height: 44px;
+  width: 44px;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--foreground);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.item-sheet-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  border-radius: 28px 28px 0 0;
+}
+
+.item-sheet-photo {
+  /* Viewport-relative, not a fixed px height — pixel-measured from
+     mockup/4-menu_item.jpg (~28vh) so this scales with actual viewport
+     height instead of staying visually tiny on a taller window. */
+  position: relative;
+  height: 28vh;
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--chart-2));
+  color: color-mix(in srgb, var(--primary-foreground) 80%, transparent);
+}
+
+.item-sheet-photo svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.85;
+}
+
+.item-sheet-content {
+  padding: 20px 20px 32px;
+}
+
+.item-sheet-price {
+  /* Fraunces, not Playfair Display (this page's usual heading font) —
+     deliberately a second display face used only for the price, matching
+     the real component's own scoped-font choice (item-detail-sheet.tsx). */
+  font-family: "Fraunces", "Playfair Display", serif;
+  text-align: right;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.item-sheet-name {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Playfair Display", serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.item-sheet-name .best-seller-star {
+  color: var(--warning);
+}
+
+.item-sheet-desc {
+  margin: 12px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.item-sheet-tags {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.item-sheet-tag {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--primary);
 }
 
 /* ---- empty / error states ---- */

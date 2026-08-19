@@ -6,10 +6,14 @@ const badgeVariants = cva(
   {
     variants: {
       tone: {
-        success: "bg-success text-success-foreground",
+        // Soft (tinted) fills, not solid — same semantic colors (green/
+        // gray/red), just gentler than a full-strength fill + inverted
+        // text. `warning` (amber/gold) intentionally left as a solid fill;
+        // only gray/red/green were asked to soften.
+        success: "bg-success/15 text-success",
         warning: "bg-warning text-warning-foreground",
-        neutral: "bg-border text-foreground",
-        destructive: "bg-destructive text-destructive-foreground",
+        neutral: "bg-muted text-muted-foreground",
+        destructive: "bg-destructive/15 text-destructive",
       },
     },
   }

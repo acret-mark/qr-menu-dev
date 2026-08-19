@@ -21,7 +21,12 @@ export default async function MenuPage({
     await loadDisplayCategories(business);
 
   return (
-    <div className="mx-auto w-full flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
+    // `relative` is load-bearing: ItemDetailSheet renders `position: absolute`
+    // (not `fixed`) precisely so it stays scoped to this mobile-width frame
+    // instead of spanning the full desktop viewport — the app is mobile-first
+    // "even viewed in desktop" (a centered phone-width column, not a
+    // full-bleed layout), and its modal should behave the same way.
+    <div className="relative mx-auto w-full flex h-dvh max-w-[430px] flex-col overflow-hidden bg-background">
       <MenuHome
         business={business}
         sourceCategories={sourceCategories}

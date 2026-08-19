@@ -16,10 +16,17 @@ export function LanguageSelector({
   current,
   onChange,
   isTranslating = false,
+  variant = "default",
 }: {
   current: DisplayLanguage;
   onChange: (language: DisplayLanguage) => void;
   isTranslating?: boolean;
+  // "on-hero": rendering-only variant for sitting on the colored hero
+  // (menu-home.tsx) — a light/white pill instead of the default
+  // border/bg-muted pill tuned for a light bg-card header bar. No change
+  // to open/close, selection, or persistence behavior either way
+  // (specs/026-menu-home-rebrand, research.md Decision 2).
+  variant?: "default" | "on-hero";
 }) {
   const [open, setOpen] = useState(false);
 
@@ -31,7 +38,12 @@ export function LanguageSelector({
         aria-expanded={open}
         aria-busy={isTranslating}
         onClick={() => setOpen((value) => !value)}
-        className="flex items-center gap-1 rounded-full border border-border bg-muted px-2.5 py-1.5 text-[0.78rem] font-semibold text-foreground"
+        className={cn(
+          "flex items-center gap-1 rounded-full px-2.5 py-1.5 text-[0.78rem] font-semibold",
+          variant === "on-hero"
+            ? "bg-white text-foreground shadow-md"
+            : "border border-border bg-muted text-foreground"
+        )}
       >
         <span>{LANGUAGE_LABELS[current].short}</span>
         {isTranslating ? (
