@@ -24,7 +24,7 @@ export function CategoryTabs({
                 "shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[0.88rem] font-medium",
                 category.id === activeCategoryId
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-foreground"
+                  : "border-primary bg-card text-primary"
               )}
             >
               {category.name}

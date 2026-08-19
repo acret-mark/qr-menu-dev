@@ -1,7 +1,13 @@
 /*
- * Hapag brand tokens — locked per planning/06_ui-design.md.
- * Primary: deep green (#1E3D2F). Secondary accent: amber (#A67C3A).
- * Warm off-white ground, not pure white/black — food-forward, not sterile.
+ * Hapag brand tokens.
+ * Rebranded 2026-08-14 (specs/026-menu-home-rebrand, ai_workspace): primary/accent moved from the
+ * original deep-green/amber pairing to a warm orange sampled directly from mockup/3-menu.jpg (hero,
+ * active category-tab fill, footer bar, and item price all sample to the same ~#F47B43). Ground moved
+ * from warm off-white to pure white to match the mockup's content panel. --warning is deliberately
+ * repointed to a toned-down gold (not orange) so it keeps reading as its own "attention" tone across
+ * its existing consumers (pending-status badges, offline/translation-unavailable banners) while also
+ * matching the mockup's best-seller star color when reused for that purpose in item-card.tsx — see
+ * research.md Decision 3 for the sampling method and full rationale.
  *
  * Single source of truth: consumed by the app (src/app/globals.css, via
  * @theme inline) and directly by the static reference pages in
@@ -9,43 +15,43 @@
  * can link it as plain CSS.
  */
 :root {
-  --background: #faf7f1;
+  --background: #ffffff;
   --foreground: #1b1b18;
   --card: #ffffff;
   --card-foreground: #1b1b18;
   --popover: #ffffff;
   --popover-foreground: #1b1b18;
-  --primary: #1e3d2f;
-  --primary-foreground: #faf7f1;
-  --secondary: #f3e9d8;
-  --secondary-foreground: #1b1b18;
-  --muted: #f1ece1;
-  --muted-foreground: #5b5750;
-  --accent: #a67c3a;
-  --accent-foreground: #1b1b18;
+  --primary: #f47b43;
+  --primary-foreground: #ffffff;
+  --secondary: #fce7da;
+  --secondary-foreground: #7a3a17;
+  --muted: #f1f1f1;
+  --muted-foreground: #6b6862;
+  --accent: #f47b43;
+  --accent-foreground: #ffffff;
   --destructive: #b3261e;
   --destructive-foreground: #faf7f1;
   --success: #2f855a;
   --success-foreground: #faf7f1;
-  --warning: #a67c3a;
+  --warning: #e3a73b;
   --warning-foreground: #1b1b18;
-  --border: #e3dcce;
-  --input: #e3dcce;
-  --ring: #a67c3a;
-  --chart-1: #1e3d2f;
+  --border: #e2e2e2;
+  --input: #e2e2e2;
+  --ring: #f47b43;
+  --chart-1: #f47b43;
   --chart-2: #2f855a;
-  --chart-3: #a67c3a;
+  --chart-3: #e3a73b;
   --chart-4: #c99a52;
-  --chart-5: #5b5750;
+  --chart-5: #6b6862;
   --radius: 0.625rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #1b1b18;
-  --sidebar-primary: #1e3d2f;
-  --sidebar-primary-foreground: #faf7f1;
-  --sidebar-accent: #f3e9d8;
-  --sidebar-accent-foreground: #1b1b18;
-  --sidebar-border: #e3dcce;
-  --sidebar-ring: #a67c3a;
+  --sidebar-primary: #f47b43;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fce7da;
+  --sidebar-accent-foreground: #7a3a17;
+  --sidebar-border: #e2e2e2;
+  --sidebar-ring: #f47b43;
 }
 
 .dark {

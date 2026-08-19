@@ -7,10 +7,14 @@ const statusBadgeVariants = cva(
   {
     variants: {
       status: {
-        active: "bg-success text-success-foreground",
+        // Soft (tinted) fills for gray/red/green — same semantic colors,
+        // gentler than a full-strength fill + inverted text. `trial`
+        // (amber/gold `warning`) intentionally left as a solid fill; only
+        // gray/red/green were asked to soften.
+        active: "bg-success/15 text-success",
         trial: "bg-warning text-warning-foreground",
-        pending: "bg-border text-foreground",
-        suspended: "bg-destructive text-destructive-foreground",
+        pending: "bg-muted text-muted-foreground",
+        suspended: "bg-destructive/15 text-destructive",
       } satisfies Record<BusinessStatus, string>,
     },
   }

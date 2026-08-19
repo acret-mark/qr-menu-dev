@@ -9,7 +9,10 @@ const STATUS_LABELS: Record<TicketStatus, string> = {
 const STATUS_VARIANT_CLASSES: Record<TicketStatus, string> = {
   open: "bg-warning text-warning-foreground",
   in_progress: "bg-warning text-warning-foreground",
-  resolved: "bg-success text-success-foreground",
+  // Soft (tinted) fill, matching badge.tsx/status-badge.tsx's own softened
+  // success tone — `warning` above left as a solid fill (only gray/red/
+  // green were asked to soften).
+  resolved: "bg-success/15 text-success",
 };
 
 export function TicketStatusBadge({ status }: { status: TicketStatus }) {
