@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { NAV_LINKS, LOGIN_HREF } from "@/lib/marketing/content";
 import { Button } from "@/components/ui/button";
@@ -80,11 +81,8 @@ export function MarketingNav({ registerHref }: { registerHref: string }) {
       }`}
     >
       <div className="relative mx-auto flex max-w-[990px] items-center justify-between gap-4 px-5 py-4 min-[900px]:px-10 min-[900px]:py-[18px]">
-        <Link
-          href="/"
-          className="shrink-0 text-[2.6rem] font-extrabold [font-family:var(--font-playfair-display),Georgia,serif]"
-        >
-          Hapag.
+        <Link href="/" className="shrink-0">
+          <Image src="/brand-inverted.png" alt="Hapag" width={541} height={154} priority className="h-14 w-auto" />
         </Link>
 
         <nav

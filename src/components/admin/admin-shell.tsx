@@ -80,7 +80,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-dvh w-full bg-background text-foreground">
       <aside className="flex w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
         <div className="flex items-center gap-2 px-4 py-4">
-          <Image src="/logo.png" alt="Hapag" width={32} height={32} className="shrink-0" />
+          <Image src="/brand.png" alt="Hapag" width={530} height={154} className="h-6 w-auto shrink-0" />
           <span className="font-heading text-sm font-semibold">Admin</span>
         </div>
 

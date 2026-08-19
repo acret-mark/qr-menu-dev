@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { NAV_LINKS } from "@/lib/marketing/content";
 
@@ -12,8 +13,8 @@ export function MarketingFooter() {
   return (
     <footer>
       <div className="px-5 pt-[72px] pb-14 text-center min-[900px]:px-10 min-[900px]:pt-24 min-[900px]:pb-16">
-        <div className="mb-5 text-[2rem] font-extrabold text-[var(--mkt-ink)] [font-family:var(--font-playfair-display),Georgia,serif]">
-          Hapag.
+        <div className="mb-5 flex justify-center">
+          <Image src="/brand.png" alt="Hapag" width={530} height={154} className="h-14 w-auto" />
         </div>
         <nav
           aria-label="Footer"
