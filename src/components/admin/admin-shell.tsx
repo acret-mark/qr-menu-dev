@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CreditCard, LifeBuoy, LogOut, Search, Store, type LucideIcon } from "lucide-react";
@@ -79,10 +80,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-dvh w-full bg-background text-foreground">
       <aside className="flex w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
         <div className="flex items-center gap-2 px-4 py-4">
-          <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
-            H
-          </div>
-          <span className="font-heading text-sm font-semibold">Hapag Admin</span>
+          <Image src="/logo.png" alt="Hapag" width={32} height={32} className="shrink-0" />
+          <span className="font-heading text-sm font-semibold">Admin</span>
         </div>
 
         <nav className="flex-1 px-2 py-2">
