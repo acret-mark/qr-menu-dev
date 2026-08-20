@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -16,6 +16,20 @@ function isTabKey(value: string): value is TabKey {
   return TABS.some((tab) => tab.key === value);
 }
 
+function subscribeToHash(callback: () => void) {
+  window.addEventListener("hashchange", callback);
+  return () => window.removeEventListener("hashchange", callback);
+}
+
+function getHashTab(): TabKey {
+  const hash = window.location.hash.slice(1);
+  return isTabKey(hash) ? hash : "profile";
+}
+
+function getServerTab(): TabKey {
+  return "profile";
+}
+
 export function AccountTabs({
   profilePanel,
   subscriptionPanel,
@@ -27,15 +41,18 @@ export function AccountTabs({
 }) {
   // Deep-linkable via URL hash (#profile / #subscription / #support), same as
   // the design reference, so other screens can link straight to a tab.
-  const [activeTab, setActiveTab] = useState<TabKey>(() => {
-    if (typeof window === "undefined") return "profile";
-    const hash = window.location.hash.slice(1);
-    return isTabKey(hash) ? hash : "profile";
-  });
+  // useSyncExternalStore reads the SSR-safe "profile" snapshot during
+  // hydration and only switches to the real hash afterward, so the server
+  // and client's first render always agree (a plain useState initializer
+  // reading window.location.hash would diverge from the server and fail
+  // hydration whenever the URL already has a hash).
+  const activeTab = useSyncExternalStore(subscribeToHash, getHashTab, getServerTab);
 
   function selectTab(tab: TabKey) {
-    setActiveTab(tab);
     window.history.replaceState(null, "", `#${tab}`);
+    // replaceState doesn't fire "hashchange" on its own — dispatch it so the
+    // external store re-reads the new hash and re-renders.
+    window.dispatchEvent(new Event("hashchange"));
   }
 
   const activeTitle = TABS.find((tab) => tab.key === activeTab)!.title;

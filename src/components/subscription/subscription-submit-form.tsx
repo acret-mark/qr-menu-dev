@@ -15,6 +15,7 @@ export function SubscriptionSubmitForm({ currentPlan }: { currentPlan: PlanType 
   const [fileName, setFileName] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const canOfferUpgrade = currentPlan === "standard";
   const payingForPlan: PlanType = targetPlan === "pro" ? "pro" : currentPlan;
@@ -29,6 +30,7 @@ export function SubscriptionSubmitForm({ currentPlan }: { currentPlan: PlanType 
 
     setIsSubmitting(true);
     setError(null);
+    setSubmitted(false);
 
     const formData = new FormData();
     formData.set("paymentMethod", paymentMethod);
@@ -46,6 +48,7 @@ export function SubscriptionSubmitForm({ currentPlan }: { currentPlan: PlanType 
     if (fileInputRef.current) fileInputRef.current.value = "";
     setFileName(null);
     setTargetPlan("current");
+    setSubmitted(true);
     router.refresh();
   }
 
@@ -104,12 +107,20 @@ export function SubscriptionSubmitForm({ currentPlan }: { currentPlan: PlanType 
           ref={fileInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
-          onChange={(event) => setFileName(event.target.files?.[0]?.name ?? null)}
+          onChange={(event) => {
+            setFileName(event.target.files?.[0]?.name ?? null);
+            setSubmitted(false);
+          }}
           className="hidden"
         />
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
+      {submitted && (
+        <div className="rounded-lg bg-success/10 px-3.5 py-2.5 text-sm text-success">
+          Payment proof submitted — we&apos;ll verify it shortly.
+        </div>
+      )}
 
       <Button type="submit" disabled={isSubmitting} className="mt-1 h-11">
         {isSubmitting
