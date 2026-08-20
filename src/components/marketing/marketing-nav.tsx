@@ -81,7 +81,7 @@ export function MarketingNav({ registerHref }: { registerHref: string }) {
       }`}
     >
       <div className="relative mx-auto flex max-w-[990px] items-center justify-between gap-4 px-5 py-4 min-[900px]:px-10 min-[900px]:py-[18px]">
-        <Link href="/" className="shrink-0">
+        <Link href="#top" className="shrink-0">
           <Image src="/brand-inverted.png" alt="Hapag" width={541} height={154} priority className="h-14 w-auto" />
         </Link>
 
