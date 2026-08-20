@@ -13,6 +13,9 @@ export function MarketingFooter() {
   return (
     <footer>
       <div className="px-5 pt-[72px] pb-14 text-center min-[900px]:px-10 min-[900px]:pt-24 min-[900px]:pb-16">
+        {/* Not a link — matches the reference's plain `.mkt-footer-logo`, and
+            MarketingNav's logo already gives every page using this footer a
+            "back to home" link, so a second one here would be redundant. */}
         <div className="mb-5 flex justify-center">
           <Image src="/brand.png" alt="Hapag" width={530} height={154} className="h-14 w-auto" />
         </div>

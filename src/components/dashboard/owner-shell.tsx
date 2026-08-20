@@ -36,12 +36,11 @@ export function OwnerShell({
             only other chrome this shell has — so this is a minimal one,
             not a full admin-style header, just enough to host a logout
             control and a profile avatar across every owner page. Logout sits
-            beside the avatar (same row), not stacked above it. The avatar is
-            the one link into /business-profile from here — the dashboard
-            page's own logo-button that used to go there was removed so
-            there's a single, consistent entry point instead of two. */}
+            beside the avatar (same row), not stacked above it. */}
         <div className="flex items-center justify-between gap-2">
-          <Image src="/brand.png" alt="Hapag" width={530} height={154} className="h-6 w-auto shrink-0" />
+          <Link href="/dashboard">
+            <Image src="/brand.png" alt="Hapag" width={530} height={154} className="h-6 w-auto shrink-0" />
+          </Link>
           <div className="flex items-center gap-2">
             <form action={signOutOwner}>
               <button

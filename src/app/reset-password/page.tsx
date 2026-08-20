@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ResetLinkInvalidScreen } from "@/components/auth/reset-link-invalid-screen";
 import { ResetLinkErrorScreen } from "@/components/auth/reset-link-error-screen";
@@ -43,7 +44,9 @@ export default async function ResetPasswordPage({
     <div className="mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-background">
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pt-16 pb-10">
         <div className="flex flex-col items-center text-center">
-          <Image src="/logo.png" alt="Hapag" width={128} height={128} priority />
+          <Link href="/">
+            <Image src="/logo.png" alt="Hapag" width={128} height={128} priority />
+          </Link>
           <h1 className="mt-3 font-heading text-2xl font-semibold">Set a new password</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Choose a new password for your account.
