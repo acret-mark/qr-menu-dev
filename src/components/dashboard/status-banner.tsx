@@ -5,10 +5,8 @@ const BANNER_TEXT: Record<"pending" | "trial", string> = {
   trial: "You're on a free trial — add a plan to keep access.",
 };
 
-// The subscription screen doesn't exist yet anywhere in this codebase — this
-// link stays disabled until a future feature builds it and flips this flag.
-const SUBSCRIPTION_SCREEN_ENABLED = false;
-const SUBSCRIPTION_PATH = "/business-profile";
+const SUBSCRIPTION_SCREEN_ENABLED = true;
+const SUBSCRIPTION_PATH = "/business-profile#subscription";
 
 export function StatusBanner({ status }: { status: "pending" | "trial" }) {
   return (

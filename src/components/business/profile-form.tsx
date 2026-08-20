@@ -19,7 +19,9 @@ function validate(values: { name: string; contactEmail: string }): FieldErrors {
   }
 
   const trimmedEmail = values.contactEmail.trim();
-  if (trimmedEmail && !EMAIL_PATTERN.test(trimmedEmail)) {
+  if (!trimmedEmail) {
+    errors.contactEmail = "Contact email is required.";
+  } else if (!EMAIL_PATTERN.test(trimmedEmail)) {
     errors.contactEmail = "Enter a valid email address.";
   }
 
@@ -110,7 +112,7 @@ export function ProfileForm({
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="biz-email" className="text-sm font-medium">
-          Contact email
+          Contact email <span className="font-normal text-destructive">*</span>
         </label>
         <input
           id="biz-email"
@@ -122,7 +124,11 @@ export function ProfileForm({
             fieldErrors.contactEmail && "border-destructive"
           )}
           aria-invalid={!!fieldErrors.contactEmail}
+          aria-required="true"
         />
+        <p className="text-xs text-muted-foreground">
+          We&apos;ll send your activation confirmation to this address.
+        </p>
         {fieldErrors.contactEmail && (
           <span className="text-xs text-destructive">{fieldErrors.contactEmail}</span>
         )}
@@ -146,7 +152,9 @@ export function ProfileForm({
         </div>
       )}
       {status === "saved" && (
-        <p className="text-xs text-muted-foreground">Saved.</p>
+        <div className="rounded-lg bg-success/10 px-3.5 py-2.5 text-sm text-success">
+          Business information saved.
+        </div>
       )}
 
       <Button
