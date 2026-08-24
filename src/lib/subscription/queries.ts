@@ -7,7 +7,7 @@ export async function getSubscriptionStatusForOwner(
 ): Promise<OwnerSubscriptionStatus | null> {
   const { data: business, error } = await supabase
     .from("businesses")
-    .select("id, plan")
+    .select("id, plan, status")
     .eq("owner_id", ownerId)
     .maybeSingle();
 
@@ -34,5 +34,6 @@ export async function getSubscriptionStatusForOwner(
           createdAt: latestRow.created_at,
         }
       : null,
+    isTrial: business.status === "trial",
   };
 }

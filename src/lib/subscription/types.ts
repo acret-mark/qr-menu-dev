@@ -19,4 +19,6 @@ export interface LatestSubscription {
 export interface OwnerSubscriptionStatus {
   currentPlan: PlanType;
   latest: LatestSubscription | null;
+  /** True when the business's own status is "trial" (admin-granted, no subscription row). */
+  isTrial: boolean;
 }
