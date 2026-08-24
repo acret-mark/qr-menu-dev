@@ -20,6 +20,12 @@ export interface AdminBusinessDetail {
   plan: PlanType;
   status: BusinessStatus;
   createdAt: string;
+  /**
+   * Admin-set reference date recorded when a trial is granted without a
+   * payment proof (specs/029-admin-trial-activation). Informational only —
+   * no code reads or acts on it automatically.
+   */
+  trialEndsAt: string | null;
 }
 
 export interface AdminMenuItem {

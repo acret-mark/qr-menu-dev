@@ -10,6 +10,8 @@ import { StatusBadge } from "@/components/admin/status-badge";
 import { StatCard } from "@/components/admin/stat-card";
 import { Badge } from "@/components/admin/badge";
 import { BusinessDetailTabs } from "@/components/admin/business-detail-tabs";
+import { GrantTrialForm } from "@/components/admin/grant-trial-form";
+import { SuspendBusinessButton } from "@/components/admin/suspend-business-button";
 import { formatAdminDate, formatPaymentMethod } from "@/lib/admin/format";
 import type { AdminMenuCategory, AdminSubscriptionRecord, SubscriptionStatus } from "@/lib/admin/types";
 
@@ -52,12 +54,32 @@ function OverviewPanel({
               <td className="px-5 py-3 text-muted-foreground">Address</td>
               <td className="px-5 py-3">{business.address ?? "—"}</td>
             </tr>
-            <tr>
+            <tr className={business.trialEndsAt ? "border-b border-border" : undefined}>
               <td className="px-5 py-3 text-muted-foreground">Signed up</td>
               <td className="px-5 py-3">{formatAdminDate(business.createdAt)}</td>
             </tr>
+            {business.trialEndsAt && (
+              <tr>
+                <td className="px-5 py-3 text-muted-foreground">Trial reference end date</td>
+                <td className="px-5 py-3">{formatAdminDate(business.trialEndsAt)}</td>
+              </tr>
+            )}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex items-center gap-4">
+        {business.status === "pending" && <GrantTrialForm businessId={business.id} />}
+        {business.status === "trial" && (
+          <SuspendBusinessButton
+            businessId={business.id}
+            label="Cancel Trial"
+            confirmMessage="Cancel this business's trial? The owner will lose access until reactivated."
+          />
+        )}
+        {business.status !== "suspended" && business.status !== "trial" && (
+          <SuspendBusinessButton businessId={business.id} />
+        )}
       </div>
     </div>
   );

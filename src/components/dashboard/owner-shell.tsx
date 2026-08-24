@@ -63,7 +63,7 @@ export function OwnerShell({
             </Link>
           </div>
         </div>
-        {(status === "pending" || status === "trial") && <StatusBanner status={status} />}
+        {status === "pending" && <StatusBanner status={status} />}
         {children}
       </div>
       <OwnerTabBar />

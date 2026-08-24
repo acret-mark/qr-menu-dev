@@ -32,7 +32,9 @@ export async function getBusinessDetail(id: string): Promise<AdminBusinessDetail
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("businesses")
-    .select("id, name, slug, logo_url, contact_phone, contact_email, address, plan, status, created_at")
+    .select(
+      "id, name, slug, logo_url, contact_phone, contact_email, address, plan, status, created_at, trial_ends_at"
+    )
     .eq("id", id)
     .maybeSingle();
 
@@ -50,6 +52,7 @@ export async function getBusinessDetail(id: string): Promise<AdminBusinessDetail
     plan: data.plan,
     status: data.status,
     createdAt: data.created_at,
+    trialEndsAt: data.trial_ends_at,
   };
 }
 

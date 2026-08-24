@@ -113,6 +113,84 @@ export async function rejectSubscription(input: {
   return { ok: true };
 }
 
+export type GrantTrialInput = {
+  businessId: string;
+  durationDays: number;
+};
+
+export type GrantTrialResult =
+  | { ok: true; trialEndsAt: string }
+  | { ok: false; reason: "invalid-duration" | "not-authenticated" | string };
+
+/**
+ * Admin-initiated trial grant, no payment proof or subscriptions row involved
+ * (specs/029-admin-trial-activation). Deliberately a single-table update, not
+ * an RPC like activate_subscription() — there is no second table to keep in
+ * sync, so the atomicity concern that motivated that RPC doesn't apply here.
+ * trial_ends_at is informational only (Constitution Principle II's
+ * clarification): nothing else in the app reads or acts on it.
+ */
+export async function grantTrial(input: GrantTrialInput): Promise<GrantTrialResult> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, reason: "not-authenticated" };
+  }
+
+  if (!Number.isInteger(input.durationDays) || input.durationDays <= 0) {
+    return { ok: false, reason: "invalid-duration" };
+  }
+
+  const trialEndsAt = new Date(Date.now() + input.durationDays * 86_400_000).toISOString();
+
+  // Trials run on Pro so the owner sees the full feature set during the
+  // promotional period, not the Standard tier.
+  const { error } = await supabase
+    .from("businesses")
+    .update({ status: "trial", plan: "pro", trial_ends_at: trialEndsAt })
+    .eq("id", input.businessId);
+
+  if (error) {
+    return { ok: false, reason: error.message };
+  }
+
+  return { ok: true, trialEndsAt };
+}
+
+export type SuspendBusinessResult = { ok: true } | { ok: false; reason: "not-authenticated" | string };
+
+/**
+ * Admin-initiated suspend, independent of grantTrial()/activateSubscription() —
+ * the only way a business's owner dashboard gets fully locked out today,
+ * since nothing suspends a business automatically (Constitution Principle II).
+ */
+export async function suspendBusiness(businessId: string): Promise<SuspendBusinessResult> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, reason: "not-authenticated" };
+  }
+
+  const { error } = await supabase
+    .from("businesses")
+    .update({ status: "suspended" })
+    .eq("id", businessId);
+
+  if (error) {
+    return { ok: false, reason: error.message };
+  }
+
+  return { ok: true };
+}
+
 export type ReplyToSupportTicketResult = { ok: true } | { ok: false; reason: "empty-reply" | string };
 
 /**

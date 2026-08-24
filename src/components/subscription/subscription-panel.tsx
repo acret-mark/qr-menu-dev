@@ -26,7 +26,7 @@ export async function SubscriptionPanel() {
     return null;
   }
 
-  const { currentPlan, latest } = status;
+  const { currentPlan, latest, isTrial } = status;
   const showPaymentBlock = latest === null || latest.status !== "active";
 
   return (
@@ -35,7 +35,7 @@ export async function SubscriptionPanel() {
         <div className="flex items-baseline justify-between">
           <span className="font-heading text-lg font-semibold">{PLAN_LABELS[currentPlan]}</span>
           <span className="text-sm font-medium">
-            {latest ? STATUS_LABELS[latest.status] : "No subscription yet"}
+            {latest ? STATUS_LABELS[latest.status] : isTrial ? "Trial" : "No subscription yet"}
           </span>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
