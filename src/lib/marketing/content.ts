@@ -147,10 +147,19 @@ export type NavLink = {
   href: string;
 };
 
-/** MarketingNav's registration CTA (FR-012) is not a NavLink — see marketing-nav.tsx. */
+/**
+ * MarketingNav's registration CTA (FR-012) is not a NavLink — see marketing-nav.tsx.
+ *
+ * Hrefs are root-prefixed (`/#about`, not `#about`): MarketingNav and
+ * MarketingFooter are also rendered on /terms and /privacy, which don't
+ * have these section ids on the page. A bare `#about` there only rewrote
+ * the URL hash with nothing to scroll to; `/#about` always routes through
+ * the homepage first, where the target section actually exists, and still
+ * behaves as a same-page anchor scroll when already on `/`.
+ */
 export const NAV_LINKS: NavLink[] = [
-  { label: "About", href: "#about" },
-  { label: "Features", href: "#features" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "FAQ", href: "#faq" },
+  { label: "About", href: "/#about" },
+  { label: "Features", href: "/#features" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQ", href: "/#faq" },
 ];
