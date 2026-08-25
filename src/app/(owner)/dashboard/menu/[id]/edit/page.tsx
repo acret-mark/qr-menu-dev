@@ -8,7 +8,7 @@ export default async function EditItemPage({ params }: { params: Promise<{ id: s
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.
-  const { categories, item } = await getItemFormData(supabase, user!.id, id);
+  const { categories, businessIngredients, item } = await getItemFormData(supabase, user!.id, id);
 
   if (!item) {
     return (
@@ -24,7 +24,7 @@ export default async function EditItemPage({ params }: { params: Promise<{ id: s
   return (
     <div className="flex flex-col gap-4">
       <h1 className="font-heading text-xl font-semibold">Edit Item</h1>
-      <ItemForm categories={categories} item={item} />
+      <ItemForm categories={categories} businessIngredients={businessIngredients} item={item} />
     </div>
   );
 }

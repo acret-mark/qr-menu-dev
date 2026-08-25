@@ -44,10 +44,12 @@ const TRANSITION_MS = 300;
 export function ItemDetailSheet({
   item,
   categoryName,
+  showCategory,
   onClose,
 }: {
   item: MenuItem;
   categoryName: string;
+  showCategory: boolean;
   onClose: () => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -192,14 +194,26 @@ export function ItemDetailSheet({
                 {item.description}
               </p>
             )}
+            {item.ingredients.length > 0 && (
+              <p className="mt-2 text-[0.85rem] leading-relaxed text-muted-foreground">
+                <span className="font-medium text-foreground">Ingredients: </span>
+                {item.ingredients.join(", ")}
+              </p>
+            )}
             {/* One pill for this item's actual category — the mockup shows
                 several, but the data model has exactly one category per
-                item; rendering fabricated extra tags isn't warranted. */}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="rounded-full border border-primary px-3.5 py-1.5 text-[0.82rem] font-medium text-primary">
-                {categoryName}
-              </span>
-            </div>
+                item; rendering fabricated extra tags isn't warranted.
+                Shown only when this item was opened via a search result
+                (showCategory) — redundant otherwise, since the customer just
+                tapped this exact category's own tab to get here
+                (030-menu-item-ingredients FR-012/FR-013). */}
+            {showCategory && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="rounded-full border border-primary px-3.5 py-1.5 text-[0.82rem] font-medium text-primary">
+                  {categoryName}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

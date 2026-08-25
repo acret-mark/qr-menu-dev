@@ -128,7 +128,95 @@ export type SaveItemInput = {
   isSoldOut: boolean;
   isBestSeller: boolean;
   acceptedAiDraft?: { keywords: string[] };
+  ingredients: Array<{ id: string } | { name: string }>;
 };
+
+/**
+ * Ingredients extension (contracts/save-item-ingredients.md, 030-menu-item-
+ * ingredients): resolves each `{ name }` entry to an existing or newly-created
+ * `ingredients` row (case-insensitive reuse, FR-005), then reconciles
+ * `item_ingredients` as a full diff against the item's current rows. A bad
+ * `{ id }` (not owned by this business) or a failed create is dropped, never
+ * failing the item's own save (contract step 6).
+ */
+async function reconcileItemIngredients(
+  supabase: SupabaseClient,
+  itemId: string,
+  businessId: string,
+  ingredients: Array<{ id: string } | { name: string }>
+): Promise<void> {
+  const { data: existingIngredients } = await supabase
+    .from("ingredients")
+    .select("id, name")
+    .eq("business_id", businessId);
+
+  const byLowerName = new Map<string, string>(
+    (existingIngredients ?? []).map((row) => [row.name.toLowerCase(), row.id])
+  );
+  const validIds = new Set((existingIngredients ?? []).map((row) => row.id));
+
+  const resolvedIds = new Set<string>();
+
+  for (const entry of ingredients) {
+    if ("id" in entry) {
+      if (validIds.has(entry.id)) resolvedIds.add(entry.id);
+      continue;
+    }
+
+    const name = entry.name.trim();
+    if (!name) continue;
+
+    const existingId = byLowerName.get(name.toLowerCase());
+    if (existingId) {
+      resolvedIds.add(existingId);
+      continue;
+    }
+
+    const { data: created, error } = await supabase
+      .from("ingredients")
+      .insert({ business_id: businessId, name })
+      .select("id")
+      .single();
+
+    if (error || !created) {
+      console.error(`saveItem: failed to create ingredient "${name}" for business ${businessId}`, error);
+      continue;
+    }
+
+    byLowerName.set(name.toLowerCase(), created.id);
+    resolvedIds.add(created.id);
+  }
+
+  const { data: currentRows } = await supabase
+    .from("item_ingredients")
+    .select("ingredient_id")
+    .eq("item_id", itemId);
+
+  const currentIds = new Set((currentRows ?? []).map((row) => row.ingredient_id));
+
+  const toRemove = [...currentIds].filter((ingredientId) => !resolvedIds.has(ingredientId));
+  const toAdd = [...resolvedIds].filter((ingredientId) => !currentIds.has(ingredientId));
+
+  if (toRemove.length) {
+    const { error } = await supabase
+      .from("item_ingredients")
+      .delete()
+      .eq("item_id", itemId)
+      .in("ingredient_id", toRemove);
+    if (error) console.error(`saveItem: failed to remove ingredients from item ${itemId}`, error);
+  }
+
+  if (toAdd.length) {
+    const { error } = await supabase.from("item_ingredients").insert(
+      toAdd.map((ingredientId) => ({
+        item_id: itemId,
+        ingredient_id: ingredientId,
+        business_id: businessId,
+      }))
+    );
+    if (error) console.error(`saveItem: failed to attach ingredients to item ${itemId}`, error);
+  }
+}
 
 export type SaveItemResult = { ok: true; id: string } | { ok: false; reason: string };
 
@@ -278,6 +366,8 @@ export async function saveItem(input: SaveItemInput): Promise<SaveItemResult> {
 
     itemId = data.id;
   }
+
+  await reconcileItemIngredients(supabase, itemId, business.id, input.ingredients);
 
   await applyItemDescriptionTranslations(
     supabase,

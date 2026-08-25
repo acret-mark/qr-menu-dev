@@ -4,6 +4,7 @@ import { DISPLAY_LANGUAGES, type DisplayLanguage } from "@/lib/menu/types";
 import { hashItemDescription } from "./hash";
 import type {
   CategoryOption,
+  IngredientOption,
   ItemFormData,
   ItemFormItem,
   OwnerMenuCategory,
@@ -97,7 +98,7 @@ export async function getItemFormData(
   const business = await getOwnerBusiness(supabase, ownerId);
 
   if (!business) {
-    return { categories: [], item: null };
+    return { categories: [], businessIngredients: [], item: null };
   }
 
   const { data: categoryRows } = await supabase
@@ -111,8 +112,19 @@ export async function getItemFormData(
     name: row.name,
   }));
 
+  const { data: ingredientRows } = await supabase
+    .from("ingredients")
+    .select("id, name")
+    .eq("business_id", business.id)
+    .order("name", { ascending: true });
+
+  const businessIngredients: IngredientOption[] = (ingredientRows ?? []).map((row) => ({
+    id: row.id,
+    name: row.name,
+  }));
+
   if (!itemId) {
-    return { categories, item: null };
+    return { categories, businessIngredients, item: null };
   }
 
   const { data: itemRow } = await supabase
@@ -125,8 +137,19 @@ export async function getItemFormData(
     .maybeSingle();
 
   if (!itemRow) {
-    return { categories, item: null };
+    return { categories, businessIngredients, item: null };
   }
+
+  const { data: itemIngredientRows } = await supabase
+    .from("item_ingredients")
+    .select("ingredient_id, created_at, ingredients (id, name)")
+    .eq("item_id", itemRow.id)
+    .order("created_at", { ascending: true });
+
+  const ingredients: IngredientOption[] = (itemIngredientRows ?? [])
+    .map((row) => row.ingredients as unknown as { id: string; name: string } | null)
+    .filter((ingredient): ingredient is { id: string; name: string } => ingredient !== null)
+    .map((ingredient) => ({ id: ingredient.id, name: ingredient.name }));
 
   const item: ItemFormItem = {
     id: itemRow.id,
@@ -140,7 +163,8 @@ export async function getItemFormData(
     isBestSeller: itemRow.is_best_seller,
     descriptionSource: itemRow.description_source,
     aiKeywords: itemRow.ai_keywords,
+    ingredients,
   };
 
-  return { categories, item };
+  return { categories, businessIngredients, item };
 }

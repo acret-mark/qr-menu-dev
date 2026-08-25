@@ -8,7 +8,7 @@ export default async function NewItemPage() {
 
   // The (owner) layout already guarantees a signed-in user with a valid
   // business row before this page renders.
-  const { categories } = await getItemFormData(supabase, user!.id);
+  const { categories, businessIngredients } = await getItemFormData(supabase, user!.id);
 
   if (categories.length === 0) {
     return (
@@ -28,7 +28,7 @@ export default async function NewItemPage() {
   return (
     <div className="flex flex-col gap-4">
       <h1 className="font-heading text-xl font-semibold">Add Item</h1>
-      <ItemForm categories={categories} item={null} />
+      <ItemForm categories={categories} businessIngredients={businessIngredients} item={null} />
     </div>
   );
 }
