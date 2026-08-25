@@ -11,14 +11,17 @@ import {
   type ItemDescriptionFieldHandle,
 } from "@/components/items/item-description-field";
 import { DeleteItemDialog } from "@/components/items/delete-item-dialog";
+import { IngredientTagInput, type IngredientTag } from "@/components/items/ingredient-tag-input";
 import { saveItem } from "@/lib/items/actions";
-import type { CategoryOption, ItemFormItem } from "@/lib/items/types";
+import type { CategoryOption, IngredientOption, ItemFormItem } from "@/lib/items/types";
 
 export function ItemForm({
   categories,
+  businessIngredients,
   item,
 }: {
   categories: CategoryOption[];
+  businessIngredients: IngredientOption[];
   item: ItemFormItem | null;
 }) {
   const router = useRouter();
@@ -33,6 +36,9 @@ export function ItemForm({
   const [isDisplayed, setIsDisplayed] = useState(item?.isDisplayed ?? true);
   const [isSoldOut, setIsSoldOut] = useState(item?.isSoldOut ?? false);
   const [isBestSeller, setIsBestSeller] = useState(item?.isBestSeller ?? false);
+  const [ingredients, setIngredients] = useState<IngredientTag[]>(
+    item?.ingredients.map((ingredient) => ({ id: ingredient.id })) ?? []
+  );
 
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,6 +77,7 @@ export function ItemForm({
       isSoldOut,
       isBestSeller,
       acceptedAiDraft: acceptedAiDraft ?? undefined,
+      ingredients,
     });
 
     setIsSubmitting(false);
@@ -154,6 +161,18 @@ export function ItemForm({
           onDescriptionChange={handleDescriptionChange}
           onAcceptedDraft={handleAcceptedDraft}
         />
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="item-ingredients" className="text-sm font-medium">
+            Ingredients
+          </label>
+          <IngredientTagInput
+            id="item-ingredients"
+            suggestions={businessIngredients}
+            value={ingredients}
+            onChange={setIngredients}
+          />
+        </div>
 
         <div className="mt-2 flex flex-col divide-y divide-border rounded-lg border border-border">
           <div className="flex items-center justify-between px-3.5 py-3">

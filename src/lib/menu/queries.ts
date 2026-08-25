@@ -40,26 +40,51 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
     async () => {
       const supabase = createPublicClient();
 
-      const [{ data: categories, error: categoriesError }, { data: items, error: itemsError }] =
-        await Promise.all([
-          supabase
-            .from("categories")
-            .select("id, name, sort_order")
-            .eq("business_id", businessId)
-            .order("sort_order", { ascending: true }),
-          supabase
-            .from("items")
-            .select(
-              "id, category_id, name, description, price, photo_url, is_sold_out, is_best_seller, sort_order"
-            )
-            .eq("business_id", businessId)
-            .eq("is_displayed", true)
-            .order("is_best_seller", { ascending: false })
-            .order("sort_order", { ascending: true }),
-        ]);
+      const [
+        { data: categories, error: categoriesError },
+        { data: items, error: itemsError },
+        { data: itemIngredientRows, error: itemIngredientsError },
+      ] = await Promise.all([
+        supabase
+          .from("categories")
+          .select("id, name, sort_order")
+          .eq("business_id", businessId)
+          .order("sort_order", { ascending: true }),
+        supabase
+          .from("items")
+          .select(
+            "id, category_id, name, description, price, photo_url, is_sold_out, is_best_seller, sort_order"
+          )
+          .eq("business_id", businessId)
+          .eq("is_displayed", true)
+          .order("is_best_seller", { ascending: false })
+          .order("sort_order", { ascending: true }),
+        // Attach order, per FR-011 (030-menu-item-ingredients) — this query is
+        // ordered so the grouping below preserves it without re-sorting.
+        supabase
+          .from("item_ingredients")
+          .select("item_id, created_at, ingredients (name)")
+          .eq("business_id", businessId)
+          .order("created_at", { ascending: true }),
+      ]);
 
       if (categoriesError) throw categoriesError;
       if (itemsError) throw itemsError;
+      // Deliberately NOT thrown, unlike categories/items above: item_ingredients
+      // is a new table (schema-change-request.md) that may not exist yet in a
+      // given environment. The public menu must keep rendering (Principle VI)
+      // with simply no ingredients shown rather than erroring the whole page
+      // for every business until that migration lands.
+      if (itemIngredientsError) console.error("getMenuData: item_ingredients query failed", itemIngredientsError);
+
+      const ingredientsByItem = new Map<string, string[]>();
+      for (const row of itemIngredientRows ?? []) {
+        const ingredient = row.ingredients as unknown as { name: string } | null;
+        if (!ingredient) continue;
+        const list = ingredientsByItem.get(row.item_id) ?? [];
+        list.push(ingredient.name);
+        ingredientsByItem.set(row.item_id, list);
+      }
 
       const itemsByCategory = new Map<string, MenuItem[]>();
       for (const item of items ?? []) {
@@ -72,6 +97,7 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
           photoUrl: item.photo_url,
           isSoldOut: item.is_sold_out,
           isBestSeller: item.is_best_seller,
+          ingredients: ingredientsByItem.get(item.id) ?? [],
         });
         itemsByCategory.set(item.category_id, list);
       }

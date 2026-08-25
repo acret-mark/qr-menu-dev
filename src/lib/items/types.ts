@@ -20,6 +20,11 @@ export interface CategoryOption {
   name: string;
 }
 
+export interface IngredientOption {
+  id: string;
+  name: string;
+}
+
 export interface ItemFormItem {
   id: string;
   name: string;
@@ -32,9 +37,11 @@ export interface ItemFormItem {
   isBestSeller: boolean;
   descriptionSource: "ai_generated" | "manual" | null;
   aiKeywords: string[] | null;
+  ingredients: IngredientOption[];
 }
 
 export interface ItemFormData {
   categories: CategoryOption[];
+  businessIngredients: IngredientOption[];
   item: ItemFormItem | null;
 }

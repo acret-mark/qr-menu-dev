@@ -76,11 +76,12 @@ export function MenuHome({
   function findExpandedEntry() {
     if (!expandedItemId) return null;
     if (trimmedQuery) {
-      return results.find((result) => result.item.id === expandedItemId) ?? null;
+      const result = results.find((candidate) => candidate.item.id === expandedItemId);
+      return result ? { ...result, fromSearch: true } : null;
     }
     for (const category of categories) {
       const item = category.items.find((candidate) => candidate.id === expandedItemId);
-      if (item) return { item, categoryName: category.name };
+      if (item) return { item, categoryName: category.name, fromSearch: false };
     }
     return null;
   }
@@ -249,6 +250,7 @@ export function MenuHome({
         <ItemDetailSheet
           item={expandedEntry.item}
           categoryName={expandedEntry.categoryName}
+          showCategory={expandedEntry.fromSearch}
           onClose={() => toggleItem(expandedEntry.item.id)}
         />
       )}

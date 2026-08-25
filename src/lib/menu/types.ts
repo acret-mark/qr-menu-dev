@@ -36,6 +36,7 @@ export interface MenuItem {
   photoUrl: string | null;
   isSoldOut: boolean;
   isBestSeller: boolean;
+  ingredients: string[];
 }
 
 export interface MenuCategory {
