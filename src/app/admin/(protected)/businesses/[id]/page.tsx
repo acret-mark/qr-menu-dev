@@ -6,12 +6,10 @@ import {
   getBusinessSubscriptions,
   hasOpenSupportTicket,
 } from "@/lib/admin/queries";
-import { StatusBadge } from "@/components/admin/status-badge";
 import { StatCard } from "@/components/admin/stat-card";
 import { Badge } from "@/components/admin/badge";
 import { BusinessDetailTabs } from "@/components/admin/business-detail-tabs";
-import { GrantTrialForm } from "@/components/admin/grant-trial-form";
-import { SuspendBusinessButton } from "@/components/admin/suspend-business-button";
+import { StatusPlanForm } from "@/components/admin/status-plan-form";
 import { formatAdminDate, formatPaymentMethod } from "@/lib/admin/format";
 import type { AdminMenuCategory, AdminSubscriptionRecord, SubscriptionStatus } from "@/lib/admin/types";
 
@@ -68,19 +66,6 @@ function OverviewPanel({
         </table>
       </div>
 
-      <div className="flex items-center gap-4">
-        {business.status === "pending" && <GrantTrialForm businessId={business.id} />}
-        {business.status === "trial" && (
-          <SuspendBusinessButton
-            businessId={business.id}
-            label="Cancel Trial"
-            confirmMessage="Cancel this business's trial? The owner will lose access until reactivated."
-          />
-        )}
-        {business.status !== "suspended" && business.status !== "trial" && (
-          <SuspendBusinessButton businessId={business.id} />
-        )}
-      </div>
     </div>
   );
 }
@@ -194,7 +179,14 @@ export default async function BusinessDetailPage({
           <h1 className="font-heading text-2xl font-semibold">{business.name}</h1>
           <p className="text-sm text-muted-foreground">{business.slug}</p>
         </div>
-        <StatusBadge status={business.status} className="ml-auto" />
+        <div className="ml-auto">
+          <StatusPlanForm
+            businessId={business.id}
+            slug={business.slug}
+            currentStatus={business.status}
+            currentPlan={business.plan}
+          />
+        </div>
       </div>
 
       {(hasPendingSubscription || hasOpenTicket) && (
