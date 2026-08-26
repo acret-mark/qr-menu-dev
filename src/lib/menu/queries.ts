@@ -63,7 +63,7 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
         // ordered so the grouping below preserves it without re-sorting.
         supabase
           .from("item_ingredients")
-          .select("item_id, created_at, ingredients (name)")
+          .select("item_id, created_at, ingredients (id, name)")
           .eq("business_id", businessId)
           .order("created_at", { ascending: true }),
       ]);
@@ -77,12 +77,12 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
       // for every business until that migration lands.
       if (itemIngredientsError) console.error("getMenuData: item_ingredients query failed", itemIngredientsError);
 
-      const ingredientsByItem = new Map<string, string[]>();
+      const ingredientsByItem = new Map<string, { id: string; name: string }[]>();
       for (const row of itemIngredientRows ?? []) {
-        const ingredient = row.ingredients as unknown as { name: string } | null;
+        const ingredient = row.ingredients as unknown as { id: string; name: string } | null;
         if (!ingredient) continue;
         const list = ingredientsByItem.get(row.item_id) ?? [];
-        list.push(ingredient.name);
+        list.push(ingredient);
         ingredientsByItem.set(row.item_id, list);
       }
 
@@ -124,22 +124,31 @@ export async function getTranslations(
     async () => {
       const supabase = createPublicClient();
 
-      const [{ data: categoryRows, error: categoryError }, { data: itemRows, error: itemError }] =
-        await Promise.all([
-          supabase
-            .from("category_translations")
-            .select("category_id, translated_name")
-            .eq("business_id", businessId)
-            .eq("language_code", language),
-          supabase
-            .from("item_translations")
-            .select("item_id, translated_description")
-            .eq("business_id", businessId)
-            .eq("language_code", language),
-        ]);
+      const [
+        { data: categoryRows, error: categoryError },
+        { data: itemRows, error: itemError },
+        { data: ingredientRows, error: ingredientError },
+      ] = await Promise.all([
+        supabase
+          .from("category_translations")
+          .select("category_id, translated_name")
+          .eq("business_id", businessId)
+          .eq("language_code", language),
+        supabase
+          .from("item_translations")
+          .select("item_id, translated_description")
+          .eq("business_id", businessId)
+          .eq("language_code", language),
+        supabase
+          .from("ingredient_translations")
+          .select("ingredient_id, translated_name")
+          .eq("business_id", businessId)
+          .eq("language_code", language),
+      ]);
 
       if (categoryError) throw categoryError;
       if (itemError) throw itemError;
+      if (ingredientError) throw ingredientError;
 
       const categoryNames: Record<string, string> = {};
       for (const row of categoryRows ?? []) {
@@ -151,7 +160,12 @@ export async function getTranslations(
         if (row.translated_description) itemDescriptions[row.item_id] = row.translated_description;
       }
 
-      return { categoryNames, itemDescriptions };
+      const ingredientNames: Record<string, string> = {};
+      for (const row of ingredientRows ?? []) {
+        if (row.translated_name) ingredientNames[row.ingredient_id] = row.translated_name;
+      }
+
+      return { categoryNames, itemDescriptions, ingredientNames };
     },
     ["menu-translations", businessId, language],
     { tags: [menuCacheTag(slug)], revalidate: CACHE_REVALIDATE_SECONDS }

@@ -197,7 +197,7 @@ export function ItemDetailSheet({
             {item.ingredients.length > 0 && (
               <p className="mt-2 text-[0.85rem] leading-relaxed text-muted-foreground">
                 <span className="font-medium text-foreground">Ingredients: </span>
-                {item.ingredients.join(", ")}
+                {item.ingredients.map((ingredient) => ingredient.name).join(", ")}
               </p>
             )}
             {/* One pill for this item's actual category — the mockup shows

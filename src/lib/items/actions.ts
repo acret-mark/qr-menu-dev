@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { getOwnerBusiness } from "@/lib/auth/login";
 import { DISPLAY_LANGUAGES, type DisplayLanguage } from "@/lib/menu/types";
-import { hashItemDescription } from "./hash";
+import { hashItemDescription, hashIngredientName } from "./hash";
 import { translateText } from "@/lib/deepl/client";
 import { uploadImage } from "@/lib/cloudinary/client";
 import { validateLogoFile } from "@/lib/business/logo-validation";
@@ -144,7 +144,7 @@ async function reconcileItemIngredients(
   itemId: string,
   businessId: string,
   ingredients: Array<{ id: string } | { name: string }>
-): Promise<void> {
+): Promise<{ id: string; name: string }[]> {
   const { data: existingIngredients } = await supabase
     .from("ingredients")
     .select("id, name")
@@ -152,6 +152,9 @@ async function reconcileItemIngredients(
 
   const byLowerName = new Map<string, string>(
     (existingIngredients ?? []).map((row) => [row.name.toLowerCase(), row.id])
+  );
+  const nameById = new Map<string, string>(
+    (existingIngredients ?? []).map((row) => [row.id, row.name])
   );
   const validIds = new Set((existingIngredients ?? []).map((row) => row.id));
 
@@ -184,6 +187,7 @@ async function reconcileItemIngredients(
     }
 
     byLowerName.set(name.toLowerCase(), created.id);
+    nameById.set(created.id, name);
     resolvedIds.add(created.id);
   }
 
@@ -216,6 +220,73 @@ async function reconcileItemIngredients(
     );
     if (error) console.error(`saveItem: failed to attach ingredients to item ${itemId}`, error);
   }
+
+  return [...resolvedIds].map((id) => ({ id, name: nameById.get(id) ?? "" }));
+}
+
+/**
+ * Ingredient translate-on-save (ingredient-translation follow-on to
+ * 030-menu-item-ingredients, which explicitly deferred this): a direct port
+ * of categories/actions.ts's applyTranslations() onto ingredient_translations,
+ * run once per ingredient currently attached to the saved item. Ingredients
+ * are a shared per-business vocabulary (like categories, not per-item text),
+ * so re-running this for an already-translated, unchanged ingredient is a
+ * cheap no-op via the same source_hash skip used elsewhere.
+ */
+async function applyIngredientTranslations(
+  supabase: SupabaseClient,
+  businessId: string,
+  ingredients: { id: string; name: string }[],
+  sourceLanguage: string
+): Promise<void> {
+  const requiredLanguages = DISPLAY_LANGUAGES.filter((lang) => lang !== sourceLanguage);
+  if (!requiredLanguages.length) return;
+
+  await Promise.allSettled(
+    ingredients
+      .filter((ingredient) => ingredient.name.trim())
+      .map(async (ingredient) => {
+        const currentHash = hashIngredientName(ingredient.name);
+
+        const { data: existingRows } = await supabase
+          .from("ingredient_translations")
+          .select("language_code, source_hash")
+          .eq("ingredient_id", ingredient.id);
+
+        const existingByLanguage = new Map(
+          (existingRows ?? []).map((row) => [row.language_code as DisplayLanguage, row.source_hash])
+        );
+
+        const staleLanguages = requiredLanguages.filter(
+          (lang) => existingByLanguage.get(lang) !== currentHash
+        );
+
+        await Promise.allSettled(
+          staleLanguages.map(async (lang) => {
+            const result = await translateText(ingredient.name, lang);
+            if (!result.ok) {
+              console.error(`saveItem: translation failed for ingredient ${ingredient.id} -> ${lang}`);
+              return;
+            }
+
+            const { error } = await supabase.from("ingredient_translations").upsert(
+              {
+                ingredient_id: ingredient.id,
+                business_id: businessId,
+                language_code: lang,
+                translated_name: result.text,
+                source_hash: currentHash,
+              },
+              { onConflict: "ingredient_id,language_code" }
+            );
+
+            if (error) {
+              console.error(`saveItem: upsert failed for ingredient ${ingredient.id} -> ${lang}`, error);
+            }
+          })
+        );
+      })
+  );
 }
 
 export type SaveItemResult = { ok: true; id: string } | { ok: false; reason: string };
@@ -367,7 +438,14 @@ export async function saveItem(input: SaveItemInput): Promise<SaveItemResult> {
     itemId = data.id;
   }
 
-  await reconcileItemIngredients(supabase, itemId, business.id, input.ingredients);
+  const resolvedIngredients = await reconcileItemIngredients(
+    supabase,
+    itemId,
+    business.id,
+    input.ingredients
+  );
+
+  await applyIngredientTranslations(supabase, business.id, resolvedIngredients, business.source_language);
 
   await applyItemDescriptionTranslations(
     supabase,
