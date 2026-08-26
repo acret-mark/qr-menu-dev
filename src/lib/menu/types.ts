@@ -36,7 +36,7 @@ export interface MenuItem {
   photoUrl: string | null;
   isSoldOut: boolean;
   isBestSeller: boolean;
-  ingredients: string[];
+  ingredients: { id: string; name: string }[];
 }
 
 export interface MenuCategory {
@@ -48,4 +48,5 @@ export interface MenuCategory {
 export interface Translations {
   categoryNames: Record<string, string>;
   itemDescriptions: Record<string, string>;
+  ingredientNames: Record<string, string>;
 }
