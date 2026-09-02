@@ -68,23 +68,43 @@ export function QrCodeView({ name, slug }: { name: string; slug: string }) {
     triggerDownload(qrDataUrl, `${slug}-qr-code.png`);
   }
 
+  // A single page of 6 identical, independently cuttable copies (3 rows x 2
+  // columns) — an owner prints once and cuts it into 6 table-ready codes,
+  // rather than printing/cutting a single QR code repeatedly (FR-005a).
+  const PDF_GRID_COLS = 2;
+  const PDF_GRID_ROWS = 3;
+  const PDF_MARGIN = 30;
+
   function handleDownloadPdf() {
     if (!qrDataUrl || !menuUrl) return;
 
     const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
 
-    const qrSize = 300;
-    const qrX = (pageWidth - qrSize) / 2;
-    const qrY = 160;
+    const cellWidth = (pageWidth - PDF_MARGIN * 2) / PDF_GRID_COLS;
+    const cellHeight = (pageHeight - PDF_MARGIN * 2) / PDF_GRID_ROWS;
+    const qrSize = Math.min(cellWidth, cellHeight) - 90;
 
-    doc.setFontSize(20);
-    doc.text(name, pageWidth / 2, 100, { align: "center" });
+    for (let row = 0; row < PDF_GRID_ROWS; row++) {
+      for (let col = 0; col < PDF_GRID_COLS; col++) {
+        const cellX = PDF_MARGIN + col * cellWidth;
+        const cellY = PDF_MARGIN + row * cellHeight;
+        const centerX = cellX + cellWidth / 2;
 
-    doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
+        const nameY = cellY + 30;
+        const qrX = cellX + (cellWidth - qrSize) / 2;
+        const qrY = nameY + 20;
 
-    doc.setFontSize(12);
-    doc.text(menuUrl, pageWidth / 2, qrY + qrSize + 40, { align: "center" });
+        doc.setFontSize(14);
+        doc.text(name, centerX, nameY, { align: "center" });
+
+        doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
+
+        doc.setFontSize(9);
+        doc.text(menuUrl, centerX, qrY + qrSize + 16, { align: "center" });
+      }
+    }
 
     doc.save(`${slug}-qr-code.pdf`);
   }
