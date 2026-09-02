@@ -10,6 +10,11 @@ import { uploadImage } from "@/lib/cloudinary/client";
 import { validateLogoFile } from "@/lib/business/logo-validation";
 import { generateDescription } from "@/lib/ai-description/client";
 import { checkAndIncrementDailyLimit } from "@/lib/ai-description/rate-limit";
+import { getSubscriptionAccess } from "@/lib/subscription/access-gate";
+
+// Reject reason shared by every action below when the caller's subscription
+// is locked (spec FR-012, specs/032-unified-subscription-lifecycle).
+const LOCKED_REASON = "subscription-locked";
 
 export type SetItemSoldOutInput = {
   id: string;
@@ -32,6 +37,11 @@ export async function setItemSoldOut(input: SetItemSoldOutInput): Promise<SetIte
 
   if (!business) {
     return { ok: false, reason: "no-business" };
+  }
+
+  const access = await getSubscriptionAccess(supabase, business.id);
+  if (!access.full) {
+    return { ok: false, reason: LOCKED_REASON };
   }
 
   const { error } = await supabase
@@ -332,6 +342,11 @@ export async function saveItem(input: SaveItemInput): Promise<SaveItemResult> {
     return { ok: false, reason: "no-business" };
   }
 
+  const access = await getSubscriptionAccess(supabase, business.id);
+  if (!access.full) {
+    return { ok: false, reason: LOCKED_REASON };
+  }
+
   const { data: category } = await supabase
     .from("categories")
     .select("id")
@@ -476,6 +491,11 @@ export async function deleteItem(input: { id: string }): Promise<DeleteItemResul
     return { ok: false, reason: "no-business" };
   }
 
+  const access = await getSubscriptionAccess(supabase, business.id);
+  if (!access.full) {
+    return { ok: false, reason: LOCKED_REASON };
+  }
+
   const { error } = await supabase
     .from("items")
     .delete()
@@ -499,6 +519,16 @@ export async function uploadItemPhoto(formData: FormData): Promise<UploadItemPho
 
   if (!user) {
     return { ok: false, message: "You must be signed in to upload a photo." };
+  }
+
+  const business = await getOwnerBusiness(supabase, user.id);
+  if (!business) {
+    return { ok: false, message: "Couldn't find your business. Please try again." };
+  }
+
+  const access = await getSubscriptionAccess(supabase, business.id);
+  if (!access.full) {
+    return { ok: false, message: "Your subscription has expired. Renew to keep editing your menu." };
   }
 
   const file = formData.get("file");
@@ -545,6 +575,11 @@ export async function generateItemDescription(
   const business = await getOwnerBusiness(supabase, user.id);
 
   if (!business) {
+    return { ok: false, reason: "generation-failed" };
+  }
+
+  const access = await getSubscriptionAccess(supabase, business.id);
+  if (!access.full) {
     return { ok: false, reason: "generation-failed" };
   }
 

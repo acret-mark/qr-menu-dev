@@ -170,6 +170,9 @@ export default async function BusinessDetailPage({
 
   const subscriptions = await getBusinessSubscriptions(id);
   const hasPendingSubscription = subscriptions.some((s) => s.status === "pending");
+  // Latest row (subscriptions is ordered newest-first) is the same signal
+  // getBusinessList()'s `locked` uses (specs/032-unified-subscription-lifecycle).
+  const isLocked = subscriptions[0]?.status === "expired";
   const hasOpenTicket = await hasOpenSupportTicket(id);
 
   return (
@@ -179,6 +182,11 @@ export default async function BusinessDetailPage({
           <h1 className="font-heading text-2xl font-semibold">{business.name}</h1>
           <p className="text-sm text-muted-foreground">{business.slug}</p>
         </div>
+        {isLocked && (
+          <span className="inline-flex items-center rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-medium text-destructive">
+            Expired
+          </span>
+        )}
         <div className="ml-auto">
           <StatusPlanForm
             businessId={business.id}
