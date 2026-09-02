@@ -6,6 +6,13 @@ import { DISPLAY_LANGUAGES, type DisplayLanguage, type SourceLanguage } from "@/
 import { hashCategoryName } from "./hash";
 import { translateText } from "@/lib/deepl/client";
 import type { OwnerCategory } from "./types";
+import { getSubscriptionAccess } from "@/lib/subscription/access-gate";
+
+// Reject reason shared by every action below when the caller's subscription
+// is locked (spec FR-012, specs/032-unified-subscription-lifecycle) —
+// category create/edit/delete/reorder are all menu-edit actions that must be
+// blocked once access-gate.ts reports not-full access.
+const LOCKED_REASON = "subscription-locked";
 
 export type SaveCategoryInput = {
   id?: string;
@@ -110,6 +117,11 @@ export async function saveCategory(input: SaveCategoryInput): Promise<SaveCatego
     return { ok: false, reason: "no-business" };
   }
 
+  const access = await getSubscriptionAccess(supabase, business.id);
+  if (!access.full) {
+    return { ok: false, reason: LOCKED_REASON };
+  }
+
   if (input.id) {
     const { data, error } = await supabase
       .from("categories")
@@ -209,6 +221,11 @@ export async function deleteCategory(input: DeleteCategoryInput): Promise<Delete
     return { ok: false, reason: "no-business" };
   }
 
+  const access = await getSubscriptionAccess(supabase, business.id);
+  if (!access.full) {
+    return { ok: false, reason: LOCKED_REASON };
+  }
+
   const { error } = await supabase
     .from("categories")
     .delete()
@@ -249,6 +266,11 @@ export async function reorderCategory(
 
   if (businessError || !business) {
     return { ok: false, reason: "no-business" };
+  }
+
+  const access = await getSubscriptionAccess(supabase, business.id);
+  if (!access.full) {
+    return { ok: false, reason: LOCKED_REASON };
   }
 
   const { data: categories, error: listError } = await supabase

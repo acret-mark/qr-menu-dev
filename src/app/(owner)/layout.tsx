@@ -8,6 +8,7 @@ import {
   isKnownBusinessStatus,
 } from "@/lib/auth/login";
 import { OwnerShell } from "@/components/dashboard/owner-shell";
+import { getSubscriptionAccess } from "@/lib/subscription/access-gate";
 
 export default async function OwnerLayout({
   children,
@@ -30,8 +31,15 @@ export default async function OwnerLayout({
     redirect(SUSPENDED_PATH);
   }
 
+  // Only meaningful for trial/active — a still-pending business has never
+  // had lifecycle access to lose (spec FR-014 concerns the locked state
+  // that follows an elapsed grace period, not first-activation waiting).
+  const locked =
+    business.status !== "pending" &&
+    !(await getSubscriptionAccess(supabase, business.id)).full;
+
   return (
-    <OwnerShell status={business.status} businessName={business.name}>
+    <OwnerShell status={business.status} businessName={business.name} locked={locked}>
       {children}
     </OwnerShell>
   );

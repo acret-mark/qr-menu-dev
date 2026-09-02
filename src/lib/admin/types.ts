@@ -1,4 +1,10 @@
 export type BusinessStatus = "active" | "trial" | "pending" | "suspended";
+// businesses.plan — an admin's paid-tier choice for a business. Deliberately
+// does NOT include "trial" (see SubscriptionPlanType below) — putting
+// "trial" here would let an admin pick it as a business plan tier through
+// the Set Status/Plan picker (status-plan-form.tsx PLAN_OPTIONS), which is
+// not what a trial-type subscription row means (specs/032-unified-
+// subscription-lifecycle research.md §5).
 export type PlanType = "standard" | "pro";
 
 export interface AdminBusinessSummary {
@@ -7,6 +13,8 @@ export interface AdminBusinessSummary {
   plan: PlanType;
   status: BusinessStatus;
   createdAt: string;
+  /** True when the business's subscription lockout has kicked in (specs/032-unified-subscription-lifecycle). */
+  locked: boolean;
 }
 
 export interface AdminBusinessDetail {
@@ -44,9 +52,17 @@ export interface AdminMenuCategory {
 
 export type SubscriptionStatus = "pending" | "active" | "expired" | "cancelled";
 
+/**
+ * subscriptions.plan — unlike PlanType above, this DOES include "trial"
+ * (specs/032-unified-subscription-lifecycle T001 widened plan_type). Used
+ * only for subscription-row shapes (AdminSubscriptionRecord below), never
+ * for a business's own plan.
+ */
+export type SubscriptionPlanType = PlanType | "trial";
+
 export interface AdminSubscriptionRecord {
   id: string;
-  plan: PlanType;
+  plan: SubscriptionPlanType;
   amount: number;
   status: SubscriptionStatus;
   paymentMethod: string | null;

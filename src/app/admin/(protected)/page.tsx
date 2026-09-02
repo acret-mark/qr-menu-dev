@@ -28,6 +28,7 @@ export default async function BusinessListPage({
   const needsAttention = businesses.filter(
     (b) => b.status === "trial" || b.status === "pending"
   ).length;
+  const expired = businesses.filter((b) => b.locked).length;
 
   const trimmedQuery = q?.trim() ?? "";
   const filteredBusinesses = trimmedQuery
@@ -43,11 +44,12 @@ export default async function BusinessListPage({
         <p className="text-sm text-muted-foreground">All registered Hapag accounts.</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         <StatCard label="Total Businesses" value={total} />
         <StatCard label="Active" value={active} />
         <StatCard label="On Trial" value={trial} />
         <StatCard label="Needs Attention" value={needsAttention} />
+        <StatCard label="Expired" value={expired} />
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -89,7 +91,13 @@ export default async function BusinessListPage({
                     </td>
                     <td className="p-0">
                       <Link href={href} className="block px-5 py-3.5">
-                        <StatusBadge status={business.status} />
+                        {business.locked ? (
+                          <span className="inline-flex items-center rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-medium text-destructive">
+                            Expired
+                          </span>
+                        ) : (
+                          <StatusBadge status={business.status} />
+                        )}
                       </Link>
                     </td>
                     <td className="p-0">

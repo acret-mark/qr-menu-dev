@@ -132,6 +132,22 @@ export type SetBusinessStatusAndPlanResult = { ok: true } | { ok: false; reason:
  * table to keep in sync, so no RPC is needed. Invalidates the public menu cache
  * unconditionally, since both status (visibility) and plan (rendering) can change
  * what /menu/{slug} would show (research.md §6).
+ *
+ * EXTENDED for specs/032-unified-subscription-lifecycle (T012): a trial grant
+ * now also needs a real `subscriptions` row, since `subscriptions.expires_at`
+ * is the unified lifecycle's sole expiry source of truth (spec FR-003) — a
+ * business flipped to `status: "trial"` with no subscription row would never
+ * be picked up by the expiry cron and would sit at full access forever. When
+ * `input.status === "trial"`, this calls the `grant_trial_subscription()` RPC
+ * (T001, 20260902020000_add_grant_trial_subscription_fn.sql) — a sibling to
+ * `activate_subscription()`, not an extension of it, since a trial grant has
+ * neither a pending row nor a payment amount to activate. That RPC already
+ * sets `businesses.status = 'trial'` itself; `input.plan` is applied in a
+ * second, separate update here since the RPC has no plan parameter. Every
+ * other status keeps the original direct single-table write, unchanged — no
+ * subscriptions row is created or required for a non-trial status/plan
+ * change (specs/031-admin-status-plan-override's FR-002-equivalent
+ * guarantee).
  */
 export async function setBusinessStatusAndPlan(
   input: SetBusinessStatusAndPlanInput
@@ -144,6 +160,38 @@ export async function setBusinessStatusAndPlan(
 
   if (!user) {
     return { ok: false, reason: "not-authenticated" };
+  }
+
+  if (input.status === "trial") {
+    // One calendar month from grant time — the same fixed reference window
+    // Constitution Principle II's trial-grant clarification already
+    // established for admin-granted trials (mirrored by T001's backfill
+    // migration's fallback for businesses with no trial_ends_at).
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 1);
+
+    const { error: grantError } = await supabase.rpc("grant_trial_subscription", {
+      p_business_id: input.businessId,
+      p_admin_id: user.id,
+      p_expires_at: expiresAt.toISOString(),
+    });
+
+    if (grantError) {
+      return { ok: false, reason: grantError.message };
+    }
+
+    const { error: planError } = await supabase
+      .from("businesses")
+      .update({ plan: input.plan })
+      .eq("id", input.businessId);
+
+    if (planError) {
+      return { ok: false, reason: planError.message };
+    }
+
+    invalidateMenuCache(input.slug);
+
+    return { ok: true };
   }
 
   const { error } = await supabase

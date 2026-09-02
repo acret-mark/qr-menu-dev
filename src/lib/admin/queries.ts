@@ -10,21 +10,55 @@ import type {
   PlanType,
 } from "./types";
 
+/**
+ * `locked` (specs/032-unified-subscription-lifecycle, spec FR-017) backs
+ * both the admin business list's "Expired" stat card (T015) and a per-row
+ * flag, so the two can never disagree.
+ *
+ * Per T001's landed schema decision, `businesses.status` gets NO new value
+ * for lockout — it stays `active`/`trial` throughout, so this cannot be a
+ * simple `businesses.status = 'expired'` filter. Instead: the expiry cron
+ * (src/app/api/cron/subscription-expiry/route.ts) is the only writer of
+ * `subscriptions.status = 'expired'`, and only does so once a subscription's
+ * grace period has elapsed — so a business is locked exactly when its most
+ * recent subscription row (by created_at) has `status = 'expired'`. Fetches
+ * every subscription row (pilot scale — SRS §12.4/§12.6: 3-5 restaurants,
+ * headroom for low hundreds of businesses, per plan.md's Performance Goals)
+ * and reduces to one status per business client-side, since there's no
+ * generated-types/view layer here to express "latest row per group" as a
+ * single query.
+ */
 export async function getBusinessList(): Promise<AdminBusinessSummary[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("businesses")
-    .select("id, name, plan, status, created_at")
-    .order("created_at", { ascending: false });
+  const [businessesResult, subscriptionsResult] = await Promise.all([
+    supabase
+      .from("businesses")
+      .select("id, name, plan, status, created_at")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("subscriptions")
+      .select("business_id, status, created_at")
+      .order("business_id", { ascending: true })
+      .order("created_at", { ascending: false }),
+  ]);
 
-  if (error) throw error;
+  if (businessesResult.error) throw businessesResult.error;
+  if (subscriptionsResult.error) throw subscriptionsResult.error;
 
-  return (data ?? []).map((row) => ({
+  const latestSubscriptionStatusByBusiness = new Map<string, string>();
+  for (const row of subscriptionsResult.data ?? []) {
+    if (!latestSubscriptionStatusByBusiness.has(row.business_id)) {
+      latestSubscriptionStatusByBusiness.set(row.business_id, row.status);
+    }
+  }
+
+  return (businessesResult.data ?? []).map((row) => ({
     id: row.id,
     name: row.name,
     plan: row.plan,
     status: row.status,
     createdAt: row.created_at,
+    locked: latestSubscriptionStatusByBusiness.get(row.id) === "expired",
   }));
 }
 
