@@ -31,11 +31,12 @@ export interface LatestSubscription {
   status: SubscriptionStatus;
   paymentMethod: string | null;
   createdAt: string;
+  expiresAt: string | null;
 }
 
 export interface OwnerSubscriptionStatus {
   currentPlan: PlanType;
   latest: LatestSubscription | null;
-  /** True when the business's own status is "trial" (admin-granted, no subscription row). */
+  /** True when the business's own status is "trial" (specs/032-unified-subscription-lifecycle: trial rows carry a real subscriptions row via grant_trial_subscription()/backfill, same as any other plan). */
   isTrial: boolean;
 }

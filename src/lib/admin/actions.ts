@@ -143,10 +143,26 @@ export type SetBusinessStatusAndPlanResult = { ok: true } | { ok: false; reason:
  * `activate_subscription()`, not an extension of it, since a trial grant has
  * neither a pending row nor a payment amount to activate. That RPC already
  * sets `businesses.status = 'trial'` itself; `input.plan` is applied in a
- * second, separate update here since the RPC has no plan parameter. Every
- * other status keeps the original direct single-table write, unchanged — no
- * subscriptions row is created or required for a non-trial status/plan
- * change (specs/031-admin-status-plan-override's FR-002-equivalent
+ * second, separate update here since the RPC has no plan parameter.
+ *
+ * FOLLOW-UP for 032: `status: "active"` has the same problem `trial` did —
+ * a business whose latest subscription is `expired` (locked) previously
+ * just got `businesses.status` flipped back to "active" with the stale
+ * expired row left as the latest one the access gate reads, so the lock
+ * silently never lifted despite the control looking like it succeeded.
+ * Fixed the same way: when there's no currently-live subscription (none, or
+ * the latest one isn't `active`), this calls the new
+ * `grant_active_subscription()` RPC (20260904000000) — same admin-override
+ * trust model as the trial grant, just for a paid plan — which creates a
+ * fresh active row and actually lifts the lock. When a live subscription
+ * already exists (the common case: admin is just correcting
+ * status/plan on an already-healthy business), this deliberately falls
+ * through to the plain direct write below instead, so a real, longer-dated
+ * paid subscription is never superseded by a $0 admin-override row.
+ *
+ * Every other status (pending/suspended) keeps the original direct
+ * single-table write, unchanged — no subscriptions row is created or
+ * required there (specs/031-admin-status-plan-override's FR-002-equivalent
  * guarantee).
  */
 export async function setBusinessStatusAndPlan(
@@ -192,6 +208,39 @@ export async function setBusinessStatusAndPlan(
     invalidateMenuCache(input.slug);
 
     return { ok: true };
+  }
+
+  if (input.status === "active") {
+    const { data: latest } = await supabase
+      .from("subscriptions")
+      .select("status")
+      .eq("business_id", input.businessId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const hasLiveSubscription = latest?.status === "active";
+
+    if (!hasLiveSubscription) {
+      // Same fixed one-month reference window as the trial grant.
+      const expiresAt = new Date();
+      expiresAt.setMonth(expiresAt.getMonth() + 1);
+
+      const { error: grantError } = await supabase.rpc("grant_active_subscription", {
+        p_business_id: input.businessId,
+        p_admin_id: user.id,
+        p_plan: input.plan,
+        p_expires_at: expiresAt.toISOString(),
+      });
+
+      if (grantError) {
+        return { ok: false, reason: grantError.message };
+      }
+
+      invalidateMenuCache(input.slug);
+
+      return { ok: true };
+    }
   }
 
   const { error } = await supabase

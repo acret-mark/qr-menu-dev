@@ -61,6 +61,12 @@ export function StatusPlanForm({
     return movesOffActive || movesOffPro;
   }
 
+  // "Trial" and "Active" both actually renew — grant_trial_subscription()
+  // and (when there's no currently-live subscription) grant_active_subscription()
+  // each create a fresh subscription row (specs/032-unified-subscription-lifecycle;
+  // see setBusinessStatusAndPlan()) — hence the different button label below.
+  const isRenewal = status === "trial" || status === "active";
+
   async function handleApply() {
     if (isBackwardMove()) {
       const confirmed = window.confirm(
@@ -117,7 +123,7 @@ export function StatusPlanForm({
           ))}
         </select>
         <Button type="button" variant="outline" size="xs" disabled={isSubmitting} onClick={handleApply}>
-          {isSubmitting ? "Applying…" : "Apply"}
+          {isSubmitting ? "Applying…" : isRenewal ? "Renew" : "Apply"}
         </Button>
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
