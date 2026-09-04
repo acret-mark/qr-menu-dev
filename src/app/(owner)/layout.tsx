@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/supabase/server";
 import {
@@ -9,6 +10,13 @@ import {
 } from "@/lib/auth/login";
 import { OwnerShell } from "@/components/dashboard/owner-shell";
 import { getSubscriptionAccess } from "@/lib/subscription/access-gate";
+
+// Covers dashboard/menu/categories/qr/business-profile/support in one place —
+// none of these pages are ever meant to appear in search results (specs/033
+// FR-007).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function OwnerLayout({
   children,

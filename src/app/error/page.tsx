@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { ErrorState } from "@/components/system/error-state";
+
+// Error pages are functional-only and never meant to surface in search
+// results (specs/033 FR-009).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 // The destination `ERROR_PATH` ("/error", src/lib/auth/login.ts) already
 // points to from `(owner)/layout.tsx` and `account-suspended/page.tsx` when a

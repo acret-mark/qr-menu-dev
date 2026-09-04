@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { getBusinessBySlug, loadDisplayCategories } from "@/lib/menu/queries";
 import { InactiveMenuScreen } from "@/components/menu/inactive-menu-screen";
 import { MenuHome } from "@/components/menu/menu-home";
+
+// Public menu pages are reached only by scanning a physical QR code, never by
+// search — indexing them offers no value and risks thin/duplicate-content
+// problems at scale, so every one carries a noindex directive regardless of
+// robots.txt (specs/033 FR-006). No per-business title/description is added
+// here — that would have no SEO payoff for a page that stays excluded.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function MenuPage({
   params,

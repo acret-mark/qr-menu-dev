@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Lock } from "lucide-react";
@@ -11,6 +12,12 @@ import {
 } from "@/lib/auth/login";
 import { buttonVariants } from "@/components/ui/button";
 import { signOutOwner } from "@/lib/auth/logout";
+
+// Auth/account pages are functional-only and never meant to surface in
+// search results (specs/033 FR-009).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 // Top-level route, deliberately outside the `(owner)` route group: that layout
 // is what redirects *to* this page when `status === 'suspended'`, so this page

@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import { LOGIN_PATH } from "@/lib/auth/login";
+
+// Auth pages are functional-only and never meant to surface in search
+// results (specs/033 FR-009).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function ForgotPasswordPage() {
   return (

@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ResetLinkInvalidScreen } from "@/components/auth/reset-link-invalid-screen";
 import { ResetLinkErrorScreen } from "@/components/auth/reset-link-error-screen";
 import { ResetPasswordForm } from "@/components/auth/reset-password-form";
+
+// Auth pages are functional-only and never meant to surface in search
+// results (specs/033 FR-009).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 const DEFAULT_TYPE = "recovery";
 
