@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+// Error pages are functional-only and never meant to surface in search
+// results (specs/033 FR-009).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 // Dev-only verification aid for S-04 (spec.md US2/FR-007) — throws for real,
 // so visiting this route in development exercises the actual

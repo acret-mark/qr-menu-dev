@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { RegisterForm } from "@/components/auth/register-form";
+
+// Auth pages are functional-only and never meant to surface in search
+// results (specs/033 FR-009).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function RegisterPage() {
   return (

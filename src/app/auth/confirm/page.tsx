@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { LinkInvalidScreen } from "@/components/auth/link-invalid-screen";
 import { ConfirmationErrorScreen } from "@/components/auth/confirmation-error-screen";
 import { BusinessSetupFailedScreen } from "@/components/auth/business-setup-failed-screen";
+
+// Auth pages are functional-only and never meant to surface in search
+// results (specs/033 FR-009).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 const DEFAULT_TYPE = "email";
 const DEFAULT_NEXT = "/business-profile";
