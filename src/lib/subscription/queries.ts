@@ -17,7 +17,7 @@ export async function getSubscriptionStatusForOwner(
 
   const { data: latestRow } = await supabase
     .from("subscriptions")
-    .select("id, plan, status, payment_method, created_at")
+    .select("id, plan, status, payment_method, created_at, expires_at")
     .eq("business_id", business.id)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -32,6 +32,7 @@ export async function getSubscriptionStatusForOwner(
           status: latestRow.status,
           paymentMethod: latestRow.payment_method,
           createdAt: latestRow.created_at,
+          expiresAt: latestRow.expires_at,
         }
       : null,
     isTrial: business.status === "trial",
