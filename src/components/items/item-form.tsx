@@ -12,6 +12,7 @@ import {
 } from "@/components/items/item-description-field";
 import { DeleteItemDialog } from "@/components/items/delete-item-dialog";
 import { IngredientTagInput, type IngredientTag } from "@/components/items/ingredient-tag-input";
+import { CategoryTagInput } from "@/components/items/category-tag-input";
 import { saveItem } from "@/lib/items/actions";
 import type { CategoryOption, IngredientOption, ItemFormItem } from "@/lib/items/types";
 
@@ -28,7 +29,9 @@ export function ItemForm({
   const descriptionFieldRef = useRef<ItemDescriptionFieldHandle>(null);
 
   const [name, setName] = useState(item?.name ?? "");
-  const [categoryId, setCategoryId] = useState(item?.categoryId ?? categories[0]?.id ?? "");
+  const [categoryIds, setCategoryIds] = useState<string[]>(
+    item?.categoryIds ?? (categories[0] ? [categories[0].id] : [])
+  );
   const [price, setPrice] = useState(item ? String(item.price) : "");
   const [description, setDescription] = useState(item?.description ?? "");
   const [acceptedAiDraft, setAcceptedAiDraft] = useState<{ keywords: string[] } | null>(null);
@@ -48,7 +51,11 @@ export function ItemForm({
   const priceValue = Number(price);
   const isPriceValid = price.trim() !== "" && Number.isFinite(priceValue) && priceValue >= 0;
   const canSubmit =
-    name.trim() !== "" && categoryId !== "" && isPriceValid && !isPhotoUploading && !isSubmitting;
+    name.trim() !== "" &&
+    categoryIds.length > 0 &&
+    isPriceValid &&
+    !isPhotoUploading &&
+    !isSubmitting;
 
   function handleDescriptionChange(next: string) {
     setDescription(next);
@@ -69,7 +76,7 @@ export function ItemForm({
     const result = await saveItem({
       id: item?.id,
       name,
-      categoryId,
+      categoryIds,
       price: priceValue,
       description,
       photoUrl,
@@ -118,20 +125,14 @@ export function ItemForm({
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="item-category" className="text-sm font-medium">
-            Category
+            Categories
           </label>
-          <select
+          <CategoryTagInput
             id="item-category"
-            value={categoryId}
-            onChange={(event) => setCategoryId(event.target.value)}
-            className="h-11 rounded-lg border border-border bg-background px-3.5 text-base outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+            categories={categories}
+            value={categoryIds}
+            onChange={setCategoryIds}
+          />
         </div>
 
         <div className="flex flex-col gap-1.5">

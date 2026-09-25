@@ -130,7 +130,7 @@ async function applyItemDescriptionTranslations(
 export type SaveItemInput = {
   id?: string;
   name: string;
-  categoryId: string;
+  categoryIds: string[];
   price: number;
   description: string;
   photoUrl: string | null;
@@ -235,6 +235,65 @@ async function reconcileItemIngredients(
 }
 
 /**
+ * Category reconciliation on save (contracts/save-item-categories.md,
+ * 035-item-multiple-categories) — a structural copy of
+ * reconcileItemIngredients() above, minus its "create new" resolution step:
+ * every categoryId here was already validated (in saveItem()) as an existing
+ * category owned by the caller's business, so this only diffs the item's
+ * current item_categories rows against that set. A newly-added category gets
+ * sort_order = max(sort_order) + 1 scoped to that category (append to the end
+ * of its list) — an already-linked category's row, and therefore its
+ * sort_order, is left untouched (FR-005: a category link that already
+ * existed doesn't move when the item is linked to one more).
+ */
+async function reconcileItemCategories(
+  supabase: SupabaseClient,
+  itemId: string,
+  businessId: string,
+  categoryIds: string[]
+): Promise<void> {
+  const { data: currentRows } = await supabase
+    .from("item_categories")
+    .select("category_id")
+    .eq("item_id", itemId);
+
+  const currentIds = new Set((currentRows ?? []).map((row) => row.category_id));
+  const nextIds = new Set(categoryIds);
+
+  const toRemove = [...currentIds].filter((categoryId) => !nextIds.has(categoryId));
+  const toAdd = [...nextIds].filter((categoryId) => !currentIds.has(categoryId));
+
+  if (toRemove.length) {
+    const { error } = await supabase
+      .from("item_categories")
+      .delete()
+      .eq("item_id", itemId)
+      .in("category_id", toRemove);
+    if (error) console.error(`saveItem: failed to unlink categories from item ${itemId}`, error);
+  }
+
+  for (const categoryId of toAdd) {
+    const { data: maxRow } = await supabase
+      .from("item_categories")
+      .select("sort_order")
+      .eq("category_id", categoryId)
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const nextSortOrder = maxRow ? maxRow.sort_order + 1 : 0;
+
+    const { error } = await supabase.from("item_categories").insert({
+      item_id: itemId,
+      category_id: categoryId,
+      business_id: businessId,
+      sort_order: nextSortOrder,
+    });
+    if (error) console.error(`saveItem: failed to link category ${categoryId} to item ${itemId}`, error);
+  }
+}
+
+/**
  * Ingredient translate-on-save (ingredient-translation follow-on to
  * 030-menu-item-ingredients, which explicitly deferred this): a direct port
  * of categories/actions.ts's applyTranslations() onto ingredient_translations,
@@ -315,7 +374,8 @@ export async function saveItem(input: SaveItemInput): Promise<SaveItemResult> {
     return { ok: false, reason: "empty-name" };
   }
 
-  if (!input.categoryId) {
+  const categoryIds = [...new Set(input.categoryIds)];
+  if (categoryIds.length === 0) {
     return { ok: false, reason: "missing-category" };
   }
 
@@ -347,14 +407,13 @@ export async function saveItem(input: SaveItemInput): Promise<SaveItemResult> {
     return { ok: false, reason: LOCKED_REASON };
   }
 
-  const { data: category } = await supabase
+  const { data: ownedCategories } = await supabase
     .from("categories")
     .select("id")
-    .eq("id", input.categoryId)
-    .eq("business_id", business.id)
-    .maybeSingle();
+    .in("id", categoryIds)
+    .eq("business_id", business.id);
 
-  if (!category) {
+  if ((ownedCategories ?? []).length !== categoryIds.length) {
     return { ok: false, reason: "invalid-category" };
   }
 
@@ -362,7 +421,6 @@ export async function saveItem(input: SaveItemInput): Promise<SaveItemResult> {
 
   const baseFields = {
     name,
-    category_id: input.categoryId,
     price: input.price,
     description: description || null,
     photo_url: input.photoUrl,
@@ -425,23 +483,12 @@ export async function saveItem(input: SaveItemInput): Promise<SaveItemResult> {
         ? { description_source: "manual" as const }
         : {};
 
-    const { data: maxRow } = await supabase
-      .from("items")
-      .select("sort_order")
-      .eq("category_id", input.categoryId)
-      .order("sort_order", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    const nextSortOrder = maxRow ? maxRow.sort_order + 1 : 0;
-
     const { data, error } = await supabase
       .from("items")
       .insert({
         ...baseFields,
         ...provenanceFields,
         business_id: business.id,
-        sort_order: nextSortOrder,
       })
       .select("id")
       .single();
@@ -452,6 +499,8 @@ export async function saveItem(input: SaveItemInput): Promise<SaveItemResult> {
 
     itemId = data.id;
   }
+
+  await reconcileItemCategories(supabase, itemId, business.id, categoryIds);
 
   const resolvedIngredients = await reconcileItemIngredients(
     supabase,

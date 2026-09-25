@@ -77,11 +77,11 @@ export function MenuHome({
     if (!expandedItemId) return null;
     if (trimmedQuery) {
       const result = results.find((candidate) => candidate.item.id === expandedItemId);
-      return result ? { ...result, fromSearch: true } : null;
+      return result ? { item: result.item, fromSearch: true } : null;
     }
     for (const category of categories) {
       const item = category.items.find((candidate) => candidate.id === expandedItemId);
-      if (item) return { item, categoryName: category.name, fromSearch: false };
+      if (item) return { item, fromSearch: false };
     }
     return null;
   }
@@ -249,7 +249,6 @@ export function MenuHome({
       {expandedEntry && (
         <ItemDetailSheet
           item={expandedEntry.item}
-          categoryName={expandedEntry.categoryName}
           showCategory={expandedEntry.fromSearch}
           onClose={() => toggleItem(expandedEntry.item.id)}
         />

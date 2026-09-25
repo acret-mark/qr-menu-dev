@@ -44,6 +44,7 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
         { data: categories, error: categoriesError },
         { data: items, error: itemsError },
         { data: itemIngredientRows, error: itemIngredientsError },
+        { data: itemCategoryRows, error: itemCategoriesError },
       ] = await Promise.all([
         supabase
           .from("categories")
@@ -52,13 +53,9 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
           .order("sort_order", { ascending: true }),
         supabase
           .from("items")
-          .select(
-            "id, category_id, name, description, price, photo_url, is_sold_out, is_best_seller, sort_order"
-          )
+          .select("id, name, description, price, photo_url, is_sold_out, is_best_seller")
           .eq("business_id", businessId)
-          .eq("is_displayed", true)
-          .order("is_best_seller", { ascending: false })
-          .order("sort_order", { ascending: true }),
+          .eq("is_displayed", true),
         // Attach order, per FR-011 (030-menu-item-ingredients) — this query is
         // ordered so the grouping below preserves it without re-sorting.
         supabase
@@ -66,6 +63,14 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
           .select("item_id, created_at, ingredients (id, name)")
           .eq("business_id", businessId)
           .order("created_at", { ascending: true }),
+        // Per-category position (FR-005, 035-item-multiple-categories) — this
+        // query is ordered so the fan-out below preserves each category's own
+        // item order without re-sorting.
+        supabase
+          .from("item_categories")
+          .select("item_id, category_id, sort_order, categories (name)")
+          .eq("business_id", businessId)
+          .order("sort_order", { ascending: true }),
       ]);
 
       if (categoriesError) throw categoriesError;
@@ -76,6 +81,7 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
       // with simply no ingredients shown rather than erroring the whole page
       // for every business until that migration lands.
       if (itemIngredientsError) console.error("getMenuData: item_ingredients query failed", itemIngredientsError);
+      if (itemCategoriesError) throw itemCategoriesError;
 
       const ingredientsByItem = new Map<string, { id: string; name: string }[]>();
       for (const row of itemIngredientRows ?? []) {
@@ -86,10 +92,18 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
         ingredientsByItem.set(row.item_id, list);
       }
 
-      const itemsByCategory = new Map<string, MenuItem[]>();
+      const categoryNamesByItem = new Map<string, string[]>();
+      for (const row of itemCategoryRows ?? []) {
+        const categoryName = (row.categories as unknown as { name: string } | null)?.name;
+        if (!categoryName) continue;
+        const names = categoryNamesByItem.get(row.item_id) ?? [];
+        names.push(categoryName);
+        categoryNamesByItem.set(row.item_id, names);
+      }
+
+      const menuItemsById = new Map<string, MenuItem>();
       for (const item of items ?? []) {
-        const list = itemsByCategory.get(item.category_id) ?? [];
-        list.push({
+        menuItemsById.set(item.id, {
           id: item.id,
           name: item.name,
           description: item.description,
@@ -98,8 +112,29 @@ export async function getMenuData(businessId: string, slug: string): Promise<Men
           isSoldOut: item.is_sold_out,
           isBestSeller: item.is_best_seller,
           ingredients: ingredientsByItem.get(item.id) ?? [],
+          categoryNames: categoryNamesByItem.get(item.id) ?? [],
         });
-        itemsByCategory.set(item.category_id, list);
+      }
+
+      // Fan each item into EVERY category it's assigned to
+      // (035-item-multiple-categories FR-001/FR-003), not just one, in
+      // item_categories.sort_order order (FR-005) — a displayed item whose
+      // business row was excluded above (is_displayed false) simply has no
+      // entry in menuItemsById and is skipped here.
+      const itemsByCategory = new Map<string, MenuItem[]>();
+      for (const row of itemCategoryRows ?? []) {
+        const menuItem = menuItemsById.get(row.item_id);
+        if (!menuItem) continue;
+        const list = itemsByCategory.get(row.category_id) ?? [];
+        list.push(menuItem);
+        itemsByCategory.set(row.category_id, list);
+      }
+
+      // Pin best sellers to the top of each category's own list (FR-008),
+      // via a stable sort — items tied on is_best_seller keep the
+      // sort_order-derived order the loop above already put them in.
+      for (const list of itemsByCategory.values()) {
+        list.sort((a, b) => Number(b.isBestSeller) - Number(a.isBestSeller));
       }
 
       return (categories ?? [])

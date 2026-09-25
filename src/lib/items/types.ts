@@ -6,7 +6,11 @@ export interface OwnerMenuCategory {
 
 export interface OwnerMenuItem {
   id: string;
-  categoryId: string;
+  categoryIds: string[];
+  // Per-(item,category) position (FR-005) — category id -> its
+  // item_categories.sort_order, so the owner's item list can be ordered
+  // correctly within whichever single category is currently active.
+  categorySortOrders: Record<string, number>;
   name: string;
   price: number;
   photoUrl: string | null;
@@ -28,7 +32,7 @@ export interface IngredientOption {
 export interface ItemFormItem {
   id: string;
   name: string;
-  categoryId: string;
+  categoryIds: string[];
   price: number;
   description: string;
   photoUrl: string | null;

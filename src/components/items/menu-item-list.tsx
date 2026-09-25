@@ -12,9 +12,13 @@ const TOGGLE_ERROR_TIMEOUT_MS = 4000;
 export function MenuItemList({
   categories,
   items: initialItems,
+  pinBestSellers,
 }: {
   categories: OwnerMenuCategory[];
   items: OwnerMenuItem[];
+  // Pro-only "pin to top" behavior (SRS §4.3/§4.9) — Standard keeps items in
+  // their existing (per-category) order regardless of Best Seller flag.
+  pinBestSellers: boolean;
 }) {
   const [items, setItems] = useState(initialItems);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -51,7 +55,19 @@ export function MenuItemList({
 
   const activeCategory =
     sortedCategories.find((category) => category.id === activeCategoryId) ?? sortedCategories[0];
-  const visibleItems = items.filter((item) => item.categoryId === activeCategory.id);
+  const visibleItems = items
+    .filter((item) => item.categoryIds.includes(activeCategory.id))
+    .sort(
+      (a, b) =>
+        (a.categorySortOrders[activeCategory.id] ?? 0) -
+        (b.categorySortOrders[activeCategory.id] ?? 0)
+    );
+
+  // Stable sort — items tied on isBestSeller keep the per-category order
+  // the sort above already put them in.
+  if (pinBestSellers) {
+    visibleItems.sort((a, b) => Number(b.isBestSeller) - Number(a.isBestSeller));
+  }
 
   function scheduleErrorClear(itemId: string) {
     const existing = errorTimers.current.get(itemId);

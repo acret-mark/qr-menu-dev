@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getOwnerBusiness } from "@/lib/auth/login";
-import { DISPLAY_LANGUAGES, type DisplayLanguage } from "@/lib/menu/types";
+import { DISPLAY_LANGUAGES, type DisplayLanguage, type PlanType } from "@/lib/menu/types";
 import { hashItemDescription } from "./hash";
 import type {
   CategoryOption,
@@ -14,18 +14,18 @@ import type {
 export async function getMenuForOwner(
   supabase: SupabaseClient,
   ownerId: string
-): Promise<{ categories: OwnerMenuCategory[]; items: OwnerMenuItem[] }> {
+): Promise<{ plan: PlanType | null; categories: OwnerMenuCategory[]; items: OwnerMenuItem[] }> {
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, source_language")
+    .select("id, source_language, plan")
     .eq("owner_id", ownerId)
     .maybeSingle();
 
   if (!business) {
-    return { categories: [], items: [] };
+    return { plan: null, categories: [], items: [] };
   }
 
-  const [{ data: categoryRows }, { data: itemRows }] = await Promise.all([
+  const [{ data: categoryRows }, { data: itemRows }, { data: itemCategoryRows }] = await Promise.all([
     supabase
       .from("categories")
       .select("id, name, sort_order")
@@ -33,7 +33,14 @@ export async function getMenuForOwner(
       .order("sort_order", { ascending: true }),
     supabase
       .from("items")
-      .select("id, category_id, name, price, description, photo_url, is_sold_out, is_best_seller")
+      .select("id, name, price, description, photo_url, is_sold_out, is_best_seller")
+      .eq("business_id", business.id),
+    // Per-category position (FR-005, 035-item-multiple-categories) — ordered
+    // so grouping below preserves each category's own item order without
+    // re-sorting.
+    supabase
+      .from("item_categories")
+      .select("item_id, category_id, sort_order")
       .eq("business_id", business.id)
       .order("sort_order", { ascending: true }),
   ]);
@@ -43,6 +50,18 @@ export async function getMenuForOwner(
     name: row.name,
     sortOrder: row.sort_order,
   }));
+
+  const categoryIdsByItem = new Map<string, string[]>();
+  const categorySortOrdersByItem = new Map<string, Record<string, number>>();
+  for (const row of itemCategoryRows ?? []) {
+    const list = categoryIdsByItem.get(row.item_id) ?? [];
+    list.push(row.category_id);
+    categoryIdsByItem.set(row.item_id, list);
+
+    const sortOrders = categorySortOrdersByItem.get(row.item_id) ?? {};
+    sortOrders[row.category_id] = row.sort_order;
+    categorySortOrdersByItem.set(row.item_id, sortOrders);
+  }
 
   const itemIds = (itemRows ?? []).map((row) => row.id);
 
@@ -77,7 +96,8 @@ export async function getMenuForOwner(
 
     return {
       id: row.id,
-      categoryId: row.category_id,
+      categoryIds: categoryIdsByItem.get(row.id) ?? [],
+      categorySortOrders: categorySortOrdersByItem.get(row.id) ?? {},
       name: row.name,
       price: Number(row.price),
       photoUrl: row.photo_url,
@@ -87,7 +107,7 @@ export async function getMenuForOwner(
     };
   });
 
-  return { categories, items };
+  return { plan: business.plan, categories, items };
 }
 
 export async function getItemFormData(
@@ -130,7 +150,7 @@ export async function getItemFormData(
   const { data: itemRow } = await supabase
     .from("items")
     .select(
-      "id, name, category_id, price, description, photo_url, is_displayed, is_sold_out, is_best_seller, description_source, ai_keywords"
+      "id, name, price, description, photo_url, is_displayed, is_sold_out, is_best_seller, description_source, ai_keywords"
     )
     .eq("id", itemId)
     .eq("business_id", business.id)
@@ -139,6 +159,14 @@ export async function getItemFormData(
   if (!itemRow) {
     return { categories, businessIngredients, item: null };
   }
+
+  const { data: itemCategoryRows } = await supabase
+    .from("item_categories")
+    .select("category_id")
+    .eq("item_id", itemRow.id)
+    .order("sort_order", { ascending: true });
+
+  const categoryIds = (itemCategoryRows ?? []).map((row) => row.category_id);
 
   const { data: itemIngredientRows } = await supabase
     .from("item_ingredients")
@@ -154,7 +182,7 @@ export async function getItemFormData(
   const item: ItemFormItem = {
     id: itemRow.id,
     name: itemRow.name,
-    categoryId: itemRow.category_id,
+    categoryIds,
     price: Number(itemRow.price),
     description: itemRow.description ?? "",
     photoUrl: itemRow.photo_url,
