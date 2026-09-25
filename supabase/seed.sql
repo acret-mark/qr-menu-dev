@@ -35,6 +35,17 @@ insert into auth.users (
    now(), null, now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
   ('00000000-0000-0000-0000-000000000000', '99999999-9999-9999-9999-999999999999', 'authenticated', 'authenticated',
    'admin@seed.hapag.ph', crypt('password123', gen_salt('bf')),
+   now(), null, now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
+  -- Added for specs/034-local-dev-environment (ai_workspace): trial + grace-period-boundary states
+  -- not covered by the original four owners above.
+  ('00000000-0000-0000-0000-000000000000', '55555555-5555-5555-5555-555555555555', 'authenticated', 'authenticated',
+   'owner-trial@seed.hapag.ph', crypt('password123', gen_salt('bf')),
+   now(), null, now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '66666666-6666-6666-6666-666666666666', 'authenticated', 'authenticated',
+   'owner-locked-grace@seed.hapag.ph', crypt('password123', gen_salt('bf')),
+   now(), null, now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', ''),
+  ('00000000-0000-0000-0000-000000000000', '77777777-7777-7777-7777-777777777777', 'authenticated', 'authenticated',
+   'owner-locked-expired@seed.hapag.ph', crypt('password123', gen_salt('bf')),
    now(), null, now(), '{"provider":"email","providers":["email"]}', '{}', now(), now(), '', '', '', '');
 
 insert into auth.identities (
@@ -49,7 +60,13 @@ insert into auth.identities (
   (gen_random_uuid(), '44444444-4444-4444-4444-444444444444', '44444444-4444-4444-4444-444444444444',
    '{"sub":"44444444-4444-4444-4444-444444444444","email":"owner-suspended@seed.hapag.ph"}', 'email', now(), now(), now()),
   (gen_random_uuid(), '99999999-9999-9999-9999-999999999999', '99999999-9999-9999-9999-999999999999',
-   '{"sub":"99999999-9999-9999-9999-999999999999","email":"admin@seed.hapag.ph"}', 'email', now(), now(), now());
+   '{"sub":"99999999-9999-9999-9999-999999999999","email":"admin@seed.hapag.ph"}', 'email', now(), now(), now()),
+  (gen_random_uuid(), '55555555-5555-5555-5555-555555555555', '55555555-5555-5555-5555-555555555555',
+   '{"sub":"55555555-5555-5555-5555-555555555555","email":"owner-trial@seed.hapag.ph"}', 'email', now(), now(), now()),
+  (gen_random_uuid(), '66666666-6666-6666-6666-666666666666', '66666666-6666-6666-6666-666666666666',
+   '{"sub":"66666666-6666-6666-6666-666666666666","email":"owner-locked-grace@seed.hapag.ph"}', 'email', now(), now(), now()),
+  (gen_random_uuid(), '77777777-7777-7777-7777-777777777777', '77777777-7777-7777-7777-777777777777',
+   '{"sub":"77777777-7777-7777-7777-777777777777","email":"owner-locked-expired@seed.hapag.ph"}', 'email', now(), now(), now());
 
 -- ============================================================
 -- admin_users
@@ -66,7 +83,17 @@ insert into businesses (id, name, slug, logo_url, contact_phone, contact_email, 
   ('b1111111-0000-0000-0000-000000000001', 'Kubo Kitchen', 'kubo-kitchen', null, '+63 917 111 1111', 'owner-standard@seed.hapag.ph', 'Quezon City, Metro Manila', '11111111-1111-1111-1111-111111111111', 'standard', 'active', 'en'),
   ('b2222222-0000-0000-0000-000000000002', 'Manila Meze', 'manila-meze', null, '+63 917 222 2222', 'owner-pro@seed.hapag.ph', 'Makati, Metro Manila', '22222222-2222-2222-2222-222222222222', 'pro', 'active', 'en'),
   ('b3333333-0000-0000-0000-000000000003', 'Isla Grill', 'isla-grill', null, '+63 917 333 3333', 'owner-pending@seed.hapag.ph', 'Cebu City, Cebu', '33333333-3333-3333-3333-333333333333', 'standard', 'pending', 'en'),
-  ('b4444444-0000-0000-0000-000000000004', 'Barrio Bites', 'barrio-bites', null, '+63 917 444 4444', 'owner-suspended@seed.hapag.ph', 'Davao City, Davao', '44444444-4444-4444-4444-444444444444', 'standard', 'suspended', 'en');
+  ('b4444444-0000-0000-0000-000000000004', 'Barrio Bites', 'barrio-bites', null, '+63 917 444 4444', 'owner-suspended@seed.hapag.ph', 'Davao City, Davao', '44444444-4444-4444-4444-444444444444', 'standard', 'suspended', 'en'),
+  -- Added for specs/034-local-dev-environment (ai_workspace): 029/031/032 states the original four
+  -- don't cover. `plan` stays 'standard' (its column default) for the trial business below —
+  -- grant_trial_subscription() never touches businesses.plan, only businesses.status (see the
+  -- subscriptions insert further down and 20260902020000_add_grant_trial_subscription_fn.sql).
+  ('b5555555-0000-0000-0000-000000000005', 'Tita Rosa''s Turo-Turo', 'tita-rosas-turo-turo', null, '+63 917 555 5555', 'owner-trial@seed.hapag.ph', 'Baguio City, Benguet', '55555555-5555-5555-5555-555555555555', 'standard', 'trial', 'en'),
+  -- status seeded 'active' deliberately, not a locked value — 032's design has businesses.status
+  -- stay unchanged through lockout; the locked/grace state lives entirely in the linked
+  -- subscriptions row below, read live by src/lib/subscription/access-gate.ts.
+  ('b6666666-0000-0000-0000-000000000006', 'Kanto Karinderya', 'kanto-karinderya', null, '+63 917 666 6666', 'owner-locked-grace@seed.hapag.ph', 'Iloilo City, Iloilo', '66666666-6666-6666-6666-666666666666', 'standard', 'active', 'en'),
+  ('b7777777-0000-0000-0000-000000000007', 'Baguio Brew Co.', 'baguio-brew-co', null, '+63 917 777 7777', 'owner-locked-expired@seed.hapag.ph', 'Baguio City, Benguet', '77777777-7777-7777-7777-777777777777', 'pro', 'active', 'en');
 
 -- ============================================================
 -- categories
@@ -93,6 +120,28 @@ insert into items (id, category_id, business_id, name, description, description_
   ('d2222222-0000-0000-0000-000000000001', 'c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'Hummus Platter', 'Chickpea dip, olive oil, warm pita', 'ai_generated', 220.00, null, true, false, true, 0),
   ('d2222222-0000-0000-0000-000000000002', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Lamb Kofta', 'Grilled spiced lamb skewers', 'ai_generated', 380.00, null, true, false, true, 0),
   ('d2222222-0000-0000-0000-000000000003', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Chicken Shawarma', 'Marinated chicken, garlic sauce', 'manual', 260.00, null, true, true, false, 1);
+
+-- ============================================================
+-- ingredients / item_ingredients — Kubo Kitchen only, added for
+-- specs/034-local-dev-environment (ai_workspace) to exercise
+-- 030-menu-item-ingredients locally (the original seed predates that
+-- feature). Per-business vocabulary (ingredients) plus the item <-> ingredient
+-- join, exactly as 20260825000000_add_ingredients.sql defines them.
+-- ============================================================
+
+insert into ingredients (id, business_id, name) values
+  ('a1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Pork'),
+  ('a1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Spring Roll Wrapper'),
+  ('a1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 'Garlic'),
+  ('a1111111-0000-0000-0000-000000000004', 'b1111111-0000-0000-0000-000000000001', 'Squid'),
+  ('a1111111-0000-0000-0000-000000000005', 'b1111111-0000-0000-0000-000000000001', 'Garlic Mayo');
+
+insert into item_ingredients (item_id, ingredient_id, business_id) values
+  ('d1111111-0000-0000-0000-000000000001', 'a1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001'),
+  ('d1111111-0000-0000-0000-000000000001', 'a1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001'),
+  ('d1111111-0000-0000-0000-000000000001', 'a1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001'),
+  ('d1111111-0000-0000-0000-000000000002', 'a1111111-0000-0000-0000-000000000004', 'b1111111-0000-0000-0000-000000000001'),
+  ('d1111111-0000-0000-0000-000000000002', 'a1111111-0000-0000-0000-000000000005', 'b1111111-0000-0000-0000-000000000001');
 
 -- ============================================================
 -- item_translations / category_translations — Manila Meze only (pro),
@@ -132,11 +181,25 @@ insert into item_translations (item_id, business_id, language_code, translated_d
 -- subscriptions — covers active, pending (Payment Queue), expired (S-03)
 -- ============================================================
 
-insert into subscriptions (id, business_id, plan, amount, status, payment_method, payment_proof_url, activated_by, activated_at, starts_at, expires_at) values
-  ('e1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'standard', 299.00, 'active', 'gcash', 'https://res.cloudinary.com/seed/proof-1.jpg', '99999999-9999-9999-9999-999999999999', now() - interval '15 days', now() - interval '15 days', now() + interval '15 days'),
-  ('e2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'pro', 399.00, 'active', 'bank_transfer', 'https://res.cloudinary.com/seed/proof-2.jpg', '99999999-9999-9999-9999-999999999999', now() - interval '5 days', now() - interval '5 days', now() + interval '25 days'),
-  ('e3333333-0000-0000-0000-000000000003', 'b3333333-0000-0000-0000-000000000003', 'standard', 299.00, 'pending', 'gcash', 'https://res.cloudinary.com/seed/proof-3.jpg', null, null, null, null),
-  ('e4444444-0000-0000-0000-000000000004', 'b4444444-0000-0000-0000-000000000004', 'standard', 299.00, 'expired', 'bank_transfer', 'https://res.cloudinary.com/seed/proof-4.jpg', '99999999-9999-9999-9999-999999999999', now() - interval '45 days', now() - interval '45 days', now() - interval '15 days');
+insert into subscriptions (id, business_id, plan, amount, status, payment_method, payment_proof_url, activated_by, activated_at, starts_at, expires_at, expiry_reminder_sent_at) values
+  ('e1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'standard', 299.00, 'active', 'gcash', 'https://res.cloudinary.com/seed/proof-1.jpg', '99999999-9999-9999-9999-999999999999', now() - interval '15 days', now() - interval '15 days', now() + interval '15 days', null),
+  ('e2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'pro', 399.00, 'active', 'bank_transfer', 'https://res.cloudinary.com/seed/proof-2.jpg', '99999999-9999-9999-9999-999999999999', now() - interval '5 days', now() - interval '5 days', now() + interval '25 days', null),
+  ('e3333333-0000-0000-0000-000000000003', 'b3333333-0000-0000-0000-000000000003', 'standard', 299.00, 'pending', 'gcash', 'https://res.cloudinary.com/seed/proof-3.jpg', null, null, null, null, null),
+  ('e4444444-0000-0000-0000-000000000004', 'b4444444-0000-0000-0000-000000000004', 'standard', 299.00, 'expired', 'bank_transfer', 'https://res.cloudinary.com/seed/proof-4.jpg', '99999999-9999-9999-9999-999999999999', now() - interval '45 days', now() - interval '45 days', now() - interval '15 days', null),
+  -- Added for specs/034-local-dev-environment (ai_workspace) — 032's unified lifecycle shapes not
+  -- covered above. `plan = 'trial'` + `amount = 0` + no payment_method/proof_url/reminder mirrors
+  -- grant_trial_subscription()'s exact insert shape (20260902020000_add_grant_trial_subscription_fn.sql)
+  -- — trial-ness lives on subscriptions.plan, not subscriptions.status (which stays 'active').
+  ('e5555555-0000-0000-0000-000000000005', 'b5555555-0000-0000-0000-000000000005', 'trial', 0.00, 'active', null, null, '99999999-9999-9999-9999-999999999999', now() - interval '10 days', now() - interval '10 days', now() + interval '20 days', null),
+  -- Grace-period boundary (src/lib/subscription/expiry.ts: GRACE_PERIOD_DAYS = 3). expires_at 1
+  -- day ago is still within the 3-day grace window, and expiry_reminder_sent_at already set to
+  -- "now" means the T-0 reminder is already claimed — running the subscription-expiry cron should
+  -- neither re-remind nor lock this one (still `reminded: 0` for this row, still active).
+  ('e6666666-0000-0000-0000-000000000006', 'b6666666-0000-0000-0000-000000000006', 'standard', 299.00, 'active', 'gcash', 'https://res.cloudinary.com/seed/proof-6.jpg', '99999999-9999-9999-9999-999999999999', now() - interval '90 days', now() - interval '90 days', now() - interval '1 day', now() - interval '1 day'),
+  -- Past the 3-day grace window (expires_at 5 days ago) with no reminder ever sent —
+  -- running the cron should both send its (T-0) reminder AND lock it (status -> 'expired') in the
+  -- same pass, exercising both cron effects together.
+  ('e7777777-0000-0000-0000-000000000007', 'b7777777-0000-0000-0000-000000000007', 'pro', 399.00, 'active', 'bank_transfer', 'https://res.cloudinary.com/seed/proof-7.jpg', '99999999-9999-9999-9999-999999999999', now() - interval '95 days', now() - interval '95 days', now() - interval '5 days', null);
 
 -- ============================================================
 -- support_tickets — open, in_progress, resolved-with-reply
