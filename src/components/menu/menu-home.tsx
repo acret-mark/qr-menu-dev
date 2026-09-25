@@ -154,7 +154,7 @@ export function MenuHome({
         {business.address && (
           <p className="mt-1 flex items-center justify-center gap-1 text-center text-[0.82rem] leading-tight text-muted-foreground">
             <MapPin size={13} className="shrink-0" />
-            <span className="truncate">{business.address}</span>
+            <span>{business.address}</span>
           </p>
         )}
 
