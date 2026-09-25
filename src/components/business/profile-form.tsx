@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const LONG_ADDRESS_HINT_THRESHOLD = 150;
 
 type FieldErrors = Partial<Record<"name" | "contactEmail", string>>;
 
@@ -144,6 +145,12 @@ export function ProfileForm({
           onChange={(e) => setAddress(e.target.value)}
           className="h-16 rounded-lg border border-border bg-background px-3.5 py-2.5 text-base outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         />
+        {address.length > LONG_ADDRESS_HINT_THRESHOLD && (
+          <p className="text-xs text-muted-foreground">
+            That&apos;s a long address — consider a more concise version for the menu
+            page.
+          </p>
+        )}
       </div>
 
       {formError && (
