@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Image as ImageIcon, Pencil, Star, TriangleAlert } from "lucide-react";
+import { Image as ImageIcon, Layers, Pencil, Star, TriangleAlert } from "lucide-react";
 import { MaybeLink } from "@/components/dashboard/maybe-link";
 import { Switch } from "@/components/ui/switch";
 import { cloudinaryLoader } from "@/lib/images/cloudinary";
@@ -41,6 +41,14 @@ export function MenuItemRow({
               title="Best seller"
             >
               <Star size={10} className="fill-current" />
+            </span>
+          )}
+          {item.categoryIds.length > 1 && (
+            <span
+              className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-muted px-1.5 py-0.5 text-[0.65rem] font-semibold text-muted-foreground"
+              title={`Also in ${item.categoryIds.length - 1} other categor${item.categoryIds.length - 1 === 1 ? "y" : "ies"}`}
+            >
+              <Layers size={10} />
             </span>
           )}
         </p>

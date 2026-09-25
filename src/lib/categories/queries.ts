@@ -28,24 +28,40 @@ export async function getCategoriesForOwner(
   }
 
   const requiredLanguages = DISPLAY_LANGUAGES.filter((lang) => lang !== business.source_language);
+  const categoryIds = categories.map((category) => category.id);
 
-  const [itemCounts, { data: translationRows }] = await Promise.all([
-    Promise.all(
-      categories.map((category) =>
-        supabase
-          .from("items")
-          .select("id", { count: "exact", head: true })
-          .eq("category_id", category.id)
-      )
-    ),
+  const [{ data: linkRows }, { data: translationRows }] = await Promise.all([
+    // Every item_categories row for this business's categories — used below
+    // to compute both the display total (itemCount) and the "would actually
+    // be deleted" count (FR-007, deletableItemCount: items with no OTHER
+    // category link), one query instead of one count query per category.
+    supabase.from("item_categories").select("item_id, category_id").in("category_id", categoryIds),
     supabase
       .from("category_translations")
       .select("category_id, language_code, source_hash")
-      .in(
-        "category_id",
-        categories.map((category) => category.id)
-      ),
+      .in("category_id", categoryIds),
   ]);
+
+  const categoryIdsByItem = new Map<string, Set<string>>();
+  for (const row of linkRows ?? []) {
+    const set = categoryIdsByItem.get(row.item_id) ?? new Set<string>();
+    set.add(row.category_id);
+    categoryIdsByItem.set(row.item_id, set);
+  }
+
+  const itemCountByCategory = new Map<string, number>();
+  const deletableCountByCategory = new Map<string, number>();
+  for (const row of linkRows ?? []) {
+    itemCountByCategory.set(row.category_id, (itemCountByCategory.get(row.category_id) ?? 0) + 1);
+
+    const linkedCategories = categoryIdsByItem.get(row.item_id);
+    if (linkedCategories && linkedCategories.size === 1) {
+      deletableCountByCategory.set(
+        row.category_id,
+        (deletableCountByCategory.get(row.category_id) ?? 0) + 1
+      );
+    }
+  }
 
   const translationsByCategory = new Map<string, Map<DisplayLanguage, string>>();
   for (const row of translationRows ?? []) {
@@ -55,7 +71,7 @@ export async function getCategoriesForOwner(
     translationsByCategory.get(row.category_id)!.set(row.language_code, row.source_hash);
   }
 
-  return categories.map((category, index) => {
+  return categories.map((category) => {
     const currentHash = hashCategoryName(category.name);
     const existingForCategory = translationsByCategory.get(category.id);
     const hasStaleTranslation = requiredLanguages.some(
@@ -66,7 +82,8 @@ export async function getCategoriesForOwner(
       id: category.id,
       name: category.name,
       sortOrder: category.sort_order,
-      itemCount: itemCounts[index].count ?? 0,
+      itemCount: itemCountByCategory.get(category.id) ?? 0,
+      deletableItemCount: deletableCountByCategory.get(category.id) ?? 0,
       hasStaleTranslation,
     };
   });

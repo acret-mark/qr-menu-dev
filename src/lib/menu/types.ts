@@ -37,6 +37,7 @@ export interface MenuItem {
   isSoldOut: boolean;
   isBestSeller: boolean;
   ingredients: { id: string; name: string }[];
+  categoryNames: string[];
 }
 
 export interface MenuCategory {

@@ -3,5 +3,6 @@ export interface OwnerCategory {
   name: string;
   sortOrder: number;
   itemCount: number;
+  deletableItemCount: number;
   hasStaleTranslation: boolean;
 }

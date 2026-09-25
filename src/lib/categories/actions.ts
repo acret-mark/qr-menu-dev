@@ -150,6 +150,7 @@ export async function saveCategory(input: SaveCategoryInput): Promise<SaveCatego
         name: data.name,
         sortOrder: data.sort_order,
         itemCount: 0,
+        deletableItemCount: 0,
         hasStaleTranslation,
       },
     };
@@ -190,6 +191,7 @@ export async function saveCategory(input: SaveCategoryInput): Promise<SaveCatego
       name: data.name,
       sortOrder: data.sort_order,
       itemCount: 0,
+      deletableItemCount: 0,
       hasStaleTranslation,
     },
   };
@@ -226,6 +228,33 @@ export async function deleteCategory(input: DeleteCategoryInput): Promise<Delete
     return { ok: false, reason: LOCKED_REASON };
   }
 
+  // Deleting a category must only delete items left with zero categories as
+  // a result (FR-006/FR-007, 035-item-multiple-categories) — no longer a
+  // plain FK cascade, since an item can now survive under another category.
+  // The orphan set has to be computed BEFORE the category is deleted: once
+  // deleted, item_categories.category_id's own cascade removes exactly the
+  // rows that would otherwise distinguish "this item's only link was this
+  // category" from "this item was never linked to anything" (research.md §7).
+  const { data: linkedRows } = await supabase
+    .from("item_categories")
+    .select("item_id")
+    .eq("category_id", input.id)
+    .eq("business_id", business.id);
+
+  const linkedItemIds = (linkedRows ?? []).map((row) => row.item_id);
+
+  let orphanedItemIds: string[] = [];
+  if (linkedItemIds.length) {
+    const { data: otherLinkRows } = await supabase
+      .from("item_categories")
+      .select("item_id")
+      .in("item_id", linkedItemIds)
+      .neq("category_id", input.id);
+
+    const itemsWithOtherLinks = new Set((otherLinkRows ?? []).map((row) => row.item_id));
+    orphanedItemIds = linkedItemIds.filter((itemId) => !itemsWithOtherLinks.has(itemId));
+  }
+
   const { error } = await supabase
     .from("categories")
     .delete()
@@ -234,6 +263,18 @@ export async function deleteCategory(input: DeleteCategoryInput): Promise<Delete
 
   if (error) {
     return { ok: false, reason: error.message };
+  }
+
+  if (orphanedItemIds.length) {
+    const { error: deleteItemsError } = await supabase
+      .from("items")
+      .delete()
+      .in("id", orphanedItemIds)
+      .eq("business_id", business.id);
+
+    if (deleteItemsError) {
+      console.error(`deleteCategory: failed to delete orphaned items for category ${input.id}`, deleteItemsError);
+    }
   }
 
   return { ok: true };

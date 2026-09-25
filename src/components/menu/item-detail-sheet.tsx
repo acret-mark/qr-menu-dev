@@ -43,12 +43,10 @@ const TRANSITION_MS = 300;
 
 export function ItemDetailSheet({
   item,
-  categoryName,
   showCategory,
   onClose,
 }: {
   item: MenuItem;
-  categoryName: string;
   showCategory: boolean;
   onClose: () => void;
 }) {
@@ -200,18 +198,22 @@ export function ItemDetailSheet({
                 {item.ingredients.map((ingredient) => ingredient.name).join(", ")}
               </p>
             )}
-            {/* One pill for this item's actual category — the mockup shows
-                several, but the data model has exactly one category per
-                item; rendering fabricated extra tags isn't warranted.
+            {/* One pill per assigned category, since an item can now belong
+                to more than one (035-item-multiple-categories FR-009).
                 Shown only when this item was opened via a search result
                 (showCategory) — redundant otherwise, since the customer just
-                tapped this exact category's own tab to get here
+                tapped one of this item's own category tabs to get here
                 (030-menu-item-ingredients FR-012/FR-013). */}
-            {showCategory && (
+            {showCategory && item.categoryNames.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded-full border border-primary px-3.5 py-1.5 text-[0.82rem] font-medium text-primary">
-                  {categoryName}
-                </span>
+                {item.categoryNames.map((categoryName) => (
+                  <span
+                    key={categoryName}
+                    className="rounded-full border border-primary px-3.5 py-1.5 text-[0.82rem] font-medium text-primary"
+                  >
+                    {categoryName}
+                  </span>
+                ))}
               </div>
             )}
           </div>

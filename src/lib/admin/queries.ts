@@ -93,26 +93,38 @@ export async function getBusinessDetail(id: string): Promise<AdminBusinessDetail
 export async function getBusinessMenu(businessId: string): Promise<AdminMenuCategory[]> {
   const supabase = await createClient();
 
-  const [{ data: categories, error: categoriesError }, { data: items, error: itemsError }] =
-    await Promise.all([
-      supabase
-        .from("categories")
-        .select("id, name, sort_order")
-        .eq("business_id", businessId)
-        .order("sort_order", { ascending: true }),
-      supabase
-        .from("items")
-        .select("id, category_id, name, price, is_sold_out, is_displayed, sort_order")
-        .eq("business_id", businessId)
-        .order("sort_order", { ascending: true }),
-    ]);
+  const [
+    { data: categories, error: categoriesError },
+    { data: items, error: itemsError },
+    { data: itemCategoryRows, error: itemCategoriesError },
+  ] = await Promise.all([
+    supabase
+      .from("categories")
+      .select("id, name, sort_order")
+      .eq("business_id", businessId)
+      .order("sort_order", { ascending: true }),
+    supabase
+      .from("items")
+      .select("id, name, price, is_sold_out, is_displayed")
+      .eq("business_id", businessId),
+    supabase
+      .from("item_categories")
+      .select("item_id, category_id, sort_order")
+      .eq("business_id", businessId)
+      .order("sort_order", { ascending: true }),
+  ]);
 
   if (categoriesError) throw categoriesError;
   if (itemsError) throw itemsError;
+  if (itemCategoriesError) throw itemCategoriesError;
+
+  const itemRowsById = new Map((items ?? []).map((item) => [item.id, item]));
 
   const itemsByCategory = new Map<string, AdminMenuCategory["items"]>();
-  for (const item of items ?? []) {
-    const list = itemsByCategory.get(item.category_id) ?? [];
+  for (const row of itemCategoryRows ?? []) {
+    const item = itemRowsById.get(row.item_id);
+    if (!item) continue;
+    const list = itemsByCategory.get(row.category_id) ?? [];
     list.push({
       id: item.id,
       name: item.name,
@@ -120,7 +132,7 @@ export async function getBusinessMenu(businessId: string): Promise<AdminMenuCate
       isSoldOut: item.is_sold_out,
       isDisplayed: item.is_displayed,
     });
-    itemsByCategory.set(item.category_id, list);
+    itemsByCategory.set(row.category_id, list);
   }
 
   return (categories ?? []).map((category) => ({

@@ -111,15 +111,33 @@ insert into categories (id, business_id, name, sort_order) values
 -- items
 -- ============================================================
 
-insert into items (id, category_id, business_id, name, description, description_source, price, photo_url, is_displayed, is_sold_out, is_best_seller, sort_order) values
-  ('d1111111-0000-0000-0000-000000000001', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Lumpiang Shanghai', 'Crispy pork spring rolls, 10 pcs', 'manual', 149.00, null, true, false, true, 0),
-  ('d1111111-0000-0000-0000-000000000002', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Calamares', 'Fried squid rings with garlic mayo', 'manual', 179.00, null, true, false, false, 1),
-  ('d1111111-0000-0000-0000-000000000003', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Crispy Pata', 'Deep-fried pork leg, good for sharing', 'manual', 450.00, null, true, true, true, 0),
-  ('d1111111-0000-0000-0000-000000000004', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Sinigang na Baboy', 'Pork in tamarind broth', 'manual', 259.00, null, true, false, false, 1),
-  ('d1111111-0000-0000-0000-000000000005', 'c1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 'Buko Shake', 'Fresh young coconut shake', 'manual', 99.00, null, false, false, false, 0),
-  ('d2222222-0000-0000-0000-000000000001', 'c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'Hummus Platter', 'Chickpea dip, olive oil, warm pita', 'ai_generated', 220.00, null, true, false, true, 0),
-  ('d2222222-0000-0000-0000-000000000002', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Lamb Kofta', 'Grilled spiced lamb skewers', 'ai_generated', 380.00, null, true, false, true, 0),
-  ('d2222222-0000-0000-0000-000000000003', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Chicken Shawarma', 'Marinated chicken, garlic sauce', 'manual', 260.00, null, true, true, false, 1);
+insert into items (id, business_id, name, description, description_source, price, photo_url, is_displayed, is_sold_out, is_best_seller) values
+  ('d1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 'Lumpiang Shanghai', 'Crispy pork spring rolls, 10 pcs', 'manual', 149.00, null, true, false, true),
+  ('d1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 'Calamares', 'Fried squid rings with garlic mayo', 'manual', 179.00, null, true, false, false),
+  ('d1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 'Crispy Pata', 'Deep-fried pork leg, good for sharing', 'manual', 450.00, null, true, true, true),
+  ('d1111111-0000-0000-0000-000000000004', 'b1111111-0000-0000-0000-000000000001', 'Sinigang na Baboy', 'Pork in tamarind broth', 'manual', 259.00, null, true, false, false),
+  ('d1111111-0000-0000-0000-000000000005', 'b1111111-0000-0000-0000-000000000001', 'Buko Shake', 'Fresh young coconut shake', 'manual', 99.00, null, false, false, false),
+  ('d2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 'Hummus Platter', 'Chickpea dip, olive oil, warm pita', 'ai_generated', 220.00, null, true, false, true),
+  ('d2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 'Lamb Kofta', 'Grilled spiced lamb skewers', 'ai_generated', 380.00, null, true, false, true),
+  ('d2222222-0000-0000-0000-000000000003', 'b2222222-0000-0000-0000-000000000002', 'Chicken Shawarma', 'Marinated chicken, garlic sauce', 'manual', 260.00, null, true, true, false);
+
+-- ============================================================
+-- item_categories — item <-> category assignment
+-- (035-item-multiple-categories: category_id/sort_order moved off items
+-- and onto this per-(item,category) join; every seeded item here keeps its
+-- original single category and position, matching what the real backfill
+-- migration does for pre-existing production data.)
+-- ============================================================
+
+insert into item_categories (item_id, category_id, business_id, sort_order) values
+  ('d1111111-0000-0000-0000-000000000001', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 0),
+  ('d1111111-0000-0000-0000-000000000002', 'c1111111-0000-0000-0000-000000000001', 'b1111111-0000-0000-0000-000000000001', 1),
+  ('d1111111-0000-0000-0000-000000000003', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 0),
+  ('d1111111-0000-0000-0000-000000000004', 'c1111111-0000-0000-0000-000000000002', 'b1111111-0000-0000-0000-000000000001', 1),
+  ('d1111111-0000-0000-0000-000000000005', 'c1111111-0000-0000-0000-000000000003', 'b1111111-0000-0000-0000-000000000001', 0),
+  ('d2222222-0000-0000-0000-000000000001', 'c2222222-0000-0000-0000-000000000001', 'b2222222-0000-0000-0000-000000000002', 0),
+  ('d2222222-0000-0000-0000-000000000002', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 0),
+  ('d2222222-0000-0000-0000-000000000003', 'c2222222-0000-0000-0000-000000000002', 'b2222222-0000-0000-0000-000000000002', 1);
 
 -- ============================================================
 -- ingredients / item_ingredients — Kubo Kitchen only, added for
